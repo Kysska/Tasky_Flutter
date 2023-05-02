@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class User{
   late final int? id;
@@ -60,8 +62,14 @@ class DatabaseHelperUser{
     ''');
   }
 
+  getUser() async {
+    int id = 1; //const на время
+    final db = await database;
+    var res =await  db.query("user", where: "id = ?", whereArgs: [id]);
+    return res.isNotEmpty ? User.fromMap(res.first) : null ;
+  }
 
-  Future<List<User>> getUser() async{
+  Future<List<User>> getUsers() async{
     Database db = await instance.database;
     var user = await db.query('user');
     List<User> userList = user.isNotEmpty
@@ -88,4 +96,10 @@ class DatabaseHelperUser{
     Database db = await instance.database;
     return await db.update('user', user.toMap(), where: 'id = ?', whereArgs: [user.id]);
   }
+}
+
+class UserFirebase{
+  final firestore = FirebaseFirestore.instance;
+  firestore.settings = Settings(persistenceEnabled: true);
+  DocumentSnapshot userSnapshot = await firestore.collection('users').doc(deviceId).get();
 }

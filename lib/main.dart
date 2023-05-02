@@ -14,7 +14,6 @@ Future<void> main() async{
   int result = await DatabaseHelperUser.instance.checkCount();
   if(result > 0){
     runApp(const MaterialApp(home: Bar()));
-
   }
   else {
     runApp(MaterialApp(home: SignUpPage()));

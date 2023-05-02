@@ -12,18 +12,21 @@ class ListNote extends StatefulWidget {
 }
 
 class ListNoteState extends State<ListNote> {
-  List<Note>? foundNotes;
   String searchText = "";
+  late List<Note>? notes;
+  late List<Note>? searchNotes = [];
+  late List<Note>? fullNotes = [];
 
 
-  // runFilter(String text){
-  //   List<Note>? result = [];
-  //     result = foundNotes?.where((element) =>
-  //         element.name.toLowerCase().contains(text.toLowerCase())).toList();
-  //   setState(() {
-  //     foundNotes = result;
-  //   });
-  // }
+  _runFilter(String text){
+    print(text);
+    searchNotes?.clear();
+    setState(() {
+    searchNotes = fullNotes?.where((element) =>
+          element.name.toLowerCase().contains(text.toLowerCase())).toList();
+    print(searchNotes);
+    });
+  }
 
   _refreshPage(){
     setState(() {});
@@ -53,11 +56,9 @@ class ListNoteState extends State<ListNote> {
             color: Colors.white,
             child: Center(
               child: TextField(
-                // onChanged: (text){
-                //   setState(() {
-                //   searchText = text;
-                // });
-                //   },
+                onChanged: (text){
+                  _runFilter(text);
+                  },
                 decoration: const InputDecoration(
                     hintText: 'Search for something',
                     prefixIcon: Icon(Icons.search),),
@@ -70,8 +71,13 @@ class ListNoteState extends State<ListNote> {
         delegate: SliverChildListDelegate([ FutureBuilder<List<Note>>(
         future: DatabaseHelperNote.instance.getNotes(),
         builder: (context, snapshot) {
-          List<Note>? notes = snapshot.data;
-          // runFilter(searchText);
+          if(searchNotes!.isEmpty){
+            notes = snapshot.data;
+            fullNotes = snapshot.data;
+          }
+          else{
+            notes = searchNotes;
+          }
           if (notes == null) {
             return const Center(
               child: SizedBox(
@@ -83,7 +89,7 @@ class ListNoteState extends State<ListNote> {
             return Center(
               child: Text(snapshot.error.toString()),
             );
-          } else if (notes.isNotEmpty) {
+          } else if (notes!.isNotEmpty) {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: SingleChildScrollView(
@@ -95,13 +101,13 @@ class ListNoteState extends State<ListNote> {
                       Expanded(
                         child: Column(
                           children: [
-                            for (int i = 0; i < notes.length; i += 2)
+                            for (int i = 0; i < notes!.length; i += 2)
                               GestureDetector(
                                   onTap:
                                       () {
                                     Navigator.push(context, MaterialPageRoute(
                                         builder: (context) =>
-                                            AddNote(note: notes[i], isEdit: true,))).then((
+                                            AddNote(note: notes![i], isEdit: true,))).then((
                                         value) =>
                                     {
                                       if(value!=null && value == true){
@@ -110,20 +116,20 @@ class ListNoteState extends State<ListNote> {
                                     });
                                   },
                                   // => Get.to(() => DetailsScreen(id: note.id)),
-                                  child: BaseContainer(note: notes[i])),
+                                  child: BaseContainer(note: notes![i])),
                           ],
                         ),
                       ),
                       Expanded(
                         child: Column(
                           children: [
-                            for (int i = 1; i < notes.length; i += 2)
+                            for (int i = 1; i < notes!.length; i += 2)
                               GestureDetector(
                                   onTap:
                                       () {
                                     Navigator.push(context, MaterialPageRoute(
                                         builder: (context) =>
-                                            AddNote(note: notes[i], isEdit: true,))).then((
+                                            AddNote(note: notes![i], isEdit: true,))).then((
                                         value) =>
                                     {
                                       if(value!=null && value == true){
@@ -132,7 +138,7 @@ class ListNoteState extends State<ListNote> {
                                     });
                                   },
                                   // => Get.to(() => DetailsScreen(id: note.id)),
-                                  child: BaseContainer(note: notes[i])),
+                                  child: BaseContainer(note: notes![i])),
                           ],
                         ),
                       ),
@@ -141,7 +147,7 @@ class ListNoteState extends State<ListNote> {
                 ),
               ),
             );
-          } else if (notes.isEmpty) {
+          } else if (notes!.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "465525405582",
+    "firebase_url": "https://tasky-3f0ce-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "tasky-3f0ce",
+    "storage_bucket": "tasky-3f0ce.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:465525405582:android:073b851ce04cc48f0616df",
+        "android_client_info": {
+          "package_name": "com.example.tasky_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "465525405582-hk2b9hcekcf2ir69r9dosl7lp50peos4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7T4EGFNtdiCsYLq97S0V3Iso7JcMIgcg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "465525405582-hk2b9hcekcf2ir69r9dosl7lp50peos4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
