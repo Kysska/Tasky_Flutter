@@ -40,7 +40,23 @@ class _GameState extends State<Game> {
                           Container(
                             width: 50,
                             height: 50,
-                            child: Shop()
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.red,
+                                backgroundColor: Colors.red,
+                                shape: CircleBorder(),
+                              ),
+                              onPressed: () {
+                          showModalBottomSheet(
+                              backgroundColor: Colors.transparent,
+                              context: context,
+                              isScrollControlled: true,
+                              builder: (context) {
+                                return Shop();
+                              });
+                        },
+                        child: Icon(Icons.shopping_bag, color: Colors.white,),
+                            )
                           ),
                           // Column(
                           //   children: [

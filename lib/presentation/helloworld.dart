@@ -1,7 +1,8 @@
 
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
+import '../main.dart';
 import '../vidgets/input_field.dart';
 
 class Welcome extends StatefulWidget{
@@ -65,7 +66,7 @@ class _WelcomeHome extends State<Welcome>{
   }
   _validateData(){
     if(_titleController.text.isNotEmpty){
-      _addToDB();
+      // _addToDB();
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => Bar()));
     }
@@ -76,13 +77,13 @@ class _WelcomeHome extends State<Welcome>{
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
-  _addToDB() async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-    firestore.collection('users').doc(userID).set({
-      'name': _titleController.text,
-      'money': 500,
-      'skin': "skins/cat02.png"
-    });
-  }
+  // _addToDB() async {
+  //   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //
+  //   firestore.collection('users').doc(userID).set({
+  //     'name': _titleController.text,
+  //     'money': 500,
+  //     'skin': "skins/cat02.png"
+  //   });
+  // }
 }

@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:tasky_flutter/presentation/forum.dart';
 import 'package:tasky_flutter/presentation/game.dart';
@@ -7,10 +8,14 @@ import 'package:tasky_flutter/presentation/person.dart';
 import 'package:tasky_flutter/presentation/signup.dart';
 
 import 'data/userdatabase.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
 
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   int result = await DatabaseHelperUser.instance.checkCount();
   if(result > 0){
     runApp(const MaterialApp(home: Bar()));

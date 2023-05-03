@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>465525405582-cisv7kidilngcsb858tnvmr9jpf7g9ci.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.465525405582-cisv7kidilngcsb858tnvmr9jpf7g9ci</string>
+	<key>API_KEY</key>
+	<string>AIzaSyC2CCMexs7UgTy80TLeRrTmfq0N8x8INMI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>465525405582</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.taskyFlutter</string>
+	<key>PROJECT_ID</key>
+	<string>tasky-3f0ce</string>
+	<key>STORAGE_BUCKET</key>
+	<string>tasky-3f0ce.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:465525405582:ios:f78c31e667e92b360616df</string>
+	<key>DATABASE_URL</key>
+	<string>https://tasky-3f0ce-default-rtdb.asia-southeast1.firebasedatabase.app</string>
+</dict>
+</plist>

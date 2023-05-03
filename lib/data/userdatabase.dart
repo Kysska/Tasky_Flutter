@@ -98,8 +98,23 @@ class DatabaseHelperUser{
   }
 }
 
-class UserFirebase{
-  final firestore = FirebaseFirestore.instance;
-  firestore.settings = Settings(persistenceEnabled: true);
-  DocumentSnapshot userSnapshot = await firestore.collection('users').doc(deviceId).get();
-}
+// class UserFirebase{
+//
+//   Future<User> getUser(String login) async{
+//     final firestore = Firestore.instance;
+//     var userSnapshot = firestore.collection('users').document(login).getCollection('info');
+//     DocumentSnapshot snapshot = await userSnapshot.document(index).get()
+//     return User(login: userSnapshot.data('login'), password: userSnapshot.data('password'), avatar: userSnapshot.data('avatar'))
+//   }
+//
+//   Future<void> addUser(User user) async{
+//     Firestore firestore = Firestore.instance;
+//
+//     firestore.collection('users').document(user.login).setData({
+//       'login': user.login,
+//       'password': user.password,
+//       'avatar': user.avatar
+//     });
+//   }
+//
+// }
