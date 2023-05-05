@@ -1,18 +1,23 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:tasky_flutter/data/gamedatabase.dart';
 
+import '../data/userdatabase.dart';
 import '../main.dart';
 import '../vidgets/input_field.dart';
 
 class Welcome extends StatefulWidget{
-  const Welcome({super.key});
+  final login;
+  const Welcome({super.key, required this.login, });
 
   @override
   _WelcomeHome createState() => _WelcomeHome();
 }
 class _WelcomeHome extends State<Welcome>{
   final _titleController = TextEditingController();
+  GameDatabase game = GameDatabase();
+  GameFirebase fireGame = GameFirebase();
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +29,10 @@ class _WelcomeHome extends State<Welcome>{
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Center(child: Image.asset('assets/skins/cat01.png',width: 200,
+                  Center(child: Image.asset('images/default_capibara.png',width: 200,
                     height: 200,)),
                   SizedBox(height: 8,),
-                  Text("Добро Пожаловать в Skill Catcher!"),
+                  Text("Добро Пожаловать в Tasky!"),
                   Padding(
                     padding: const EdgeInsets.all(30.0),
                     child: Text("Познакомьтесь, это ваш виртуальный питомец. Он поможет вам контролировать свои задачи, а взамен позаботьтесь о нём. Ставьте личные цели и прокачивайте своего питомца."),
@@ -65,8 +70,14 @@ class _WelcomeHome extends State<Welcome>{
     );
   }
   _validateData(){
-    if(_titleController.text.isNotEmpty){
-      // _addToDB();
+    String namePet = _titleController.text;
+    if(namePet.isNotEmpty){
+      game.setNamePet(namePet);
+      game.setHungerScale(100);
+      game.setAssetSkin('images/default_capibara.png');
+      game.setMoney(500);
+      //TODO
+      fireGame.setGameState(widget.login, namePet);
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => Bar()));
     }

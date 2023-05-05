@@ -17,12 +17,19 @@ class _KapibaraState extends State<Kapibara> {
     "images/Kapibara_2.gif"
   ];
   int _currentGifIndex = 0;
+  // late final List<ImageProvider> gifProviders;
 
   @override
   void initState() {
     super.initState();
 
-    Timer.periodic(Duration(seconds: 60), (timer) {
+    // gifProviders = gifList.map((gif) => AssetImage(gif)).toList();
+    //
+    // for (final provider in gifProviders) {
+    //   precacheImage(provider, context);
+    // }
+
+    Timer.periodic(Duration(seconds: 10), (timer) {
       setState(() {
         _currentGifIndex =
             (_currentGifIndex + 1) % gifList.length;
@@ -30,12 +37,13 @@ class _KapibaraState extends State<Kapibara> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Image.asset(
-        gifList[_currentGifIndex],
-      ),
+        child: Image.asset(
+          gifList[_currentGifIndex],
+        ),
     );
   }
 }

@@ -41,6 +41,7 @@ dependencies:
   image_picker:
   cloud_firestore:
   firebase_core:
+  bcrypt:
   shared_preferences:
   firebase_storage: ^11.1.1
 

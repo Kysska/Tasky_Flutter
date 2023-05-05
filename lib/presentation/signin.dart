@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tasky_flutter/data/userdatabase.dart';
 
+import '../main.dart';
 import 'signup.dart';
 
 class SignInPage extends StatefulWidget {
@@ -15,6 +16,8 @@ class _SignInPageState extends State<SignInPage> {
 
   String _login = "";
   String _password = "";
+  UserFirebase userFirebase = UserFirebase();
+  late final User userData;
 
   _changeLogin(String text){
     setState(() {
@@ -28,10 +31,37 @@ class _SignInPageState extends State<SignInPage> {
     });
   }
 
-  _addUser() async{
-    DatabaseHelperUser.instance.add(User(login: _login, password: _password, avatar: ""));
+  Future<bool> _validateData() async{
+    if(_login.isNotEmpty && _password.isNotEmpty){
+      if(await userFirebase.checkUserLogin(_login)){
+        if(await userFirebase.checkUserPassword(_login, _password)){
+          await userFirebase.getUserData(_login);
+          return true;
+        }
+        else{
+          final snackBar = SnackBar(
+              content: const Text('Неверный пароль')
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          return false;
+        }
+      }
+      else{
+        final snackBar = SnackBar(
+            content: const Text('Неверный логин')
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        return false;
+      }
+    }
+    else{
+      final snackBar = SnackBar(
+          content: const Text('Логин или пароль имеет неправильный формат')
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return false;
+    }
   }
-
   @override
   Widget build(BuildContext context) {
 
@@ -60,9 +90,12 @@ class _SignInPageState extends State<SignInPage> {
       child: MaterialButton(
         minWidth: MediaQuery.of(context).size.width,
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-        onPressed: () {
-          // TODO: firebase connect: проверка на пользователя в серваке, если есть вход, если нет регистриция
-          _addUser();
+        onPressed: () async {
+         if(await _validateData()){
+           //TODO PathProvider
+           Navigator.pushReplacement(
+               context, MaterialPageRoute(builder: (context) => Bar()));
+         }
         },
         child: const Text("Войти",
           textAlign: TextAlign.center,),

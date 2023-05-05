@@ -5,7 +5,7 @@ import 'package:tasky_flutter/presentation/game.dart';
 import 'package:tasky_flutter/presentation/home.dart';
 import 'package:tasky_flutter/presentation/note.dart';
 import 'package:tasky_flutter/presentation/person.dart';
-import 'package:tasky_flutter/presentation/signup.dart';
+import 'package:tasky_flutter/presentation/signin.dart';
 
 import 'data/userdatabase.dart';
 import 'firebase_options.dart';
@@ -16,12 +16,12 @@ Future<void> main() async{
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  int result = await DatabaseHelperUser.instance.checkCount();
-  if(result > 0){
+  String? login = await SHUser().getUserLogin();
+  if(login != null){
     runApp(const MaterialApp(home: Bar()));
   }
   else {
-    runApp(MaterialApp(home: SignUpPage()));
+    runApp(MaterialApp(home: SignInPage()));
   }
 }
 

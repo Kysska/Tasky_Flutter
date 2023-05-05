@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tasky_flutter/data/userdatabase.dart';
+import 'package:tasky_flutter/presentation/helloworld.dart';
 import 'package:tasky_flutter/presentation/signin.dart';
-
 
 class SignUpPage extends StatefulWidget {
   SignUpPage({Key? key}) : super(key: key);
@@ -15,6 +15,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   String _login = "";
   String _password = "";
+  UserFirebase userFirebase = UserFirebase();
 
   _changeLogin(String text){
      setState(() {
@@ -29,7 +30,31 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   _addUser() async{
-     DatabaseHelperUser.instance.add(User(login: _login, password: _password, avatar: ""));
+     SHUser().setUserLogin(_login);
+  }
+
+
+  Future<bool> _validateData() async{
+    if(_login.isNotEmpty && _password.isNotEmpty){
+      if(await userFirebase.checkUserLogin(_login)){
+        final snackBar = SnackBar(
+            content: const Text('Логин уже занят. Попробуй другой.')
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        return false;
+      }
+      else{
+        userFirebase.setUserData(_login, _password);
+        return true;
+      }
+    }
+    else{
+      final snackBar = SnackBar(
+          content: const Text('Логин или пароль имеет неправильный формат')
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return false;
+    }
   }
 
   @override
@@ -60,9 +85,14 @@ class _SignUpPageState extends State<SignUpPage> {
       child: MaterialButton(
         minWidth: MediaQuery.of(context).size.width,
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-        onPressed: () {
-          // TODO: firebase connect: проверка на пользователя в серваке, если есть вход, если нет регистриция
-          _addUser();
+        onPressed: () async {
+          if(await _validateData()){
+            _addUser();
+
+
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => Welcome(login: _login,)));
+          }
         },
         child: const Text("Зарегистрироваться",
             textAlign: TextAlign.center,),

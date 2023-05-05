@@ -12,9 +12,10 @@ class Shop extends StatefulWidget{
 }
 class _ShopState extends State<Shop> with TickerProviderStateMixin {
 
-  ShopDatabase mShop = ShopDatabase();
-  List<Eat>? mListEat;
-  Future<List<Eat>>? retrievedListEat;
+  ShopFirebase mShop = ShopFirebase();
+  InventoryDatabase inventoryDatabase = InventoryDatabase.instance;
+  List<EatInShop>? mListEat;
+  Future<List<EatInShop>>? retrievedListEat;
 
   @override
   void initState() {
@@ -23,7 +24,7 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
     getListFood();
   }
 
-  Future<List<Eat>?> getListFood() async{
+  Future<List<EatInShop>?> getListFood() async{
     mListEat = await mShop.getEatList();
     return mListEat;
   }
@@ -154,10 +155,9 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
 
   }
   _getCard(){
-
-    return FutureBuilder<List<Eat>>(
+    return FutureBuilder<List<EatInShop>>(
       future: retrievedListEat,
-      builder: (BuildContext context, AsyncSnapshot<List<Eat>> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<List<EatInShop>> snapshot) {
         if (snapshot.hasData && snapshot.data!.isNotEmpty) {
           return ListView.builder(
               itemCount: mListEat!.length,
@@ -176,7 +176,7 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                           Container(
                             padding: EdgeInsets.all(5.0),
                             alignment: Alignment.centerLeft,
-                            child: Text(mListEat![index].name),
+                            child: Text(mListEat![index].title),
                           ),
                           Container(
                             padding: EdgeInsets.all(5.0),
@@ -187,8 +187,16 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                             children: [
                               TextButton(
                                 child: const Text('Купить'),
-                                onPressed: () {
-                                  /* ... */
+                                onPressed: () async {
+                                  int? count = await inventoryDatabase.getCount(mListEat![index].title);
+                                  print(count);
+                                 if(count! > 0){
+                                   count+=1;
+                                   inventoryDatabase.updateCount(count, mListEat![index].title);
+                                 }
+                                 else{
+                                   inventoryDatabase.add(EatInInventory(title: mListEat![index].title, asset: mListEat![index].asset, money: mListEat![index].money, count: 1));
+                                 }
                                 },
                               ),
                             ],

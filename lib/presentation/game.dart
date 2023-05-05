@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tasky_flutter/data/shopdatabase.dart';
 import 'package:tasky_flutter/vidgets/kapibara.dart';
 import 'package:tasky_flutter/vidgets/shop.dart';
 
@@ -129,95 +130,89 @@ class _GameState extends State<Game> {
                       ],
                     ),
                 ),
-                // Center(
-                //   child: Row(
-                //     children: [
-                //       IconButton(
-                //         icon: Icon(Icons.arrow_left),
-                //         onPressed: () {
-                //           _scrollController.animateTo(_scrollController.offset - MediaQuery.of(context).size.width * 0.5, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                //         },
-                //       ),
-                //       Expanded(
-                //         child: Container(
-                //           height: 200,
-                //           child: SingleChildScrollView(
-                //             controller: _scrollController,
-                //             scrollDirection: Axis.horizontal,
-                //             child: StreamBuilder(
-                //               stream: FirebaseFirestore.instance.collection('users').doc(deviceId).collection('food').snapshots(),
-                //               builder: (BuildContext context,
-                //                   AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-                //                 print("3");
-                //                 print(_hunger);
-                //                 if(!setState1) {
-                //                   return CircularProgressIndicator();
-                //                 }
-                //                 if (snapshot.connectionState == ConnectionState.waiting) {
-                //                   return SizedBox.shrink();
-                //                 }
-                //                 int length;
-                //                 if(snapshot.data == null || snapshot.data!.docs.isEmpty)
-                //                 {
-                //                   length = 0;
-                //                 } else {
-                //                   length = snapshot.data!.docs.length;
-                //                 }
-                //                 return Row(
-                //                   children: List.generate(length, (index) {
-                //                     final int count = snapshot.data!.docs[index].get('count');
-                //                     if (count <= 0) {
-                //                       return SizedBox.shrink();
-                //                     }
-                //                     return Draggable(data: snapshot.data!.docs[index].id,
-                //                       child: Padding(
-                //                           padding: const EdgeInsets.all(
-                //                               2.0),
-                //                           child:
-                //                           Container(
-                //                             // height: 70,
-                //                             // width: 70,
-                //                             // decoration: BoxDecoration(
-                //                             //   shape: BoxShape.circle,
-                //                             //   color: Colors.white,
-                //                             // ),
-                //                             child: Image.asset(
-                //                               snapshot.data!.docs[index].get('image'), width: 100,
-                //                               height: 100,),
-                //                           )
-                //                       ),
-                //
-                //                       feedback: Padding(
-                //                           padding: const EdgeInsets.all(
-                //                               2.0),
-                //                           child:
-                //                           Container(
-                //                             // height: 70,
-                //                             // width: 70,
-                //                             // decoration: BoxDecoration(
-                //                             //   shape: BoxShape.circle,
-                //                             //   color: Colors.white,
-                //                             // ),
-                //                             child: Image.asset(
-                //                               snapshot.data!.docs[index].get('image'), width: 100,
-                //                               height: 100,),
-                //                           )
-                //                       ),);
-                //                   }),//data!!!!
-                //                 );},
-                //             ),
-                //           ),
-                //         ),
-                //       ),
-                //       IconButton(
-                //         icon: Icon(Icons.arrow_right),
-                //         onPressed: () {
-                //           _scrollController.animateTo(_scrollController.offset + MediaQuery.of(context).size.width * 0.5, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                //         },
-                //       ),
-                //     ],
-                //   ),
-                // )
+                Center(
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.arrow_left),
+                        onPressed: () {
+                          _scrollController.animateTo(_scrollController.offset - MediaQuery.of(context).size.width * 0.5, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                        },
+                      ),
+                      Expanded(
+                        child: Container(
+                          height: 200,
+                          child: SingleChildScrollView(
+                            controller: _scrollController,
+                            scrollDirection: Axis.horizontal,
+                            child: FutureBuilder(
+                              future: InventoryDatabase.instance.getEatList(),
+                              builder: (BuildContext context,
+                              AsyncSnapshot<List<EatInInventory>> snapshot) {
+                                if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                                     return Row(
+                                      children: List.generate(snapshot.data!.length, (index) {
+                                        final int count = snapshot.data![index].count;
+                                        if (count <= 0) {
+                                          return SizedBox.shrink();
+                                        }
+                                        return Draggable(data: snapshot.data![index].title,
+
+                                          feedback: Padding(
+                                              padding: const EdgeInsets.all(
+                                                  2.0),
+                                              child:
+                                              Container(
+                                                // height: 70,
+                                                // width: 70,
+                                                // decoration: BoxDecoration(
+                                                //   shape: BoxShape.circle,
+                                                //   color: Colors.white,
+                                                // ),
+                                                child: Image.asset(
+                                                snapshot.data![index].asset, width: 100,
+                                                  height: 100,),
+                                              )
+                                          ),
+                                          child: Padding(
+                                              padding: const EdgeInsets.all(
+                                                  2.0),
+                                              child:
+                                              Container(
+                                                // height: 70,
+                                                // width: 70,
+                                                // decoration: BoxDecoration(
+                                                //   shape: BoxShape.circle,
+                                                //   color: Colors.white,
+                                                // ),
+                                                child: Image.asset(
+                                                  snapshot.data![index].asset, width: 100,
+                                                  height: 100,),
+                                              )
+                                          ),);
+                                      }),//data!!!!
+                                    );
+                          } else if (snapshot.connectionState ==
+                                  ConnectionState.done &&
+                              snapshot.data!.isEmpty) {
+                            return SizedBox.shrink();
+                          } else {
+                            return SizedBox.shrink();
+                          }
+                        }
+                            ),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.arrow_right),
+                        onPressed: () {
+                          _scrollController.animateTo(_scrollController.offset + MediaQuery.of(context).size.width * 0.5, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                        },
+                      ),
+                    ],
+                  ),
+                )
               ]
 
           ),
