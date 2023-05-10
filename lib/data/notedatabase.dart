@@ -1,23 +1,23 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-import 'package:path/path.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class Note{
-  late final int? id;
-  late final String name;
+  late final String id;
+  late final String title;
   late final String desc;
   late final String date;
   late final bool isImportant;
 
-  Note({this.id, required this.name, required this.desc, required this.date, required this.isImportant
+  Note({required this.id, required this.title, required this.desc, required this.date, required this.isImportant
   });
 
   factory Note.fromMap(Map<String, dynamic> json) => Note(
     id: json['id'],
-    name: json['name'],
+    title: json['title'],
     desc: json['desc'],
     date: json['date'],
     isImportant: _boolFromJson(json['isImportant']),
@@ -26,7 +26,7 @@ class Note{
   Map<String, dynamic> toMap(){
     return{
       'id': id,
-      'name': name,
+      'title': title,
       'desc': desc,
       'date': date,
       'isImportant': _boolToJson(isImportant)
@@ -70,8 +70,8 @@ class DatabaseHelperNote{
   Future _onCreate(Database db, int version) async {
     await db.execute('''
     CREATE TABLE note(
-    id INTEGER PRIMARY KEY,
-    name TEXT,
+    id TEXT,
+    title TEXT,
     desc TEXT,
     date TEXT,
     isImportant INT
@@ -94,7 +94,7 @@ class DatabaseHelperNote{
     return await db.insert('note', note.toMap() );
   }
 
-  Future<int> remove(int id) async{
+  Future<int> remove(String id) async{
     Database db = await instance.database;
     return await db.delete('note', where: 'id = ?', whereArgs: [id]);
   }
@@ -102,5 +102,45 @@ class DatabaseHelperNote{
   Future<int> update(Note note) async{
     Database db = await instance.database;
     return await db.update('note', note.toMap(), where: 'id = ?', whereArgs: [note.id]);
+  }
+}
+
+class NoteFirebase{
+  final firestore = FirebaseFirestore.instance;
+
+  getUserCollection(String login){
+    var noteSnapshot = firestore.collection('user').doc(login).collection('note');
+    return noteSnapshot;
+  }
+
+  Future<List<Note>> getNoteList(String login)async {
+    var noteSnapshot = await firestore.collection('user').doc(login).collection('note').get();
+    if (noteSnapshot.docs.isEmpty) {
+      return [];
+    }
+    List<Note> noteList = noteSnapshot.docs.map((doc) {
+      Note note = Note.fromMap(doc.data());
+      return note;
+    }).toList();
+    return noteList;
+  }
+
+  Future<void> setDataNoteList(String login, Note note) async{
+    print("setData");
+    var userSnapshot = getUserCollection(login);
+    await userSnapshot.doc(note.id)
+        .set({'id': note.id, 'title': note.title, 'desc': note.desc, 'date': note.date, 'isImportant': note.isImportant});
+  }
+
+  Future<void> updateNote(String login, Note note) async{
+    var userSnapshot = getUserCollection(login);
+    await userSnapshot.doc(note.id)
+        .update({'id': note.id, 'title': note.title, 'desc': note.desc, 'date': note.date, 'isImportant': note.isImportant});
+  }
+
+  Future<void> deleteNote(String login, String noteId) async {
+    var userSnapshot = getUserCollection(login);
+    await userSnapshot.doc(noteId)
+        .delete();
   }
 }

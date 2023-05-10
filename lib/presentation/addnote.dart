@@ -8,7 +8,8 @@ import '../data/notedatabase.dart';
 class AddNote extends StatefulWidget {
   final Note note;
   final bool isEdit;
-  const AddNote({Key? key, required this.note, required this.isEdit}) : super(key: key);
+  final String login;
+  const AddNote({Key? key, required this.note, required this.isEdit, required this.login}) : super(key: key);
 
   @override
   _AddNoteState createState() => _AddNoteState();
@@ -19,12 +20,14 @@ class _AddNoteState extends State<AddNote> {
   String _desc = "";
   bool _isImportant = false;
   bool _isEdit = false;
+  NoteFirebase mNoteFire = NoteFirebase();
+  DatabaseHelperNote mNote = DatabaseHelperNote.instance;
 
   @override
   void initState() {
     super.initState();
     _isEdit = widget.isEdit;
-    _title = widget.note.name;
+    _title = widget.note.title;
     _desc = widget.note.desc;
     _isImportant = widget.note.isImportant;
   }
@@ -51,13 +54,17 @@ class _AddNoteState extends State<AddNote> {
   }
 
   _addNote() async{
-    await DatabaseHelperNote.instance.add(Note(name: _title, desc: _desc, date: DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now()).toString(), isImportant: _isImportant));
+    var id = DateTime.now().toString();
+    await mNote.add( Note(id: id, title: _title, desc: _desc, date: DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now()).toString(), isImportant: _isImportant));
+    await mNoteFire.setDataNoteList(widget.login, Note( id: id, title: _title, desc: _desc, date: DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now()).toString(), isImportant: _isImportant));
   }
   _updateNote() async{
-    await DatabaseHelperNote.instance.update(Note(id: widget.note.id, name: _title, desc: _desc, date: DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now()).toString(), isImportant: _isImportant));
+    await mNote.update( Note(id: widget.note.id, title: _title, desc: _desc, date: DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now()).toString(), isImportant: _isImportant));
+    await mNoteFire.updateNote(widget.login, Note(id: widget.note.id, title: _title, desc: _desc, date: DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now()).toString(), isImportant: _isImportant));
   }
   _deleteNote() async{
-    await DatabaseHelperNote.instance.remove(widget.note.id!);
+    await mNote.remove(widget.note.id);
+    await mNoteFire.deleteNote(widget.login, widget.note.id);
   }
 
 

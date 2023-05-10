@@ -6,7 +6,8 @@ import '../data/notedatabase.dart';
 import '../vidgets/listnote.dart';
 
 class NoteScreen extends StatefulWidget {
-  const NoteScreen({Key? key}) : super(key: key);
+  final String login;
+  const NoteScreen({Key? key, required this.login}) : super(key: key);
 
   @override
   _NoteScreenState createState() => _NoteScreenState();
@@ -24,8 +25,8 @@ class _NoteScreenState extends State<NoteScreen> {
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-          Note note = Note(name: "", desc: "", date: DateTime.now().toString(), isImportant: false);
-          Navigator.push(context, MaterialPageRoute(builder: (context) => AddNote(note: note, isEdit: false,))).then((value) => {
+          Note note = Note(id: "", title: "", desc: "", date: DateTime.now().toString(), isImportant: false);
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AddNote(note: note, isEdit: false, login: widget.login,))).then((value) => {
             if(value!=null && value == true){
               _refreshPage()
             }
@@ -39,7 +40,7 @@ class _NoteScreenState extends State<NoteScreen> {
         ),
         backgroundColor: Colors.blue,
       ),
-      body: ListNote(),
+      body: ListNote(login: widget.login,),
 
     );
   }

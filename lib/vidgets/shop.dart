@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tasky_flutter/data/inventorydatabase.dart';
 import 'package:tasky_flutter/data/shopdatabase.dart';
 
 class Shop extends StatefulWidget{
-  const Shop({super.key});
+  final String login;
+  const Shop({super.key, required this.login});
 
 
   @override
@@ -13,7 +15,8 @@ class Shop extends StatefulWidget{
 class _ShopState extends State<Shop> with TickerProviderStateMixin {
 
   ShopFirebase mShop = ShopFirebase();
-  InventoryDatabase inventoryDatabase = InventoryDatabase.instance;
+  InventoryDatabase mInventory = InventoryDatabase.instance;
+  InventoryFirebase mInventoryFire = InventoryFirebase();
   List<EatInShop>? mListEat;
   Future<List<EatInShop>>? retrievedListEat;
 
@@ -188,15 +191,28 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                               TextButton(
                                 child: const Text('Купить'),
                                 onPressed: () async {
-                                  int? count = await inventoryDatabase.getCount(mListEat![index].title);
-                                  print(count);
-                                 if(count! > 0){
-                                   count+=1;
-                                   inventoryDatabase.updateCount(count, mListEat![index].title);
-                                 }
-                                 else{
-                                   inventoryDatabase.add(EatInInventory(title: mListEat![index].title, asset: mListEat![index].asset, money: mListEat![index].money, count: 1));
-                                 }
+                                  bool foodIn = await mInventory.checkIfExists(mListEat![index].title);
+                                  if(foodIn){
+                                    int count = await mInventory.getCount(mListEat![index].title);
+                                      count +=1;
+                                      await mInventory.updateCount(count, mListEat![index].title);
+                                      await mInventoryFire.updateCountEat(widget.login, count, mListEat![index].title);
+                                  }
+                                  else{
+                                    await mInventory.add(EatInInventory(title: mListEat![index].title, asset: mListEat![index].asset, money: mListEat![index].money, count: 1));
+                                    print(widget.login);
+                                    await mInventoryFire.setDataEatList(widget.login, EatInInventory(title: mListEat![index].title, asset: mListEat![index].asset, money: mListEat![index].money, count: 1));
+                                  }
+
+                                 //  bool check  = await mInventory.getCheckFood(widget.login, mListEat![index].title);
+                                 // if(check){
+                                 //   int count = await mInventory.getCount(widget.login, mListEat![index].title);
+                                 //   count+=1;
+                                 //   await mInventory.updateCountEat(widget.login, count, mListEat![index].title);
+                                 // }
+                                 // else{
+                                 //   await mInventory.setDataEatList(widget.login, EatInInventory(title: mListEat![index].title, asset: mListEat![index].asset, money: mListEat![index].money, count: 1));
+                                 // }
                                 },
                               ),
                             ],

@@ -94,7 +94,7 @@ class _SignInPageState extends State<SignInPage> {
          if(await _validateData()){
            //TODO PathProvider
            Navigator.pushReplacement(
-               context, MaterialPageRoute(builder: (context) => Bar()));
+               context, MaterialPageRoute(builder: (context) => Bar(login: _login,)));
          }
         },
         child: const Text("Войти",

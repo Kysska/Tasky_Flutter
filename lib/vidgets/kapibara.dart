@@ -40,10 +40,8 @@ class _KapibaraState extends State<Kapibara> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: Image.asset(
+    return Image.asset(
           gifList[_currentGifIndex],
-        ),
-    );
+        );
   }
 }

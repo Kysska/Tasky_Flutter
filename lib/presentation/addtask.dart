@@ -1,11 +1,13 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tasky_flutter/data/taskdatabase.dart';
 
 import '../vidgets/input_field.dart';
 
 class AddTask extends StatefulWidget{
+  late final String login;
 
   @override
   State<AddTask> createState() => _AddTaskState();
@@ -14,11 +16,20 @@ class AddTask extends StatefulWidget{
 class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
 
   final _titleController = TextEditingController();
+  final _descController = TextEditingController();
   late TabController _tabController;
+  TaskFirebase mTaskFire = TaskFirebase();
+  DatabaseHelperTask mTask = DatabaseHelperTask.instance;
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this,);
+  }
+
+  _dbTaskAdd() async{
+    var id = DateTime.now().toString();
+    await mTask.add(Task(title: _titleController.text, id: id, desc: _descController.text, date: DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now()).toString(), isCompleted: false));
+    await mTaskFire.setDataTaskList(widget.login, Task(title: _titleController.text, id: id, desc: _descController.text, date: DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now()).toString(), isCompleted: false));
   }
 
   @override
@@ -77,6 +88,7 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                               children: [
                                 MyInputField(title: "Название", hint: "Введите название задачи", controller: _titleController,),
                                 SizedBox(height: 18,),
+                                MyInputField(title: "Описание", hint: "Описание задачи", controller: _descController,),
                                 Align(
                                   alignment: Alignment.center,
                                   child: Row(
@@ -123,7 +135,7 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
   _validateData() {
     if(_titleController.text.isNotEmpty){
       print("Да");
-      _dbAdd();
+      _dbTaskAdd();
     }
     else if(_titleController.text.isEmpty){
       final snackBar = SnackBar(
@@ -132,9 +144,9 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
-  _dbAdd() async{
-    await DatabaseHelperTask.instance.add(Task(name: _titleController.text));
-  }
+  // _dbAdd() async{
+  //   await mTask.setDataTaskList(widget.login, Task(name: _titleController.text,));
+  // } TODO addTask
   _validateDataHabit() {
     if(_titleController.text.isNotEmpty){
       print("Да");

@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:tasky_flutter/data/shopdatabase.dart';
 import 'package:tasky_flutter/vidgets/kapibara.dart';
 import 'package:tasky_flutter/vidgets/shop.dart';
 
+import '../data/inventorydatabase.dart';
+
 class Game extends StatefulWidget{
-  const Game({super.key});
+  final String login;
+  const Game({super.key, required this.login});
 
 
   @override
@@ -14,6 +16,16 @@ class Game extends StatefulWidget{
 
 }
 class _GameState extends State<Game> {
+
+  InventoryFirebase mInventoryFire = InventoryFirebase();
+  InventoryDatabase mInventory = InventoryDatabase.instance;
+  late Map<String, int> listFood = {};
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +65,7 @@ class _GameState extends State<Game> {
                               context: context,
                               isScrollControlled: true,
                               builder: (context) {
-                                return Shop();
+                                return Shop(login: widget.login,);
                               });
                         },
                         child: Icon(Icons.shopping_bag, color: Colors.white,),
@@ -107,12 +119,22 @@ class _GameState extends State<Game> {
                           },
                           child: Stack(
                               children: [DragTarget<String>(builder: (context, candidateData, rejectedData){
-                                  return Kapibara();
+                                 return Image.asset(
+                                   "images/Kapibara_1.gif",
+                                    width: 500,
+                                    height: 500,
+                                  );
                               },
                                   onWillAccept: (data) {
+                                    print('object');
                                     return data == data;
                                   },
-                                  onAccept: (data) {
+                                  onAccept: (data) async {
+                                print('object');
+                                print(data);
+                                    await mInventory.updateCount(listFood[data]! - 1,  data);
+                                    await  mInventoryFire.updateCountEat(widget.login, listFood[data]! - 1, data);
+
                                     // putListFood(data).then((value) =>
                                     //     setState(() {
                                     //       _feed(10);
@@ -145,14 +167,15 @@ class _GameState extends State<Game> {
                           child: SingleChildScrollView(
                             controller: _scrollController,
                             scrollDirection: Axis.horizontal,
-                            child: FutureBuilder(
-                              future: InventoryDatabase.instance.getEatList(),
+                            child: StreamBuilder(
+                              stream: mInventory.getEatListStream(),
                               builder: (BuildContext context,
                               AsyncSnapshot<List<EatInInventory>> snapshot) {
                                 if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                                      return Row(
                                       children: List.generate(snapshot.data!.length, (index) {
                                         final int count = snapshot.data![index].count;
+                                        listFood[snapshot.data![index].title] = count;
                                         if (count <= 0) {
                                           return SizedBox.shrink();
                                         }
@@ -170,7 +193,7 @@ class _GameState extends State<Game> {
                                                 //   color: Colors.white,
                                                 // ),
                                                 child: Image.asset(
-                                                snapshot.data![index].asset, width: 100,
+                                                  snapshot.data![index].asset, width: 100,
                                                   height: 100,),
                                               )
                                           ),
@@ -197,7 +220,7 @@ class _GameState extends State<Game> {
                               snapshot.data!.isEmpty) {
                             return SizedBox.shrink();
                           } else {
-                            return SizedBox.shrink();
+                            return CircularProgressIndicator();
                           }
                         }
                             ),

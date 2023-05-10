@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Person extends StatefulWidget{
   const Person({super.key});
@@ -15,17 +17,42 @@ class Person extends StatefulWidget{
 }
 class _PersonState extends State<Person> {
 
-  late File _image;
+  late File _image = File('');
+  late String _imagePath;
 
-  _imgFromGallery() async {
-    final ImagePicker picker = ImagePicker();
-    final image = await  picker.getImage(
-        source: ImageSource.gallery, imageQuality: 50
+  Future<void> _initImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final imagePath = prefs.getString('imagePath');
+    if (imagePath != null) {
+      setState(() {
+        _imagePath = imagePath;
+        _image = File(imagePath);
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initImage();
+  }
+
+  Future<void> _imgFromGallery() async {
+    final picker = ImagePicker();
+    final image = await picker.getImage(
+      source: ImageSource.gallery,
+      imageQuality: 50,
     );
 
-    setState(() {
-      _image = File(image!.path);
-    });
+    if (image != null) {
+      setState(() {
+        _image = File(image.path);
+        _imagePath = image.path;
+      });
+
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString('imagePath', _imagePath);
+    }
   }
 
 
@@ -44,14 +71,14 @@ class _PersonState extends State<Person> {
               child: CircleAvatar(
                 backgroundColor: Color(0xffFDCF09),
                 radius: 50,
-                child: _image != null
+                child: _image != null && _image.path.isNotEmpty
                     ? ClipRRect(
                   borderRadius: BorderRadius.circular(50),
                   child: Image.file(
                     _image,
                     width: 100,
                     height: 100,
-                    fit: BoxFit.fitHeight,
+                    fit: BoxFit.cover,
                   ),
                 )
                     : Container(

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:tasky_flutter/presentation/forum.dart';
@@ -16,17 +17,17 @@ Future<void> main() async{
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  final firestore = FirebaseFirestore.instance;
+  firestore.settings = const Settings(persistenceEnabled: true);
   String? login = await SHUser().getUserLogin();
-  if(login != null){
-    runApp(const MaterialApp(home: Bar()));
-  }
-  else {
-    runApp(MaterialApp(home: SignInPage()));
-  }
+  runApp(MaterialApp(home: login == null ? SignInPage(): Bar(login: login)));
 }
 
+
+
 class Bar extends StatefulWidget {
-  const Bar({super.key});
+  final login;
+  const Bar({super.key, this.login});
 
 
   @override
@@ -36,14 +37,18 @@ class Bar extends StatefulWidget {
 
 class _BottomBarState extends State<Bar> {
   int _selectedIndex = 0;
-  List pages = [
-    Home(),
-    NoteScreen(),
-    Game(),
-    Forum(),
-    Person()
-  ];
+  List pages = [];
 
+  @override void initState() {
+    super.initState();
+    pages = [
+      Home(login: widget.login),
+      NoteScreen(login: widget.login,),
+      Game(login: widget.login),
+      Forum(),
+      Person()
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {

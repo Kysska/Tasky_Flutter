@@ -79,7 +79,7 @@ class _WelcomeHome extends State<Welcome>{
       //TODO
       fireGame.setGameState(widget.login, namePet);
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Bar()));
+          context, MaterialPageRoute(builder: (context) => Bar(login: widget.login,)));
     }
     else{
       final snackBar = SnackBar(
