@@ -8,30 +8,55 @@ import 'package:path/path.dart';
 class Task{
   late final String id;
   late final String title;
-  late final String desc;
   late final String date;
+  final String notice;
+  final String time;
+  final String tag;
   late final bool isCompleted;
+  final List<String> daysOfWeek;
 
-  Task({required this.id, required this.title,
-    required this.desc, required this.date, required this.isCompleted
+  Task ( {required this.id, required this.title,
+    required this.date, required this.isCompleted, required this.notice, required this.time, required this.tag, required this.daysOfWeek
   });
 
   factory Task.fromMap(Map<String, dynamic> json) => Task(
     id: json['id'],
-      title: json['title'],
-      desc: json['desc'],
-      date: json['date'],
-      isCompleted: json['isCompleted']
+    title: json['title'],
+    date: json['date'],
+    notice: json['notice'],
+    time: json['time'],
+    tag: json['tag'],
+    isCompleted: _boolFromJson(json['isCompleted']),
+    daysOfWeek: json['daysOfWeek']?.split(','),
   );
 
-  Map<String, dynamic> toMap(){
-    return{
+  Map<String, dynamic> toMap() {
+    return {
       'id': id,
       'title': title,
-      'desc': desc,
       'date': date,
-      'isCompleted': isCompleted,
+      'notice': notice,
+      'time': time,
+      'tag': tag,
+      'isCompleted': _boolToJson(isCompleted),
+      'daysOfWeek': daysOfWeek.join(','),
     };
+  }
+
+  static int _boolToJson(bool value) {
+    if (value == true) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  static bool _boolFromJson(int value) {
+    if (value == 1) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 
@@ -54,14 +79,14 @@ class TaskFirebase{
 
   Future<void> setDataTaskList(String login, Task task) async{
     var userSnapshot = getUserCollection(login);
-    await userSnapshot
-        .add({'title': task.title, 'desc': task.desc, 'date': task.date, 'isImportant': task.isCompleted});
+    await userSnapshot.doc(task.id)
+        .set(task.toMap());
   }
 
   Future<void> updateCountTask(String login, Task task) async{
     var userSnapshot = getUserCollection(login);
     await userSnapshot.doc(task.id)
-        .update({'title': task.title, 'desc': task.desc, 'date': task.date, 'isImportant': task.isCompleted});
+        .update(task.toMap());
   }
 
   Future<void> deleteTask(String login, String taskId) async {
@@ -92,9 +117,12 @@ class DatabaseHelperTask{
     await db.execute('''
     CREATE TABLE task(
     id TEXT,
-    title TEXT
-    desc TEXT,
-    date DATETIME,
+    title TEXT,
+    date TEXT,
+    time TEXT,
+    notice TEXT,
+    tag TEXT,
+    daysOfWeek TEXT,
     isCompleted BOOL
     )
     ''');

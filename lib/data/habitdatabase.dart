@@ -8,29 +8,38 @@ import 'package:path/path.dart';
 class Habit{
   late final String id;
   late final String title;
-  late final String desc;
-  late final String date; //TODO продолжительность
+  late final String time;
+  late final String notice;
+  late final List<String> listWeek;
+  final String tag;
   late final List<String> isCompleted;
+  late final int sumCompleted;
 
   Habit({required this.id, required this.title,
-    required this.desc, required this.date, required this.isCompleted
+    required this.isCompleted, required this.tag, required this.time, required this.listWeek, required this.notice, required this.sumCompleted,
   });
 
   factory Habit.fromMap(Map<String, dynamic> json) => Habit(
       id: json['id'],
       title: json['title'],
-      desc: json['desc'],
-      date: json['date'],
-      isCompleted: json['isCompleted']
+      isCompleted: json['isCompleted']?.split(','),
+      tag: json['tag'],
+      time: json['time'],
+      listWeek: json['listWeek']?.split(','),
+      notice: json['notice'],
+      sumCompleted: json['sumCompleted'],
   );
 
   Map<String, dynamic> toMap(){
     return{
       'id': id,
       'title': title,
-      'desc': desc,
-      'date': date,
-      'isCompleted': isCompleted,
+      'isCompleted': isCompleted.join(','),
+      'tag': tag,
+      'time': time,
+      'listWeek': listWeek.join(','),
+      'notice': notice,
+      'sumCompleted': sumCompleted,
     };
   }
 }
@@ -55,13 +64,13 @@ class HabitFirebase{
   Future<void> setDataHabitList(String login, Habit habit) async{
     var userSnapshot = getUserCollection(login);
     await userSnapshot
-        .add({'title': habit.title, 'desc': habit.desc, 'date': habit.date, 'isImportant': habit.isCompleted});
+        .add(habit.toMap());
   }
 
   Future<void> updateCountHabit(String login, Habit habit) async{
     var userSnapshot = getUserCollection(login);
     await userSnapshot.doc(habit.id)
-        .update({'title': habit.title, 'desc': habit.desc, 'date': habit.date, 'isImportant': habit.isCompleted});
+        .update(habit.toMap());
   }
 
   Future<void> deleteHabit(String login, String habitId) async {
@@ -92,12 +101,15 @@ class DatabaseHelperHabit{
     await db.execute('''
     CREATE TABLE habit(
     id TEXT,
-    title TEXT
-    desc TEXT,
-    date DATETIME,
-    isCompleted BOOL
+    title TEXT,
+    tag TEXT,
+    time TEXT,
+    notice TEXT,
+    listWeek TEXT,
+    sumCompleted INT,
+    isCompleted TEXT
     )
-    '''); //TODO isCompleted is List
+    ''');
   }
 
 

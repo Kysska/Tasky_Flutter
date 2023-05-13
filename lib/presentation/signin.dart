@@ -34,7 +34,7 @@ class _SignInPageState extends State<SignInPage> {
   Future<bool> _validateData() async{
     if(_login.isNotEmpty && _password.isNotEmpty){
       if(await userFirebase.checkUserLogin(_login)){
-        if(await userFirebase.checkUserPassword(_login, _password)){
+        if(await userFirebase.checkUserPassword(_login, _password)){ //TODO исправить
           await userFirebase.getUserData(_login);
           return true;
         }
