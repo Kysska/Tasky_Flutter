@@ -10,7 +10,7 @@ class Habit{
   late final String title;
   late final String time;
   late final String notice;
-  late final List<String> listWeek;
+  late final List<bool> listWeek;
   final String tag;
   late final List<String> isCompleted;
   late final int sumCompleted;
@@ -25,7 +25,7 @@ class Habit{
       isCompleted: json['isCompleted']?.split(','),
       tag: json['tag'],
       time: json['time'],
-      listWeek: json['listWeek']?.split(','),
+      listWeek: (json['listWeek'].split(',') as List).map((str) => str.toLowerCase() == 'true').toList(),
       notice: json['notice'],
       sumCompleted: json['sumCompleted'],
   );

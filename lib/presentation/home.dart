@@ -3,8 +3,11 @@ import 'dart:math';
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tags/flutter_tags.dart';
+import 'package:intl/intl.dart';
+import 'package:tasky_flutter/data/habitdatabase.dart';
 import 'package:tasky_flutter/data/taskdatabase.dart';
+import 'package:tasky_flutter/presentation/habitinfo.dart';
+import 'package:tasky_flutter/presentation/updatetask.dart';
 
 import 'addtask.dart';
 
@@ -15,6 +18,7 @@ class Home extends StatefulWidget{
 
   @override
   _HomeState createState() => _HomeState();
+
 
 }
 class _HomeState extends State<Home> {
@@ -28,7 +32,9 @@ class _HomeState extends State<Home> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => AddTask(login: widget.login,))).then((value) => {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AddTask(login: widget.login,))).then((
+              value) =>
+          {
             if(value!=null && value == true){
               refreshPage()
             }
@@ -52,17 +58,22 @@ class _HomeState extends State<Home> {
           Container(
             margin: const EdgeInsets.only(top: 20, left: 20, bottom: 20),
             child: DatePicker(
-              DateTime.now().subtract(Duration(days: 30)),
-              height: 100,
-              width: 80,
+              DateTime.now().subtract(Duration(days: 2)),
               controller: _controller,
+              locale: "ru_RU",
               initialSelectedDate: DateTime.now(),
               selectionColor: Colors.blue,
               selectedTextColor: Colors.white,
-              dateTextStyle: TextStyle(
-                  fontSize: 20,
+              dateTextStyle: const TextStyle(
+                  fontSize: 15,
                   fontWeight: FontWeight.w600,
                   color: Colors.grey
+              ),
+              monthTextStyle: const TextStyle(
+                  fontSize: 10,
+              ),
+              dayTextStyle:  const TextStyle(
+                fontSize: 10,
               ),
               onDateChange: (date) {
                 setState(() {
@@ -72,20 +83,23 @@ class _HomeState extends State<Home> {
               },
             ),
           ),
-          MyDraggableScrollableSheet(login: widget.login,)
+          MyDraggableScrollableSheet(login: widget.login, selectedDate: _selectedDate,)
         ],
       )
       );
     
   }
   refreshPage(){
-    setState(() {});
+    setState(() {
+      _selectedDate = DateTime.now();
+    });
   }
 }
 
 class MyDraggableScrollableSheet extends StatefulWidget {
   final String? login;
-  const MyDraggableScrollableSheet({super.key, this.login});
+  final selectedDate;
+  const MyDraggableScrollableSheet({super.key, this.login, this.selectedDate, });
 
   @override
   _MyDraggableScrollableSheetState createState() =>
@@ -99,12 +113,23 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
   Future<List<Task>>? retrievedListTask;
   DatabaseHelperTask mTask = DatabaseHelperTask.instance;
   final List<bool> _isSelected = [true, false];
+  var _selectedDate = DateTime.now();
+
 
   @override
   void initState() {
     super.initState();
+    _selectedDate = widget.selectedDate;
     retrievedListTask = mTask.getTasks();
     getListTask();
+  }
+
+  @override
+  void didUpdateWidget(covariant MyDraggableScrollableSheet oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedDate != oldWidget.selectedDate) {
+      _selectedDate = widget.selectedDate;
+    }
   }
 
   Future<List<Task>?> getListTask() async{
@@ -136,7 +161,6 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
               ],
               color: Colors.white,
             ),
-            // Contents of the sheet
             child:
               Column(
                 children: [
@@ -144,10 +168,6 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: ToggleButtons(
-                      children: <Widget>[
-                        Text("Задачи"),
-                        Text("Привычки"),
-                      ],
                       constraints: BoxConstraints(minWidth: 70, maxWidth: 70, minHeight: kMinInteractiveDimension),
                       isSelected: _isSelected,
                       borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -160,27 +180,72 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                           _isSelected[1] = !_isSelected[1];
                         });
                       },
+                      children: const <Widget>[
+                        Text("Задачи"),
+                        Text("Привычки"),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 20),
+                  if(_isSelected[0])
                   Expanded(
                     child: Scrollbar(
                       child: FutureBuilder<List<Task>>(
                         future: retrievedListTask,
                         builder: (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
                           if (!snapshot.hasData) {
-                            return Center(child: Text('Loading..'));
+                            return Center(child: Text('Загрузка..'));
                           }
                           return snapshot.data!.isEmpty
-                              ? Center(child: Text('No Tasks'),)
+                              ? Center(child: Text('Задач нет'),)
                               : ListView.builder(
                             controller: scrollController,
                             itemCount: snapshot.data!.length,
                             itemBuilder: (BuildContext context, int index) {
-                              return Padding(
+                              String selectedFormatDate = DateFormat.yMd().format(
+                                  _selectedDate);
+                              String dateSqlite = snapshot.data![index].date;
+                              if(selectedFormatDate == dateSqlite) {
+                                return Padding(
                                 padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                                 child: Dismissible(
                                   key: Key(snapshot.data![index].id),
+                                  background: Container(
+                                    color: Colors.red,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(15),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: const <Widget>[
+                                          Icon(Icons.delete, color: Colors.white),
+                                          Text('Удалить', style: TextStyle(color: Colors.white)),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  confirmDismiss: (DismissDirection direction) async {
+                                    return await showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text("Удалить задачу"),
+                                          content: const Text("Вы правда хотите удалить задачу?"),
+                                          actions: <Widget>[
+                                            TextButton(
+                                                onPressed: () async{
+                                                  await mTask.remove(snapshot.data![index].id);
+                                                  Navigator.of(context).pop(true);},
+                                                child: const Text("Удалить")
+                                            ),
+                                            TextButton(
+                                              onPressed: () => Navigator.of(context).pop(false),
+                                              child: const Text("Закрыть"),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
                                   child: Card(
                                     color: snapshot.data![index].isCompleted
                                         ? Colors.grey[300]
@@ -192,7 +257,9 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                                       Row(
                                           mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Container(
+                                          snapshot.data![index].tag == ""
+                                              ? SizedBox.shrink()
+                                              : Container(
                                             decoration: BoxDecoration(
                                               borderRadius: BorderRadius.circular(14.0),
                                               border: Border.all(
@@ -207,50 +274,156 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                                             ),
                                           ),
                                           snapshot.data![index].isCompleted
-                                              ? Text("Выполнено")
+                                              ? const Icon(
+                                              Icons.check_circle_outline,
+                                              color: Colors.pink,
+                                            )
                                               : IconButton(
-                                            icon: Icon(
-                                              Icons.check,
+                                            icon: const Icon(
+                                              Icons.circle_outlined,
                                               color: Colors.pink,
                                             ),
                                             onPressed: () {
-                                              // do something when pressed
+                                              setState(() {
+                                                mTask.updateCompleted(snapshot.data![index].title);
+                                              });
                                             },
                                           ),
                                         ],
-                                      )
+                                      ),
+                                      onTap: (){
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateTask(login: widget.login, task: snapshot.data![index],)));
+                                      },
                                     ),
                                   ),
                                 ),
                               );
+                              }
+                              else{
+                                return SizedBox.shrink();
+                              }
                             },
                           );
                         },
                       ),
                     ),
                   ),
+                  if(_isSelected[1])
+                    HabitsCards(login: widget.login,),
                 ],
               ),
           );
       },
     );
-    //             child: ToggleButtons(
-    //               children: <Widget>[
-    //                 Text("Задачи"),
-    //                 Text("Привычки"),
-    //               ],
-    //               isSelected: _isSelected,
-    //               borderRadius: BorderRadius.all(Radius.circular(10)),
-    //               fillColor: Colors.blueAccent,
-    //               color: Colors.black87,
-    //               selectedColor: Colors.white,
-    //               onPressed: (int index) {
-    //                 setState(() {
-    //                   _isSelected[0] = !_isSelected[0];
-    //                   _isSelected[1] = !_isSelected[1];
-    //                 });
-    //               },
-    //             ),
-    //           ),
+
   }
+}
+
+class HabitsCards extends StatefulWidget {
+  final String? login;
+  const HabitsCards({super.key, this.login});
+
+  @override
+  _HabitsCardsState createState() =>
+      _HabitsCardsState();
+}
+
+class _HabitsCardsState extends State<HabitsCards> {
+
+  ScrollController scrollController = ScrollController();
+  HabitFirebase mHabitFire = HabitFirebase();
+  List<Habit>? mListHabit;
+  Future<List<Habit>>? retrievedListHabit;
+  DatabaseHelperHabit mHabit = DatabaseHelperHabit.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    retrievedListHabit = mHabit.getHabit();
+    getListHabit();
+  }
+
+  Future<List<Habit>?> getListHabit() async{
+    mListHabit = await mHabit.getHabit();
+    return mListHabit;
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Scrollbar(
+        child: FutureBuilder<List<Habit>>(
+          future: retrievedListHabit,
+          builder: (BuildContext context, AsyncSnapshot<List<Habit>> snapshot) {
+            if (!snapshot.hasData) {
+              return Center(child: Text('Загрузка..'));
+            }
+            return snapshot.data!.isEmpty
+                ? Center(child: Text('Привычек нет'),)
+                : ListView.builder(
+              controller: scrollController,
+              itemCount: snapshot.data!.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                  child: Dismissible(
+                    key: Key(snapshot.data![index].id),
+                    child: Card(
+                      color: Colors.white,
+                      // snapshot.data![index].isCompleted
+                      //     ? Colors.grey[300]
+                      //     : Colors.white,
+                      child: ListTile(
+                          title: Text(snapshot.data![index].title),
+                          subtitle: Text(snapshot.data![index].time),
+                          trailing:
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              snapshot.data![index].tag == ""
+                                  ? SizedBox.shrink()
+                                  : Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(14.0),
+                                  border: Border.all(
+                                    width: 1.0,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                padding: const EdgeInsets.all(4.0),
+                                child: Text(
+                                  snapshot.data![index].tag,
+                                  style: const TextStyle(fontSize: 14.0),
+                                ),
+                              ),
+                              // snapshot.data![index].isCompleted
+                              //     ? Text("Выполнено")
+                              //     :
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.check,
+                                  color: Colors.pink,
+                                ),
+                                onPressed: () {
+                                  // do something when pressed
+                                },
+                              ),
+                            ],
+                          ),
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => HabitInfo(login: widget.login,)));
+                            },
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
 }

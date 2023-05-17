@@ -83,7 +83,7 @@ class TaskFirebase{
         .set(task.toMap());
   }
 
-  Future<void> updateCountTask(String login, Task task) async{
+  Future<void> updateTask(String login, Task task) async{
     var userSnapshot = getUserCollection(login);
     await userSnapshot.doc(task.id)
         .update(task.toMap());
@@ -152,5 +152,10 @@ class DatabaseHelperTask{
   Future<int> update(Task task) async{
     Database db = await instance.database;
     return await db.update('task', task.toMap(), where: 'id = ?', whereArgs: [task.id]);
+  }
+
+  Future<void> updateCompleted(String title) async{
+    Database db = await instance.database;
+    await db.rawUpdate('UPDATE task SET isCompleted = ? WHERE title = ?', [1, title]);
   }
 }
