@@ -119,7 +119,7 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                               children: [
                                 MyInputField(title: "Название", hint: "Введите название задачи", controller: _titleController,),
                                 SizedBox(height: 18,),
-                                MyInputField(title: "Дата", hint: _selectedDate,
+                                MyInputField(title: "Дата", hint: '',
                                   widget: IconButton(
                                     icon: Icon(Icons.calendar_month),
                                     onPressed: (){
@@ -128,7 +128,7 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                                   ),
                                 ),
                                 SizedBox(height: 18,),
-                                MyInputField(title: "Время", hint: _selectedTime,
+                                MyInputField(title: "Время", hint: '',
                                   widget: IconButton(
                                     icon: Icon(Icons.access_time),
                                     onPressed: (){
@@ -200,11 +200,11 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
       horizontalScroll: true,
       itemCount: TagsList.length,
       itemBuilder: (int index){
-        final item = TagsList[index];
-
+        final itemTag = TagsList[index];
+        print(itemTag);
         return ItemTags(
           index: index, // required
-          title: item,
+          title: itemTag,
           // active: item.active,
           // customData: item.customData,
           singleItem: true,
@@ -215,7 +215,7 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
           ),
           onPressed: (item) => {
             setState((){
-              _selectedTag = item.title;
+              _selectedTag = itemTag;
             })
           },
         );
@@ -226,11 +226,9 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
   _getDateFromUser() async{
     DateTime? _checkDate = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime.now(), lastDate: DateTime(2050));
     String _pickerDate = DateFormat.yMd().format(_checkDate!);
-    if(_pickerDate != null){
-      setState(() {
-        _selectedDate = _pickerDate;
-      });
-    }
+    setState(() {
+      _selectedDate = _pickerDate;
+    });
   }
 
   _getTimeFromUser() async{
@@ -357,7 +355,7 @@ class _AddHabitState extends State<AddHabit>{
           values: isSelectedWeekday,
         ),
         const SizedBox(height: 18,),
-        MyInputField(title: "Время для уведомлений", hint: _selectedTime,
+        MyInputField(title: "Время для уведомлений", hint: '',
           widget: IconButton(
             icon: Icon(Icons.access_time),
             onPressed: (){
@@ -476,7 +474,7 @@ class _AddHabitState extends State<AddHabit>{
           ),
           onPressed: (item) => {
             setState((){
-              _selectedTag = item.title;
+              _selectedTag = item.title!;
             })
           },
         );

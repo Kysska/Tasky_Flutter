@@ -174,7 +174,7 @@ class _UpdateTaskState extends State<UpdateTask>{
           ),
           onPressed: (item) => {
             setState((){
-              _selectedTag = item.title;
+              _selectedTag = item.title!;
             })
           },
         );
@@ -192,7 +192,7 @@ class _UpdateTaskState extends State<UpdateTask>{
             ),
             onPressed: (item) => {
               setState((){
-                _selectedTag = item.title;
+                _selectedTag = item.title!;
               })
             },
           );

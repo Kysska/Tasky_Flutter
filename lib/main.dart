@@ -7,6 +7,7 @@ import 'package:tasky_flutter/presentation/home.dart';
 import 'package:tasky_flutter/presentation/note.dart';
 import 'package:tasky_flutter/presentation/person.dart';
 import 'package:tasky_flutter/presentation/signin.dart';
+import 'package:tasky_flutter/vidgets/options.dart';
 
 import 'data/userdatabase.dart';
 import 'firebase_options.dart';
@@ -35,6 +36,7 @@ class Bar extends StatefulWidget {
 
 }
 
+
 class _BottomBarState extends State<Bar> {
   int _selectedIndex = 0;
   List pages = [];
@@ -46,7 +48,8 @@ class _BottomBarState extends State<Bar> {
       NoteScreen(login: widget.login,),
       Game(login: widget.login),
       Forum(),
-      Person()
+      Person(),
+      Settings()
     ];
   }
 
@@ -59,35 +62,51 @@ class _BottomBarState extends State<Bar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Tasky"),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: Image.asset(
+                'images/options.png',
+                width: 30,
+                height: 30,
+              ),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          },
         ),
-        body:
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Colors.blue, Colors.white]),
-          ),
-          child: pages[_selectedIndex],
+      ),
+      drawer: SettingsMenu(),
+      body:
+      Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.blue, Colors.white]),
         ),
-        bottomNavigationBar:
-        BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: "1"),
-            BottomNavigationBarItem(icon: Icon(Icons.book_rounded), label: "2"),
-            BottomNavigationBarItem(icon: Icon(Icons.people), label: "3"),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.videogame_asset_rounded), label: "4"),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.accessibility_new), label: "5"),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.amber[800],
-          onTap: _onItemTapped,
-          backgroundColor: Colors.white,
-        ),
+        child: pages[_selectedIndex],
+      ),
+      bottomNavigationBar:
+      BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: "1"),
+          BottomNavigationBarItem(icon: Icon(Icons.book_rounded), label: "2"),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: "3"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.videogame_asset_rounded), label: "4"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.accessibility_new), label: "5"),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
+        backgroundColor: Colors.white,
+      ),
 
     );
   }
