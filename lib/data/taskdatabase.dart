@@ -154,8 +154,8 @@ class DatabaseHelperTask{
     return await db.update('task', task.toMap(), where: 'id = ?', whereArgs: [task.id]);
   }
 
-  Future<void> updateCompleted(String title) async{
+  Future<void> updateCompleted(String title, int isCompleted) async{
     Database db = await instance.database;
-    await db.rawUpdate('UPDATE task SET isCompleted = ? WHERE title = ?', [1, title]);
+    await db.rawUpdate('UPDATE task SET isCompleted = ? WHERE title = ?', [isCompleted, title]);
   }
 }

@@ -5,7 +5,8 @@ import 'package:tasky_flutter/data/shopdatabase.dart';
 
 class Shop extends StatefulWidget{
   final String login;
-  const Shop({super.key, required this.login});
+  final Function() updateData;
+  const Shop({super.key, required this.login, required this.updateData});
 
 
   @override
@@ -196,6 +197,7 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                                     int count = await mInventory.getCount(mListEat![index].title);
                                       count +=1;
                                       await mInventory.updateCount(count, mListEat![index].title);
+                                      widget.updateData();
                                       await mInventoryFire.updateCountEat(widget.login, count, mListEat![index].title);
                                   }
                                   else{

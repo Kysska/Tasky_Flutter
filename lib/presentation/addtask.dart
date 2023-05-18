@@ -396,7 +396,6 @@ class _AddHabitState extends State<AddHabit>{
               ]
           ),
         )
-        //значок, цвет, дата
       ],
     );
   }

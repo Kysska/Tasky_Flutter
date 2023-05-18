@@ -1,9 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tasky_flutter/presentation/updatehabit.dart';
+
+import '../data/habitdatabase.dart';
 
 class HabitInfo extends StatefulWidget {
   final String? login;
-  const HabitInfo({super.key, this.login});
+  final int sumCompleted;
+  final Habit habit;
+  const HabitInfo({super.key, this.login, required this.sumCompleted, required this.habit});
 
   @override
   _HabitInfoState createState() =>
@@ -12,10 +17,38 @@ class HabitInfo extends StatefulWidget {
 
 class _HabitInfoState extends State<HabitInfo> {
 
+  late int sumCompleted;
+  late double percentageCompleted;
+  late double percentage2Completed;
+
+  @override
+  void initState() {
+    super.initState();
+    sumCompleted = widget.sumCompleted;
+    percentageCompleted = sumCompleted / 21;
+    percentage2Completed = sumCompleted / 50;
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
+        actionsIconTheme: const IconThemeData(color: Colors.black),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: widget.habit, )));
+            },
+            icon: const Icon(
+              Icons.edit,
+            ),
+          ),
+        ],
+      ),
       body: Padding(padding: const EdgeInsets.only(left: 25.0),
         child: Row(
           children: [
@@ -40,10 +73,13 @@ class _HabitInfoState extends State<HabitInfo> {
                   ),
                   ),
                   const SizedBox(height: 10),
-                  const LinearProgressIndicator(
-                    value: 1,
+                  LinearProgressIndicator(
+                    value: percentageCompleted,
                     backgroundColor: Colors.grey,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+                  ),
+                  Text(
+                      "${sumCompleted}/21"
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
@@ -81,10 +117,13 @@ class _HabitInfoState extends State<HabitInfo> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const LinearProgressIndicator(
-                    value: 0.5,
+                  LinearProgressIndicator(
+                    value: percentage2Completed,
                     backgroundColor: Colors.grey,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+                  ),
+                  Text(
+                      "${sumCompleted}/50"
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(

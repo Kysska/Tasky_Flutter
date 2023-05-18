@@ -71,6 +71,21 @@ class _UpdateTaskState extends State<UpdateTask>{
 
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.black),
+          actionsIconTheme: const IconThemeData(color: Colors.black),
+          actions: [
+            IconButton(
+              onPressed: () async{
+                await mTask.remove(widget.task.id);
+                Navigator.pop(context, true);
+              },
+              icon: const Icon(
+                Icons.delete,
+              ),
+            ),
+          ],
         ),
         body: Column(
             children: [
@@ -160,12 +175,14 @@ class _UpdateTaskState extends State<UpdateTask>{
       itemCount: TagsList.length,
       itemBuilder: (int index){
         final item = TagsList[index];
+        print(_selectedTag);
+        print(item);
         if(_selectedTag == item) {
           return ItemTags(
           index: index, // required
           title: item,
-          active: true,
-          // customData: item.customData,
+          active: true, //xnjnjfhjf
+          pressEnabled: true,
           singleItem: true,
           textStyle: TextStyle( fontSize: 14, ),
           combine: ItemTagsCombine.withTextBefore,

@@ -22,7 +22,7 @@ class Habit{
   factory Habit.fromMap(Map<String, dynamic> json) => Habit(
       id: json['id'],
       title: json['title'],
-      isCompleted: json['isCompleted']?.split(','),
+      isCompleted: json['isCompleted'].split(','),
       tag: json['tag'],
       time: json['time'],
       listWeek: (json['listWeek'].split(',') as List).map((str) => str.toLowerCase() == 'true').toList(),
@@ -63,8 +63,8 @@ class HabitFirebase{
 
   Future<void> setDataHabitList(String login, Habit habit) async{
     var userSnapshot = getUserCollection(login);
-    await userSnapshot
-        .add(habit.toMap());
+    await userSnapshot.doc(habit.id)
+        .set(habit.toMap());
   }
 
   Future<void> updateCountHabit(String login, Habit habit) async{
@@ -136,5 +136,11 @@ class DatabaseHelperHabit{
   Future<int> update(Habit habit) async{
     Database db = await instance.database;
     return await db.update('habit', habit.toMap(), where: 'id = ?', whereArgs: [habit.id]);
+  }
+
+  Future<void> updateCompleted(String title, List<String> isCompleted) async{
+    Database db = await instance.database;
+    String isCompletedString = isCompleted.join(',');
+    await db.rawUpdate('UPDATE habit SET isCompleted = ? WHERE title = ?', [isCompletedString, title]);
   }
 }

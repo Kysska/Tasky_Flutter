@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -83,23 +81,22 @@ class _HomeState extends State<Home> {
               },
             ),
           ),
-          MyDraggableScrollableSheet(login: widget.login, selectedDate: _selectedDate,)
+          MyDraggableScrollableSheet(login: widget.login, selectedDate: _selectedDate)
         ],
       )
       );
     
   }
   refreshPage(){
-    setState(() {
-      _selectedDate = DateTime.now();
-    });
+    setState(() {});
   }
 }
 
 class MyDraggableScrollableSheet extends StatefulWidget {
   final String? login;
   final selectedDate;
-  const MyDraggableScrollableSheet({super.key, this.login, this.selectedDate, });
+
+  const MyDraggableScrollableSheet({super.key, this.login, this.selectedDate});
 
   @override
   _MyDraggableScrollableSheetState createState() =>
@@ -274,10 +271,35 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                                             ),
                                           ),
                                           snapshot.data![index].isCompleted
-                                              ? const Icon(
-                                              Icons.check_circle_outline,
-                                              color: Colors.pink,
-                                            )
+                                              ? IconButton(
+                                                icon: const Icon(
+                                                Icons.check_circle_outline,
+                                                color: Colors.pink,
+                                            ),
+                                            onPressed: () async {
+                                              return await showDialog(
+                                                context: context,
+                                                builder: (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title: const Text("Отменить выполнененную задачу"),
+                                                    content: const Text("Вы правда хотите отменить выполнение задачи?"),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                          onPressed: () async{
+                                                            await mTask.updateCompleted(snapshot.data![index].title, 0);
+                                                            Navigator.of(context).pop(true);},
+                                                          child: const Text("Да")
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () => Navigator.of(context).pop(false),
+                                                        child: const Text("Нет"),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                              )
                                               : IconButton(
                                             icon: const Icon(
                                               Icons.circle_outlined,
@@ -285,14 +307,20 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                                             ),
                                             onPressed: () {
                                               setState(() {
-                                                mTask.updateCompleted(snapshot.data![index].title);
+                                                mTask.updateCompleted(snapshot.data![index].title, 1);
                                               });
                                             },
                                           ),
                                         ],
                                       ),
                                       onTap: (){
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateTask(login: widget.login, task: snapshot.data![index],)));
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateTask(login: widget.login, task: snapshot.data![index],))).then((
+                                            value) =>
+                                        {
+                                          if(value!=null && value == true){
+                                            _refreshPage()
+                                          }
+                                        });
                                       },
                                     ),
                                   ),
@@ -309,7 +337,7 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                     ),
                   ),
                   if(_isSelected[1])
-                    HabitsCards(login: widget.login,),
+                    HabitsCards(login: widget.login, selectedWeekday: _selectedDate.weekday, selectedDay: _selectedDate,),
                 ],
               ),
           );
@@ -317,11 +345,16 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
     );
 
   }
+  _refreshPage(){
+    setState(() {});
+  }
 }
 
 class HabitsCards extends StatefulWidget {
   final String? login;
-  const HabitsCards({super.key, this.login});
+  final selectedWeekday;
+  final selectedDay;
+  const HabitsCards({super.key, this.login, this.selectedWeekday, this.selectedDay});
 
   @override
   _HabitsCardsState createState() =>
@@ -335,10 +368,14 @@ class _HabitsCardsState extends State<HabitsCards> {
   List<Habit>? mListHabit;
   Future<List<Habit>>? retrievedListHabit;
   DatabaseHelperHabit mHabit = DatabaseHelperHabit.instance;
+  var _selectedWeekday;
+  var _selectedDay;
 
   @override
   void initState() {
     super.initState();
+    _selectedWeekday = widget.selectedWeekday;
+    _selectedDay = widget.selectedDay;
     retrievedListHabit = mHabit.getHabit();
     getListHabit();
   }
@@ -346,6 +383,17 @@ class _HabitsCardsState extends State<HabitsCards> {
   Future<List<Habit>?> getListHabit() async{
     mListHabit = await mHabit.getHabit();
     return mListHabit;
+  }
+
+  @override
+  void didUpdateWidget(covariant HabitsCards oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedWeekday != oldWidget.selectedWeekday) {
+      _selectedWeekday = widget.selectedWeekday;
+    }
+    if (widget.selectedDay != oldWidget.selectedDay) {
+      _selectedDay = widget.selectedDay;
+    }
   }
 
 
@@ -365,7 +413,12 @@ class _HabitsCardsState extends State<HabitsCards> {
               controller: scrollController,
               itemCount: snapshot.data!.length,
               itemBuilder: (BuildContext context, int index) {
-                return Padding(
+                bool selectedFormatWeek = snapshot.data![index].listWeek[_selectedWeekday - 1];
+                List<String> selectedFormatDate = snapshot.data![index].isCompleted;
+                String selectedFormatDay = DateFormat.yMd().format(_selectedDay);
+                bool dayInList = selectedFormatDate.contains(selectedFormatDay);
+                if(selectedFormatWeek) {
+                  return Padding(
                   padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                   child: Dismissible(
                     key: Key(snapshot.data![index].id),
@@ -397,33 +450,77 @@ class _HabitsCardsState extends State<HabitsCards> {
                                   style: const TextStyle(fontSize: 14.0),
                                 ),
                               ),
-                              // snapshot.data![index].isCompleted
-                              //     ? Text("Выполнено")
-                              //     :
-                              IconButton(
+                              dayInList
+                                  ? IconButton(
                                 icon: const Icon(
-                                  Icons.check,
+                                  Icons.check_circle_outline,
                                   color: Colors.pink,
                                 ),
-                                onPressed: () {
-                                  // do something when pressed
+                                onPressed: () async {
+                                  return await showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text("Отменить выполнененную задачу"),
+                                        content: const Text("Вы правда хотите отменить выполнение задачи?"),
+                                        actions: <Widget>[
+                                          TextButton(
+                                              onPressed: () async{
+                                                selectedFormatDate.remove(selectedFormatDay);
+                                                await mHabit.updateCompleted(snapshot.data![index].title, selectedFormatDate);
+                                                Navigator.of(context).pop(true);},
+                                              child: const Text("Да")
+                                          ),
+                                          TextButton(
+                                            onPressed: () => Navigator.of(context).pop(false),
+                                            child: const Text("Нет"),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                              )
+                                  : IconButton(
+                                icon: const Icon(
+                                  Icons.circle_outlined,
+                                  color: Colors.pink,
+                                ),
+                                onPressed: () async{
+                                      selectedFormatDate.add(selectedFormatDay);
+                                      await mHabit.updateCompleted(snapshot.data![index].title, selectedFormatDate);
+                                      _refreshPage();
                                 },
                               ),
                             ],
                           ),
                           onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => HabitInfo(login: widget.login,)));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => HabitInfo(login: widget.login, sumCompleted: selectedFormatDate.length - 1, habit: snapshot.data![index],))).then((
+                                value) =>
+                            {
+                              if(value!=null && value == true){
+                                _refreshPage()
+                              }
+                            });
                             },
                       ),
                     ),
                   ),
                 );
+                }
+                else{
+                  return const SizedBox.shrink();
+                }
               },
             );
           },
         ),
       ),
     );
+  }
+
+  _refreshPage(){
+    setState(() {});
   }
 
 }

@@ -65,7 +65,7 @@ class _GameState extends State<Game> {
                               context: context,
                               isScrollControlled: true,
                               builder: (context) {
-                                return Shop(login: widget.login,);
+                                return Shop(login: widget.login, updateData: () { setState(() {});  },);
                               });
                         },
                         child: Icon(Icons.shopping_bag, color: Colors.white,),
@@ -121,18 +121,14 @@ class _GameState extends State<Game> {
                               children: [DragTarget<String>(builder: (context, candidateData, rejectedData){
                                  return Image.asset(
                                    "images/Kapibara_1.gif",
-                                    width: 500,
-                                    height: 500,
                                   );
                               },
                                   onWillAccept: (data) {
-                                    print('object');
                                     return data == data;
                                   },
                                   onAccept: (data) async {
-                                print('object');
-                                print(data);
                                     await mInventory.updateCount(listFood[data]! - 1,  data);
+                                    _refreshPage();
                                     await  mInventoryFire.updateCountEat(widget.login, listFood[data]! - 1, data);
 
                                     // putListFood(data).then((value) =>
@@ -240,5 +236,8 @@ class _GameState extends State<Game> {
 
           ),
         ) ); }
+  _refreshPage(){
+    setState(() {});
+  }
 
 }

@@ -44,6 +44,7 @@ dependencies:
   weekday_selector:
   bcrypt:
   date_picker_timeline:
+  flutter_quill:
   flutter_tags:
   shared_preferences:
   firebase_storage: ^11.1.1

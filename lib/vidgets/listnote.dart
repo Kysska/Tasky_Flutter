@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:tasky_flutter/data/notedatabase.dart';
 
@@ -20,12 +22,10 @@ class ListNoteState extends State<ListNote> {
 
 
   _runFilter(String text){
-    print(text);
     searchNotes?.clear();
     setState(() {
       searchNotes = fullNotes?.where((element) =>
           element.title.toLowerCase().contains(text.toLowerCase())).toList();
-      print(searchNotes);
     });
   }
 
@@ -182,6 +182,8 @@ class BaseContainer extends StatelessWidget {
   final Note note;
 
   const BaseContainer({Key? key, required this.note}) : super(key: key);
+
+
 
   @override
   Widget build(BuildContext context) {

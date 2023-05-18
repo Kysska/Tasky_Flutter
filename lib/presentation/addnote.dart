@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:intl/intl.dart';
 
 import '../data/notedatabase.dart';
@@ -16,6 +18,7 @@ class AddNote extends StatefulWidget {
 }
 
 class _AddNoteState extends State<AddNote> {
+  // late QuillController _controller;
   String _title = "";
   String _desc = "";
   bool _isImportant = false;
@@ -26,19 +29,22 @@ class _AddNoteState extends State<AddNote> {
   @override
   void initState() {
     super.initState();
+    // var myJSON = jsonDecode(widget.note.desc);
+    // _controller = QuillController(
+    //     document: Document.fromJson(myJSON),
+    //     selection: TextSelection.collapsed(offset: 0));
     _isEdit = widget.isEdit;
     _title = widget.note.title;
     _desc = widget.note.desc;
     _isImportant = widget.note.isImportant;
+    // _controller = QuillController.basic();
   }
 
 
   _changeIsImportant(){
-    print(_isImportant);
     setState(() {
       _isImportant = !_isImportant;
     });
-    print(_isImportant);
   }
 
   _changeTitle(String text){
@@ -77,11 +83,10 @@ class _AddNoteState extends State<AddNote> {
         elevation: 0,
         leading: BackButton(
           onPressed: () {
-            print("1");
+            // final jsonStr = jsonEncode(_controller.document.toDelta().toJson());
             if(_isEdit) _updateNote();
             else _addNote();
             Navigator.pop(context, true);
-            print("2");
           }
         ),
         iconTheme: const IconThemeData(color: Colors.black),
@@ -120,48 +125,21 @@ class _AddNoteState extends State<AddNote> {
           ),
         ],
       ),
-      bottomNavigationBar: Padding(
-        padding: MediaQuery.of(context).viewInsets,
-        child: Container(
-          height: 100,
-          decoration: BoxDecoration(color: Colors.white, boxShadow: [
-            BoxShadow(
-              color: Colors.blue.withOpacity(0.5),
-              spreadRadius: 2.0,
-              blurRadius: 8.0,
-            )
-          ]),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Column(
-                children: [
-                  Spacer(),
-                  InkWell(
-                    onTap: () {},
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.blue.withOpacity(0.5),
-                              spreadRadius: 2.0,
-                              blurRadius: 8.0,
-                            )
-                          ]),
-                      padding: const EdgeInsets.all(10.0),
-                      child: const Icon(
-                        Icons.check,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
+      // bottomNavigationBar: Padding(
+      //   padding: MediaQuery.of(context).viewInsets,
+      //   child: QuillToolbar.basic(controller: _controller,
+      //   showInlineCode: false,
+      //     showFontFamily: false,
+      //     showCodeBlock: false,
+      //     showSearchButton: false,
+      //     showLink: false,
+      //     showColorButton: false,
+      //     showBackgroundColorButton: false,
+      //     showSubscript: false,
+      //     showSuperscript: false,
+      //     showClearFormat: false,
+      //   ),
+      // ),
       body: SafeArea(
         child: Column(
           children: [
@@ -183,7 +161,14 @@ class _AddNoteState extends State<AddNote> {
               ),
               onChanged: _changeTitle,
             ),
-
+            // Padding(
+            //   padding: const EdgeInsets.all(4),
+            //   child: QuillEditor.basic(
+            //       controller: _controller,
+            //       readOnly: false,
+            //       locale: const Locale('ru'),
+            //   ),
+            // ),
             TextFormField(
               initialValue: _desc ?? "",
               style: const TextStyle(fontSize: 16, color: Colors.black),
