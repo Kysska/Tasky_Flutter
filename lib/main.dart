@@ -59,6 +59,12 @@ class _BottomBarState extends State<Bar> {
     });
   }
 
+  void _onProfileIconPressed() {
+    setState(() {
+      _selectedIndex = 4;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,6 +84,48 @@ class _BottomBarState extends State<Bar> {
               },
             );
           },
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.person,
+              color: Colors.black,
+            ),
+            onPressed: _onProfileIconPressed,
+          ),
+        ],
+        
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+
+          children: [
+            Column(
+              children: [
+                Icon(
+                  Icons.attach_money,
+                  color: Colors.black,
+                  size: 20,
+                ),
+                SizedBox(height: 2),
+                Text(
+                  '100',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  'kapikoin',
+                  style: TextStyle(
+                    color: Color(0xFF747686),
+                      fontSize: 10,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
       drawer: SettingsMenu(),
