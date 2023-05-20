@@ -81,14 +81,28 @@ class _HomeState extends State<Home> {
               },
             ),
           ),
-          MyDraggableScrollableSheet(login: widget.login, selectedDate: _selectedDate)
+          FutureBuilder(
+            future: Future.delayed(Duration(milliseconds: 100)),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return MyDraggableScrollableSheet(
+                  login: widget.login,
+                  selectedDate: _selectedDate,
+                );
+              } else {
+                return SizedBox.shrink();
+              }
+            },
+          ),
         ],
       )
       );
     
   }
   refreshPage(){
-    setState(() {});
+    setState(() {
+      _selectedDate = DateTime.now();
+    });
   }
 }
 

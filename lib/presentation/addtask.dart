@@ -119,7 +119,7 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                               children: [
                                 MyInputField(title: "Название", hint: "Введите название задачи", controller: _titleController,),
                                 SizedBox(height: 18,),
-                                MyInputField(title: "Дата", hint: '',
+                                MyInputField(title: "Дата", hint: DateFormat.yMd().format(DateTime.now()),
                                   widget: IconButton(
                                     icon: Icon(Icons.calendar_month),
                                     onPressed: (){
@@ -128,7 +128,7 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                                   ),
                                 ),
                                 SizedBox(height: 18,),
-                                MyInputField(title: "Время", hint: '',
+                                MyInputField(title: "Время", hint: DateFormat.Hm().format(DateTime.now()),
                                   widget: IconButton(
                                     icon: Icon(Icons.access_time),
                                     onPressed: (){
@@ -355,7 +355,7 @@ class _AddHabitState extends State<AddHabit>{
           values: isSelectedWeekday,
         ),
         const SizedBox(height: 18,),
-        MyInputField(title: "Время для уведомлений", hint: '',
+        MyInputField(title: "Время для уведомлений", hint:  DateFormat.Hm().format(DateTime.now()),
           widget: IconButton(
             icon: Icon(Icons.access_time),
             onPressed: (){
