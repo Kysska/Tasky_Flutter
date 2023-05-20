@@ -25,19 +25,16 @@ class _SettingsMenuState extends State<SettingsMenu> {
                     setState(() {
                       isDarkModeEnabled = value;
                     });
-                    // Дополнительные действия при изменении состояния
                   },
                 ),
-                // Добавьте любые другие настройки, которые вам нужны
               ],
             ),
           ),
           ListTile(
             title: Text('Выход'),
             onTap: () {
-              // Действия при нажатии на кнопку выхода
-              Navigator.pop(context); // Закрываем всплывающее окно после нажатия
-              // Дополнительные действия для выхода из приложения
+              Navigator.pop(context);
+              //aaaaaaaa
             },
           ),
         ],
