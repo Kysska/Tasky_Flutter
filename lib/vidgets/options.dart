@@ -1,34 +1,45 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class SettingsMenu extends StatelessWidget {
+class SettingsMenu extends StatefulWidget {
+  @override
+  _SettingsMenuState createState() => _SettingsMenuState();
+}
+
+class _SettingsMenuState extends State<SettingsMenu> {
+  bool isDarkModeEnabled = false;
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
+      child: Column(
         children: [
-          DrawerHeader(
-            child: Text('Меню настроек'),
-            decoration: BoxDecoration(
-              color: Colors.blue,
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.only(top: 80),
+              children: [
+                SwitchListTile(
+                  title: Text('Сменить тему'),
+                  value: isDarkModeEnabled,
+                  onChanged: (value) {
+                    setState(() {
+                      isDarkModeEnabled = value;
+                    });
+                    // Дополнительные действия при изменении состояния
+                  },
+                ),
+                // Добавьте любые другие настройки, которые вам нужны
+              ],
             ),
           ),
           ListTile(
-            title: Text('Настройка 1'),
+            title: Text('Выход'),
             onTap: () {
-              // Действия при нажатии на настройку 1
+              // Действия при нажатии на кнопку выхода
               Navigator.pop(context); // Закрываем всплывающее окно после нажатия
+              // Дополнительные действия для выхода из приложения
             },
           ),
-          ListTile(
-            title: Text('Настройка 2'),
-            onTap: () {
-              // Действия при нажатии на настройку 2
-              Navigator.pop(context); // Закрываем всплывающее окно после нажатия
-            },
-          ),
-          // Добавьте любые другие настройки, которые вам нужны
         ],
       ),
     );
