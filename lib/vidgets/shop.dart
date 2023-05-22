@@ -36,6 +36,11 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
     _kapikoinCount = await mGame.getMoney();
   }
 
+  _updateKapicoin(newCount) async{
+    _kapikoinCount = newCount;
+    await mGame.setMoney(_kapikoinCount);
+  }
+
   Future<List<EatInShop>?> getListFood() async{
     mListEat = await mShop.getEatList();
     return mListEat;
@@ -201,7 +206,7 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                               TextButton(
                                 child: const Text('Купить'),
                                 onPressed: () async {
-                                  // _updateKapicoin(mListEat![index].money + _kapikoinCount);
+                                  _updateKapicoin(_kapikoinCount - mListEat![index].money);
                                   bool foodIn = await mInventory.checkIfExists(mListEat![index].title);
                                   if(foodIn){
                                     int count = await mInventory.getCount(mListEat![index].title);

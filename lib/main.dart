@@ -8,6 +8,7 @@ import 'package:tasky_flutter/presentation/home.dart';
 import 'package:tasky_flutter/presentation/note.dart';
 import 'package:tasky_flutter/presentation/person.dart';
 import 'package:tasky_flutter/presentation/signin.dart';
+import 'package:tasky_flutter/vidgets/customappbar.dart';
 import 'package:tasky_flutter/vidgets/options.dart';
 
 import 'data/userdatabase.dart';
@@ -22,14 +23,14 @@ Future<void> main() async{
   final firestore = FirebaseFirestore.instance;
   firestore.settings = const Settings(persistenceEnabled: true);
   String? login = await SHUser().getUserLogin();
-  runApp(MaterialApp(home: login == null ? SignInPage(): Bar(login: login)));
+  runApp(MaterialApp(home: login == null ? SignInPage(): Bar(login: login,)));
 }
 
 
 
 class Bar extends StatefulWidget {
   final login;
-  const Bar({super.key, this.login,});
+  const Bar({super.key, this.login});
 
   @override
   _BottomBarState createState() => _BottomBarState();
@@ -39,25 +40,18 @@ class Bar extends StatefulWidget {
 class _BottomBarState extends State<Bar> {
   int _selectedIndex = 0;
   List pages = [];
-  int _kapikoinCount = 0;
-  GameDatabase mGame = GameDatabase();
 
 
   @override initState(){
     super.initState();
-    updateCoin();
     pages = [
-      Home(login: widget.login),
+      Home(login: widget.login,),
       NoteScreen(login: widget.login,),
-      Game(login: widget.login),
+      Game(login: widget.login,),
       Forum(),
       Person(),
       Settings()
     ];
-  }
-
-  Future<void> updateCoin() async{
-    _kapikoinCount = await mGame.getMoney();
   }
 
   void _onItemTapped(int index) {
@@ -71,70 +65,19 @@ class _BottomBarState extends State<Bar> {
       _selectedIndex = 4;
     });
   }
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  void _openDrawer() {
+    _scaffoldKey.currentState?.openDrawer();
+  }
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: Image.asset(
-                'images/options.png',
-                width: 30,
-                height: 30,
-              ),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            );
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.person,
-              color: Colors.black,
-            ),
-            onPressed: _onProfileIconPressed,
-          ),
-        ],
-        
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-
-          children: [
-            Column(
-              children: [
-                const Icon(
-                  Icons.attach_money,
-                  color: Colors.black,
-                  size: 20,
-                ),
-                SizedBox(height: 2),
-                Text(
-                  _kapikoinCount.toString(),
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                const Text(
-                  'kapikoin',
-                  style: TextStyle(
-                    color: Color(0xFF747686),
-                      fontSize: 10,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+      key: _scaffoldKey,
+      appBar: CustomAppBar(onLeadingPressed: () { _openDrawer(); },
+        onProfileIconPressed: () { _onProfileIconPressed(); },
       ),
       drawer: SettingsMenu(),
       body:

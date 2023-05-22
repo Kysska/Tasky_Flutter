@@ -7,11 +7,12 @@ import 'package:tasky_flutter/data/taskdatabase.dart';
 import 'package:tasky_flutter/presentation/habitinfo.dart';
 import 'package:tasky_flutter/presentation/updatetask.dart';
 
+import '../data/gamedatabase.dart';
 import 'addtask.dart';
 
 class Home extends StatefulWidget{
   final String? login;
-  const Home({super.key, this.login});
+  const Home({super.key, this.login,});
 
 
   @override
@@ -23,7 +24,17 @@ class _HomeState extends State<Home> {
 
   final DatePickerController _controller = DatePickerController();
   var _selectedDate = DateTime.now();
+  var _kapikoinCount;
 
+  @override
+  void initState() {
+    super.initState();
+    _kapikoinCount = _getKapikoinCount();
+  }
+
+  Future<int> _getKapikoinCount() async {
+    return await GameDatabase().getMoney();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,13 +59,65 @@ class _HomeState extends State<Home> {
       ),
       body: Stack(
         children: [
-          SizedBox.expand(
-            child: Container(
-              color: Colors.white,
-            ),
-          ),
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            const Icon(
+                              Icons.attach_money,
+                              color: Colors.black,
+                              size: 20,
+                            ),
+                            const SizedBox(height: 2),
+                            FutureBuilder<int>(
+                              future: _kapikoinCount,
+                              builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const Center(
+                                        child:  SizedBox.shrink(),
+                                      );
+                                    } else if (snapshot.hasError) {
+                                      return const Center(
+                                        child: SizedBox.shrink(),
+                                      );
+                                    } else {
+                                    return Text(
+                                      snapshot.data.toString(),
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                );}
+                              }
+                            ),
+                            const SizedBox(height: 2),
+                            const Text(
+                              'kapikoin',
+                              style: TextStyle(
+                                color: Color(0xFF747686),
+                                fontSize: 10,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           Container(
-            margin: const EdgeInsets.only(top: 20, left: 20, bottom: 20),
             child: DatePicker(
               DateTime.now().subtract(Duration(days: 2)),
               controller: _controller,
@@ -80,6 +143,8 @@ class _HomeState extends State<Home> {
                 // _showTasks();
               },
             ),
+          ),
+            ],
           ),
           FutureBuilder(
             future: Future.delayed(Duration(milliseconds: 100)),

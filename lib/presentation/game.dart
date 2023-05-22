@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:tasky_flutter/vidgets/kapibara.dart';
+import 'package:tasky_flutter/vidgets/customappbar.dart';
 import 'package:tasky_flutter/vidgets/shop.dart';
 
+import '../data/gamedatabase.dart';
 import '../data/inventorydatabase.dart';
 
 class Game extends StatefulWidget{
@@ -20,12 +21,17 @@ class _GameState extends State<Game> {
   InventoryFirebase mInventoryFire = InventoryFirebase();
   InventoryDatabase mInventory = InventoryDatabase.instance;
   late Map<String, int> listFood = {};
+  var _kapikoinCount;
 
   @override
   void initState() {
     super.initState();
+    _kapikoinCount = _getKapikoinCount();
   }
 
+  Future<int> _getKapikoinCount() async {
+    return await GameDatabase().getMoney();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,77 +45,95 @@ class _GameState extends State<Game> {
             //   fit: BoxFit.cover,
             // ),
           ),
-          child:
-          Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            width: 50,
-                            height: 50,
-                            child: OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: Colors.red,
-                                backgroundColor: Colors.red,
-                                shape: CircleBorder(),
-                              ),
-                              onPressed: () {
-                          showModalBottomSheet(
-                              backgroundColor: Colors.transparent,
-                              context: context,
-                              isScrollControlled: true,
-                              builder: (context) {
-                                return Shop(login: widget.login,);
-                              });
-                        },
-                        child: Icon(Icons.shopping_bag, color: Colors.white,),
-                            )
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: 50,
+                          height: 50,
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.red,
+                              backgroundColor: Colors.red,
+                              shape: CircleBorder(),
+                            ),
+                            onPressed: () {
+                              showModalBottomSheet(
+                                backgroundColor: Colors.transparent,
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (context) {
+                                  return Shop(login: widget.login);
+                                },
+                              );
+                            },
+                            child: Icon(
+                              Icons.shopping_bag,
+                              color: Colors.white,
+                            ),
                           ),
-                          // Column(
-                          //   children: [
-                          //     LinearPercentIndicator(
-                          //       center: new Text("Hunger: $_hunger%", style: TextStyle(color: Colors.white,
-                          //         fontSize: 16,)),
-                          //       lineHeight: 20,
-                          //       width: MediaQuery.of(context).size.width * 0.5,
-                          //       barRadius: Radius.circular(35),
-                          //       percent: _hunger / maxHunger,
-                          //       progressColor: Colors.red,
-                          //       backgroundColor: Colors.grey[400],
-                          //     ),
-                          //     Padding(
-                          //       padding: const EdgeInsets.all(8.0),
-                          //       child: Align(
-                          //         alignment: Alignment.centerRight,
-                          //         child: Row(
-                          //           children: <Widget>[
-                          //             Icon(
-                          //               Icons.trip_origin,
-                          //               color: Colors.yellow,
-                          //               size: 24.0,
-                          //             ),
-                          //             SizedBox(width: 4.0),
-                          //             Text(countNowMoney.toString(), style: TextStyle(fontSize: 24.0, color: Colors.black87))
-                          //           ],
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
-                        ],
-                      ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                const Icon(
+                                  Icons.attach_money,
+                                  color: Colors.black,
+                                  size: 20,
+                                ),
+                                const SizedBox(height: 2),
+                                FutureBuilder<Object>(
+                                  future: _kapikoinCount,
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const Center(
+                                          child:  SizedBox.shrink(),
+                                        );
+                                      } else if (snapshot.hasError) {
+                                        return const Center(
+                                          child: SizedBox.shrink(),
+                                        );
+                                      } else {
+                                        return Text(
+                                          snapshot.data.toString(),
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
+                                        );}
+                                    }
+                                ),
+                                const SizedBox(height: 2),
+                                const Text(
+                                  'kapikoin',
+                                  style: TextStyle(
+                                    color: Color(0xFF747686),
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-
-                  ],
-                ),
-
-                SizedBox(height: 10),
+                  ),
+                ],
+              ),
+        SizedBox(height: 10),
                 Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
