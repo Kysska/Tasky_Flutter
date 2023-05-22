@@ -54,7 +54,7 @@ class GameDatabase{
 
   Future getMoney() async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    preferences.getInt('money');
+    return preferences.getInt('money');
   }
 }
 

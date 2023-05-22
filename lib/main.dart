@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:tasky_flutter/data/gamedatabase.dart';
 import 'package:tasky_flutter/presentation/forum.dart';
 import 'package:tasky_flutter/presentation/game.dart';
 import 'package:tasky_flutter/presentation/home.dart';
@@ -28,21 +29,23 @@ Future<void> main() async{
 
 class Bar extends StatefulWidget {
   final login;
-  const Bar({super.key, this.login});
-
+  const Bar({super.key, this.login,});
 
   @override
   _BottomBarState createState() => _BottomBarState();
-
 }
 
 
 class _BottomBarState extends State<Bar> {
   int _selectedIndex = 0;
   List pages = [];
+  int _kapikoinCount = 0;
+  GameDatabase mGame = GameDatabase();
 
-  @override void initState() {
+
+  @override initState(){
     super.initState();
+    updateCoin();
     pages = [
       Home(login: widget.login),
       NoteScreen(login: widget.login,),
@@ -51,6 +54,10 @@ class _BottomBarState extends State<Bar> {
       Person(),
       Settings()
     ];
+  }
+
+  Future<void> updateCoin() async{
+    _kapikoinCount = await mGame.getMoney();
   }
 
   void _onItemTapped(int index) {
@@ -64,6 +71,7 @@ class _BottomBarState extends State<Bar> {
       _selectedIndex = 4;
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -101,22 +109,22 @@ class _BottomBarState extends State<Bar> {
           children: [
             Column(
               children: [
-                Icon(
+                const Icon(
                   Icons.attach_money,
                   color: Colors.black,
                   size: 20,
                 ),
                 SizedBox(height: 2),
                 Text(
-                  '100',
+                  _kapikoinCount.toString(),
                   style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
                 ),
-                SizedBox(height: 2),
-                Text(
+                const SizedBox(height: 2),
+                const Text(
                   'kapikoin',
                   style: TextStyle(
                     color: Color(0xFF747686),
@@ -131,7 +139,7 @@ class _BottomBarState extends State<Bar> {
       drawer: SettingsMenu(),
       body:
       Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,

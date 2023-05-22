@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart' hide Text;
 import 'package:tasky_flutter/data/notedatabase.dart';
 
 import '../presentation/addnote.dart';
@@ -183,12 +184,14 @@ class BaseContainer extends StatelessWidget {
 
   const BaseContainer({Key? key, required this.note}) : super(key: key);
 
-
-
   @override
   Widget build(BuildContext context) {
-    //final time = DateFormat.Hm().format(note.createdTime);
-    // final dateTime = DateFormat('yMMMd').format(note.date.toString() as DateTime);
+    late QuillController _controller;
+    _controller = QuillController(
+      document: Document.fromJson(jsonDecode(note.desc)),
+      selection: const TextSelection.collapsed(offset: 0),
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
       child: Container(
@@ -235,11 +238,18 @@ class BaseContainer extends StatelessWidget {
                 style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
               const SizedBox(height: 15),
-              Text(
-                note.desc,
-                style: TextStyle(fontSize: 16)
-                    .copyWith(overflow: TextOverflow.fade),
-              ),
+              QuillEditor(
+                controller: _controller,
+                readOnly: true,
+                enableInteractiveSelection: false,
+                focusNode: FocusNode(),
+                scrollController: ScrollController(),
+                scrollable: true,
+                padding: EdgeInsets.zero,
+                autoFocus: false,
+                expands: false,
+              )
+
             ],
           ),
         ),

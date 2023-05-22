@@ -65,7 +65,7 @@ class _GameState extends State<Game> {
                               context: context,
                               isScrollControlled: true,
                               builder: (context) {
-                                return Shop(login: widget.login, updateData: () { setState(() {});  },);
+                                return Shop(login: widget.login,);
                               });
                         },
                         child: Icon(Icons.shopping_bag, color: Colors.white,),

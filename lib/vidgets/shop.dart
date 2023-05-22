@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:tasky_flutter/data/inventorydatabase.dart';
 import 'package:tasky_flutter/data/shopdatabase.dart';
 
+import '../data/gamedatabase.dart';
+import '../main.dart';
+
 class Shop extends StatefulWidget{
   final String login;
-  final Function() updateData;
-  const Shop({super.key, required this.login, required this.updateData});
+  const Shop({super.key, required this.login,});
 
 
   @override
@@ -20,18 +22,25 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
   InventoryFirebase mInventoryFire = InventoryFirebase();
   List<EatInShop>? mListEat;
   Future<List<EatInShop>>? retrievedListEat;
+  GameDatabase mGame = GameDatabase();
+  var _kapikoinCount;
 
   @override
-  void initState() {
+  initState(){
     super.initState();
+    updateCoin();
     retrievedListEat= mShop.getEatList();
     getListFood();
+  }
+  Future<void> updateCoin() async{
+    _kapikoinCount = await mGame.getMoney();
   }
 
   Future<List<EatInShop>?> getListFood() async{
     mListEat = await mShop.getEatList();
     return mListEat;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -46,12 +55,12 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
         return Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               // color: colorPrimary,
               color: Colors.white,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(18.0),
-                topRight: const Radius.circular(18.0),
+                topRight: Radius.circular(18.0),
               ),
             ),
             child: DefaultTabController(
@@ -192,12 +201,12 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                               TextButton(
                                 child: const Text('Купить'),
                                 onPressed: () async {
+                                  // _updateKapicoin(mListEat![index].money + _kapikoinCount);
                                   bool foodIn = await mInventory.checkIfExists(mListEat![index].title);
                                   if(foodIn){
                                     int count = await mInventory.getCount(mListEat![index].title);
                                       count +=1;
                                       await mInventory.updateCount(count, mListEat![index].title);
-                                      widget.updateData();
                                       await mInventoryFire.updateCountEat(widget.login, count, mListEat![index].title);
                                   }
                                   else{
