@@ -9,6 +9,7 @@ import 'package:tasky_flutter/presentation/note.dart';
 import 'package:tasky_flutter/presentation/person.dart';
 import 'package:tasky_flutter/presentation/signin.dart';
 import 'package:tasky_flutter/vidgets/options.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 import 'data/userdatabase.dart';
 import 'firebase_options.dart';
@@ -77,6 +78,7 @@ class _BottomBarState extends State<Bar> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 80,
         backgroundColor: Colors.white,
         elevation: 0,
         leading: Builder(
@@ -94,12 +96,42 @@ class _BottomBarState extends State<Bar> {
           },
         ),
         actions: [
-          IconButton(
-            icon: Icon(
-              Icons.person,
-              color: Colors.black,
+          Padding(
+            padding: EdgeInsets.only(right: 15),
+            child: Container(
+              width: 40,
+              height: 40,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Transform.rotate(
+                    angle: -145 * 3.1415927 / 180, // Поворот на 75 градусов
+                    child: CircularPercentIndicator(
+                      radius: 20,
+                      lineWidth: 3.0,
+                      percent: 0.91,
+                      linearGradient: LinearGradient(
+                        colors: [
+                          Color(0xFF9FDDFF),
+                          Color(0xFF6688FF),
+                        ],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+                      backgroundColor: Colors.transparent,
+                      circularStrokeCap: CircularStrokeCap.round,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.person,
+                      color: Colors.black,
+                    ),
+                    onPressed: _onProfileIconPressed,
+                  ),
+                ],
+              ),
             ),
-            onPressed: _onProfileIconPressed,
           ),
         ],
         
@@ -120,7 +152,7 @@ class _BottomBarState extends State<Bar> {
                   style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                    fontSize: 18,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -128,7 +160,7 @@ class _BottomBarState extends State<Bar> {
                   'kapikoin',
                   style: TextStyle(
                     color: Color(0xFF747686),
-                      fontSize: 10,
+                      fontSize: 12,
                   ),
                 ),
               ],
