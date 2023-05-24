@@ -1,4 +1,9 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 class Article{
   late final String id;
@@ -6,7 +11,7 @@ class Article{
   late final String title;
   late final String desc;
   late final String date;
-  late final String likes;
+  late final int likes;
 
   Article({required this.id, required this.login, required this.title, required this.desc, required this.date, required this.likes
   });
@@ -31,13 +36,60 @@ class Article{
     };
   }
 }
+class DatabaseHelperForum{
+  DatabaseHelperForum._privateConstructor();
+  static final DatabaseHelperForum instance = DatabaseHelperForum._privateConstructor();
 
-class NoteFirebase{
+  static Database? _database;
+  Future<Database> get database async => _database ??= await _initDatabase();
+
+  Future<Database> _initDatabase() async{
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, 'forum.db');
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreate,
+    );
+  }
+
+  Future _onCreate(Database db, int version) async {
+    await db.execute('''
+    CREATE TABLE forum(
+    id TEXT
+    )
+    ''');
+  }
+
+
+  Future<List<String>> getNotes() async {
+    Database db = await instance.database;
+    var articles = await db.query('forum');
+    List<String> articleList = articles.isNotEmpty
+        ? articles.map((e) => e['id']).toList().cast<String>()
+        : [];
+    return articleList;
+  }
+
+  Future<int> add(String id) async {
+    Database db = await instance.database;
+    Map<String, dynamic> row = {'id': id};
+    return await db.insert('forum', row);
+  }
+
+  Future<int> remove(String id) async{
+    Database db = await instance.database;
+    return await db.delete('forum', where: 'id = ?', whereArgs: [id]);
+  }
+
+}
+
+class ArticleFirebase{
   final firestore = FirebaseFirestore.instance;
 
 
   Future<List<Article>> getArticleList(String login)async {
-    var articleSnapshot = await firestore.collection('articles').orderBy('likes').get();
+    var articleSnapshot = await firestore.collection('articles').get();
     if (articleSnapshot.docs.isEmpty) {
       return [];
     }
@@ -49,7 +101,7 @@ class NoteFirebase{
   }
 
   Future<List<Article>> getArticleListUser(String login)async {
-    var articleSnapshot = await firestore.collection('login').doc(login).collection('articles').get();
+    var articleSnapshot = await firestore.collection('user').doc(login).collection('articles').get();
     if (articleSnapshot.docs.isEmpty) {
       return [];
     }
@@ -66,22 +118,26 @@ class NoteFirebase{
   }
 
   Future<void> setDataArticleLogin(String login, Article article, String Id) async{
-    await firestore.collection('login').doc(login).collection('articles').doc(Id)
+    await firestore.collection('user').doc(login).collection('articles').doc(Id)
         .set({'id': Id, 'title': article.title, 'desc': article.desc, 'date': article.date, 'likes': article.likes, 'login': login});
   }
 
-  Future<void> updateArticle(Article article) async{
-    await firestore.collection('articles').doc(article.id)
-        .update({'id': article.id, 'title': article.title, 'desc': article.desc, 'date': article.date, 'likes': article.likes, });
+  Future<void> updateArticle(String title, String desc, String id, String login) async{
+    await firestore.collection('articles').doc(id)
+        .update({ 'title': title, 'desc': desc, });
+    await firestore.collection('user').doc(login).collection('articles').doc(id)
+        .update({'title': title, 'desc': desc,});
   }
 
-  Future<void> deleteArticle(String articleId) async {
+  Future<void> deleteArticle(String articleId, String login) async {
     await firestore.collection('articles').doc(articleId)
         .delete();
+    await firestore.collection('user').doc(login).collection('articles').doc(articleId).delete();
   }
 
-  Future<void> setLikeArticle(int newLike, String articleId )async {
+  Future<void> setLikeArticle(int newLike, String articleId, String login)async {
     await firestore.collection('articles').doc(articleId)
         .update({'likes': newLike});
+    await firestore.collection('user').doc(login).collection('articles').doc(articleId).update({'likes': newLike});
   }
 }

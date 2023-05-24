@@ -1,10 +1,12 @@
 
 import 'dart:io';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Person extends StatefulWidget{
@@ -19,6 +21,7 @@ class _PersonState extends State<Person> {
 
   late File _image = File('');
   late String _imagePath;
+  var _imageUrl;
 
   Future<void> _initImage() async {
     final prefs = await SharedPreferences.getInstance();
@@ -52,9 +55,19 @@ class _PersonState extends State<Person> {
 
       final prefs = await SharedPreferences.getInstance();
       prefs.setString('imagePath', _imagePath);
+      uploadProfileImage();
     }
   }
 
+  uploadProfileImage() async {
+    Reference reference = FirebaseStorage.instance
+        .ref()
+        .child('profileImage/$_imagePath');
+    UploadTask uploadTask = reference.putFile(_image);
+    TaskSnapshot snapshot = await uploadTask;
+    _imageUrl = await snapshot.ref.getDownloadURL();
+    print(_imageUrl);
+  }
 
   @override
   Widget build(BuildContext context) {

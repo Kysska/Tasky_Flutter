@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:tasky_flutter/data/gamedatabase.dart';
 import 'package:tasky_flutter/presentation/forum.dart';
 import 'package:tasky_flutter/presentation/game.dart';
@@ -50,7 +51,7 @@ class _BottomBarState extends State<Bar> {
       Home(login: widget.login),
       NoteScreen(login: widget.login,),
       Game(login: widget.login),
-      Forum(),
+      Forum(login: widget.login,),
       Person(),
       Settings()
     ];
@@ -94,47 +95,44 @@ class _BottomBarState extends State<Bar> {
           },
         ),
         actions: [
-          IconButton(
-            icon: Icon(
-              Icons.person,
-              color: Colors.black,
+          Padding(
+            padding: EdgeInsets.only(right: 15),
+            child: Container(
+              width: 40,
+              height: 40,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Transform.rotate(
+                    angle: -145 * 3.1415927 / 180, // Поворот на 75 градусов
+                    child: CircularPercentIndicator(
+                      radius: 20,
+                      lineWidth: 3.0,
+                      percent: 0.91,
+                      linearGradient: const LinearGradient(
+                        colors: [
+                          Color(0xFF9FDDFF),
+                          Color(0xFF6688FF),
+                        ],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+                      backgroundColor: Colors.transparent,
+                      circularStrokeCap: CircularStrokeCap.round,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.person,
+                      color: Colors.black,
+                    ),
+                    onPressed: _onProfileIconPressed,
+                  ),
+                ],
+              ),
             ),
-            onPressed: _onProfileIconPressed,
           ),
         ],
-        
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-
-          children: [
-            Column(
-              children: [
-                const Icon(
-                  Icons.attach_money,
-                  color: Colors.black,
-                  size: 20,
-                ),
-                SizedBox(height: 2),
-                Text(
-                  _kapikoinCount.toString(),
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                const Text(
-                  'kapikoin',
-                  style: TextStyle(
-                    color: Color(0xFF747686),
-                      fontSize: 10,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
       ),
       drawer: SettingsMenu(),
       body:
