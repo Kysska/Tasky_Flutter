@@ -18,6 +18,8 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
   late List<String> idUser;
   Future<List<Article>>? _questions;
   List<Article>? _retrievedQuestions;
+  Future<List<Article>>? _myQuestions;
+  List<Article>? _retrievedMyQuestions;
 
   _initLike() async {
     idUser = await mForum.getNotes();
@@ -30,12 +32,13 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
     _initLike();
     getListArticle();
     _questions = mForumFire.getArticleList(widget.login);
+    _myQuestions = mForumFire.getArticleListUser(widget.login);
     super.initState();
   }
 
-  Future<List<Article>?> getListArticle() async{
+  Future getListArticle() async{
     _retrievedQuestions = (await mForumFire.getArticleList(widget.login));
-    return _retrievedQuestions;
+    _retrievedMyQuestions = await mForumFire.getArticleListUser(widget.login);
   }
 
   _refreshPage(){
@@ -73,18 +76,34 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                     children: [
                   TextButton(
                     onPressed: () {
-                      setState(() {
-                        _retrievedQuestions?.sort((a, b) => (b.date).compareTo((a.date)));
-                      });
+                      if(0 == _tabController?.index){
+                        setState(() {
+                          _retrievedQuestions?.sort((a, b) => (b.date).compareTo((a.date)));
+                        });
+                      }
+                      else{
+                        setState(() {
+                          _retrievedMyQuestions?.sort((a, b) => (b.date).compareTo((a.date)));
+                        });
+                      }
                     },
                     child: Text("времени"),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   TextButton(
                     onPressed: () {
+                    if(0 == _tabController?.index) {
                       setState(() {
-                        _retrievedQuestions?.sort((a, b) => b.likes.compareTo(a.likes));
+                        _retrievedQuestions?.sort((a, b) =>
+                            b.likes.compareTo(a.likes));
                       });
+                    }
+                    else{
+                      setState(() {
+                        _retrievedMyQuestions?.sort((a, b) =>
+                            b.likes.compareTo(a.likes));
+                      });
+                    }
                     },
                     child: Text("лайкам"),
                   ),
@@ -100,7 +119,7 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(
               builder: (context) =>
-                  AddArticle(article: Article(id: '', login: widget.login, title: '', desc: '', date: '', likes: 0),
+                  AddArticle(article: Article(id: '', login: widget.login, title: '', desc: '', date: '', likes: 0, anonim: false),
                     isEdit: false,
                     login: widget.login,))).then((value) =>
           {
@@ -121,7 +140,13 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
           future: _questions,
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator(color: Colors.transparent);
+              return Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
             } else if (snapshot.hasError) {
               return Text('Ошибка: ${snapshot.error}');
             }
@@ -138,7 +163,7 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                       login: widget.login, likes: idUser,))).then((value) =>
                             {
                               if(value != null && value == true){
-                                // _refreshPage()
+                                _refreshPage()
                               }
                             });
                           },
@@ -200,6 +225,15 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                                   const SizedBox(height: 2.0),
                                                   Row(
                                                     children: <Widget>[
+                                                      question.anonim ?
+                                                      Text(
+                                                        "Анонимная Капибара",
+                                                        style: TextStyle(
+                                                            color: Colors.grey
+                                                                .withOpacity(0.6)
+                                                        ),
+                                                      )
+                                                      :
                                                       Text(
                                                         question.login,
                                                         style: TextStyle(
@@ -275,18 +309,23 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
   },
         ),
           FutureBuilder(
-            future: ArticleFirebase().getArticleListUser(widget.login),
+            future: _myQuestions,
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
+              if (snapshot.connectionState == ConnectionState.waiting || _retrievedMyQuestions == null) {
+                return Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
               } else if (snapshot.hasError) {
                 return Text('Ошибка: ${snapshot.error}');
               }
               else {
-                List<Article> questions = snapshot.data ?? [];
                 return SingleChildScrollView(
                   child: Column(
-                      children: questions.map((question) =>
+                      children: _retrievedMyQuestions!.map((question) =>
                           GestureDetector(
                             onTap:
                                 () {
@@ -373,8 +412,8 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                         onSelected: (String value) async {
                                           switch (value) {
                                             case 'delete':
-                                              await mForumFire.deleteArticle(question.id, question.login);
                                               _refreshPage();
+                                              await mForumFire.deleteArticle(question.id, question.login);
                                               break;
                                             case 'edit':
                                               Navigator.push(
@@ -387,7 +426,7 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                                       title: question.title,
                                                       desc: question.desc,
                                                       date: question.date,
-                                                      likes: 0,
+                                                      likes: 0, anonim: false,
                                                     ),
                                                     isEdit: true,
                                                     login: widget.login,

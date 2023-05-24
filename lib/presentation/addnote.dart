@@ -18,7 +18,7 @@ class AddNote extends StatefulWidget {
 }
 
 class _AddNoteState extends State<AddNote> {
-  late QuillController _controller;
+  late QuillController _controller = QuillController.basic();
   String _title = "";
   bool _isImportant = false;
   bool _isEdit = false;

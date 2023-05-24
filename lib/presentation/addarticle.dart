@@ -41,7 +41,7 @@ class _AddArticleState extends State<AddArticle> {
 
   _addArticle() async{
     var id = DateTime.now().toString();
-    Article article = Article( id: id, title: _controller.text, desc: _desc, date: DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now()).toString(), login: widget.login, likes: 0);
+    Article article = Article( id: id, title: _controller.text, desc: _desc, date: DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now()).toString(), login: widget.login, likes: 0, anonim: anonymityEnabled);
     await mArticleFire.setDataArticleList(widget.login, article, id);
     await mArticleFire.setDataArticleLogin(widget.login, article, id);
   }
@@ -85,66 +85,76 @@ class _AddArticleState extends State<AddArticle> {
         iconTheme: const IconThemeData(color: Colors.black),
         actionsIconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: SingleChildScrollView(
-        child: SafeArea(
+      body:
+      Stack(
+        children: [
+          if(!_isEdit)
+        Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              if(!_isEdit)
-              Column(
-                children: [
-                  Text("Если вы не знаете о чём писать, вы можете задать себе вопрос"),
-                  Row(
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          Random random = Random();
-                          int index = random.nextInt(_randomQuestion.length);
-                          String randomQuestion = _randomQuestion[index];
-                          print(randomQuestion);
-                          setState(() {
-                            _controller.text = randomQuestion;
-                          });
-                        },
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(Colors.indigoAccent),
-                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
+              CheckboxListTile(
+                title: Text('Анонимность'),
+                value: anonymityEnabled,
+                onChanged: (newValue) {
+                  setState(() {
+                    anonymityEnabled = newValue!;
+                  });
+                },
+                controlAffinity: ListTileControlAffinity.trailing,
+              ),
+            ],
+          ),
+        ),
+      ),
+          SingleChildScrollView(
+          child: SafeArea(
+            child: Column(
+              children: [
+                if(!_isEdit)
+                Column(
+                  children: [
+                    Text("Если вы не знаете о чём писать, вы можете задать себе вопрос"),
+                    Row(
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Random random = Random();
+                            int index = random.nextInt(_randomQuestion.length);
+                            String randomQuestion = _randomQuestion[index];
+                            print(randomQuestion);
+                            setState(() {
+                              _controller.text = randomQuestion;
+                            });
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(Colors.indigoAccent),
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
                             ),
                           ),
+                          child: const Text(
+                            'Вопрос дня',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
-                        child: const Text(
-                          'Вопрос дня',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              TextField(
-                controller: _controller,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 20,
+                      ],
+                    ),
+                  ],
                 ),
-                decoration: const InputDecoration(
-                  hintText: "Заголовок",
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide.none,
+                TextField(
+                  controller: _controller,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 20,
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-                TextFormField(
-                  minLines: 1,
-                  maxLines: 100,
-                  initialValue: _desc,
-                  style: const TextStyle(fontSize: 16, color: Colors.black),
                   decoration: const InputDecoration(
-                    hintText: "Содержание...",
+                    hintText: "Заголовок",
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide.none,
                     ),
@@ -152,11 +162,28 @@ class _AddArticleState extends State<AddArticle> {
                       borderSide: BorderSide.none,
                     ),
                   ),
-                  onChanged: _changeDesc,
                 ),
-            ],
+                  TextFormField(
+                    minLines: 1,
+                    maxLines: 100,
+                    initialValue: _desc,
+                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                    decoration: const InputDecoration(
+                      hintText: "Содержание...",
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    onChanged: _changeDesc,
+                  ),
+              ],
+            ),
           ),
         ),
+      ]
       ),
     );
   }

@@ -12,8 +12,9 @@ class Article{
   late final String desc;
   late final String date;
   late final int likes;
+  late final bool anonim;
 
-  Article({required this.id, required this.login, required this.title, required this.desc, required this.date, required this.likes
+  Article({required this.id, required this.login, required this.title, required this.desc, required this.date, required this.likes, required this.anonim
   });
 
   factory Article.fromMap(Map<String, dynamic> json) => Article(
@@ -22,7 +23,8 @@ class Article{
     title: json['title'],
     desc: json['desc'],
     date: json['date'],
-    likes: json['likes']
+    likes: json['likes'],
+    anonim: json['anonim'],
   );
 
   Map<String, dynamic> toMap(){
@@ -33,6 +35,7 @@ class Article{
       'desc': desc,
       'date': date,
       'likes': likes,
+      'anonim': anonim,
     };
   }
 }
@@ -114,12 +117,12 @@ class ArticleFirebase{
 
   Future<void> setDataArticleList(String login, Article article, String Id) async{
     await firestore.collection('articles').doc(Id)
-        .set({'id': Id, 'title': article.title, 'desc': article.desc, 'date': article.date, 'likes': article.likes, 'login': login});
+        .set({'id': Id, 'title': article.title, 'desc': article.desc, 'date': article.date, 'likes': article.likes, 'login': login, 'anonim': article.anonim});
   }
 
   Future<void> setDataArticleLogin(String login, Article article, String Id) async{
     await firestore.collection('user').doc(login).collection('articles').doc(Id)
-        .set({'id': Id, 'title': article.title, 'desc': article.desc, 'date': article.date, 'likes': article.likes, 'login': login});
+        .set({'id': Id, 'title': article.title, 'desc': article.desc, 'date': article.date, 'likes': article.likes, 'login': login, 'anonim': article.anonim});
   }
 
   Future<void> updateArticle(String title, String desc, String id, String login) async{
@@ -130,14 +133,20 @@ class ArticleFirebase{
   }
 
   Future<void> deleteArticle(String articleId, String login) async {
+    await firestore.collection('user').doc(login).collection('articles').doc(articleId).delete();
     await firestore.collection('articles').doc(articleId)
         .delete();
-    await firestore.collection('user').doc(login).collection('articles').doc(articleId).delete();
   }
 
   Future<void> setLikeArticle(int newLike, String articleId, String login)async {
     await firestore.collection('articles').doc(articleId)
         .update({'likes': newLike});
-    await firestore.collection('user').doc(login).collection('articles').doc(articleId).update({'likes': newLike});
+  }
+
+  Future<int> getLikesUser(String articleId) async {
+    DocumentSnapshot articleSnapshot = await FirebaseFirestore.instance.collection('articles').doc(articleId).get();
+    Map<String, dynamic> articleData = articleSnapshot.data() as Map<String, dynamic>;
+    int likes = articleData['likes'] ?? 0;
+    return likes;
   }
 }

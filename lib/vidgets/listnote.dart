@@ -51,7 +51,7 @@ class ListNoteState extends State<ListNote> {
               pinned: true,
               snap: false,
               centerTitle: false,
-              bottom: AppBar(
+              title: AppBar(
                 title: Container(
                   width: double.infinity,
                   height: 40,
