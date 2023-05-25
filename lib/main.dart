@@ -43,24 +43,32 @@ class _BottomBarState extends State<Bar> {
   int _selectedIndex = 0;
   List pages = [];
   int _kapikoinCount = 0;
+  late String _userAvatar = "https://firebasestorage.googleapis.com/v0/b/tasky-3f0ce.appspot.com/o/images%2F1684981544841?alt=media&token=ab9e8659-70a7-420e-bb94-178563a9d5e4";
   GameDatabase mGame = GameDatabase();
+  UserFirebase mUser = UserFirebase();
 
 
   @override initState(){
     super.initState();
     updateCoin();
+    getAvatar();
     pages = [
       Home(login: widget.login),
       NoteScreen(login: widget.login,),
       Game(login: widget.login),
-      Forum(),
-      Person(),
+      Forum(login: widget.login,),
+      Person(login: widget.login, avatar: _userAvatar),
       Settings()
     ];
+
   }
 
   Future<void> updateCoin() async{
     _kapikoinCount = await mGame.getMoney();
+  }
+
+  Future<void> getAvatar() async{
+    _userAvatar = await mUser.getUserAvatar(widget.login);
   }
 
   void _onItemTapped(int index) {
@@ -124,13 +132,16 @@ class _BottomBarState extends State<Bar> {
                       circularStrokeCap: CircularStrokeCap.round,
                     ),
                   ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.person,
-                      color: Colors.black,
+                  InkWell(
+                    onTap: () {
+                      _onProfileIconPressed;
+                    },
+                    child: Image.network(
+                      _userAvatar,  // Путь к изображению
+                      width: 50,  // Ширина изображения
+                      height: 50, // Высота изображения
                     ),
-                    onPressed: _onProfileIconPressed,
-                  ),
+                  )
                 ],
               ),
             ),

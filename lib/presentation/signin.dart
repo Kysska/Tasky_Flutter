@@ -35,7 +35,7 @@ class _SignInPageState extends State<SignInPage> {
     if(_login.isNotEmpty && _password.isNotEmpty){
       if(await userFirebase.checkUserLogin(_login)){
         if(await userFirebase.checkUserPassword(_login, _password)){ //TODO исправить
-          await userFirebase.getUserData(_login);
+          userData = await userFirebase.getUserData(_login);
           return true;
         }
         else{

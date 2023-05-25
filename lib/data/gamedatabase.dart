@@ -64,7 +64,7 @@ class GameFirebase{
 
   Future setGameState(String login, String namePet) async{
   firestore.collection('user')
-      .doc(login).set({'namePet': namePet, 'money': 500, 'assetSkin': 'images/default_capibara.png'});
+      .doc(login).update({'namePet': namePet, 'money': 500, 'assetSkin': 'images/default_capibara.png'});
   //TODO комната
 }
 

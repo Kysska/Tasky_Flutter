@@ -8,9 +8,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tasky_flutter/data/userdatabase.dart';
 
 class Person extends StatefulWidget{
-  const Person({super.key});
+  final String login;
+  final String avatar;
+  const Person({super.key, required this.login, required this.avatar});
 
 
   @override
@@ -22,16 +25,10 @@ class _PersonState extends State<Person> {
   late File _image = File('');
   late String _imagePath;
   var _imageUrl;
+  UserFirebase mUser = UserFirebase();
 
   Future<void> _initImage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final imagePath = prefs.getString('imagePath');
-    if (imagePath != null) {
-      setState(() {
-        _imagePath = imagePath;
-        _image = File(imagePath);
-      });
-    }
+    _imageUrl = widget.avatar;
   }
 
   @override
@@ -52,20 +49,19 @@ class _PersonState extends State<Person> {
         _image = File(image.path);
         _imagePath = image.path;
       });
-
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setString('imagePath', _imagePath);
       uploadProfileImage();
     }
   }
 
   uploadProfileImage() async {
+    String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
     Reference reference = FirebaseStorage.instance
         .ref()
-        .child('profileImage/$_imagePath');
+        .child('images').child(uniqueFileName);
     UploadTask uploadTask = reference.putFile(_image);
     TaskSnapshot snapshot = await uploadTask;
     _imageUrl = await snapshot.ref.getDownloadURL();
+    mUser.setUserAvatar(widget.login, _imageUrl);
     print(_imageUrl);
   }
 
@@ -84,11 +80,11 @@ class _PersonState extends State<Person> {
               child: CircleAvatar(
                 backgroundColor: Color(0xffFDCF09),
                 radius: 50,
-                child: _image != null && _image.path.isNotEmpty
+                child: _imageUrl != null
                     ? ClipRRect(
                   borderRadius: BorderRadius.circular(50),
-                  child: Image.file(
-                    _image,
+                  child: Image.network(
+                    _imageUrl,
                     width: 100,
                     height: 100,
                     fit: BoxFit.cover,

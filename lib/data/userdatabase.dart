@@ -68,8 +68,13 @@ class UserProvider extends ChangeNotifier {
     return userSnapshot.exists;
  }
   Future<void> setUserData(String login, String password) async{
+     String imageUrl = "https://firebasestorage.googleapis.com/v0/b/tasky-3f0ce.appspot.com/o/images%2F1684981544841?alt=media&token=ab9e8659-70a7-420e-bb94-178563a9d5e4";
     firestore.collection('user')
-        .doc(login).set({'login': login, 'password': hashPassword(password), 'avatar': 'images/default_avatar'});
+        .doc(login).set({'login': login, 'password': hashPassword(password), 'avatar': imageUrl});
+  }
+
+  Future<void> setUserAvatar(String login, String avatar) async{
+     firestore.collection('user').doc(login).update({'avatar': avatar});
   }
   
   Future<bool> checkUserPassword(String login, String password) async{
@@ -86,6 +91,13 @@ class UserProvider extends ChangeNotifier {
     return User(login: userSnapshot['login'], avatar: userSnapshot['avatar']);
   }
 
+   Future<String> getUserAvatar(String login) async {
+     DocumentSnapshot articleSnapshot = await FirebaseFirestore.instance.collection('user').doc(login).get();
+     Map<String, dynamic> articleData = articleSnapshot.data() as Map<String, dynamic>;
+     String avatar = articleData['avatar'] ?? '';
+     return avatar;
+   }
+
   String hashPassword(String password) {
      var salt = BCrypt.gensalt();
      return BCrypt.hashpw(password, salt);
@@ -94,6 +106,7 @@ class UserProvider extends ChangeNotifier {
    bool checkHashPassword(String password, String hash) {
      return BCrypt.checkpw(password, hash);
    }
+
  }
 
 // class UserFirebase{
