@@ -5,9 +5,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tasky_flutter/data/userdatabase.dart';
 
 class Person extends StatefulWidget{

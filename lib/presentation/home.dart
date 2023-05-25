@@ -6,13 +6,14 @@ import 'package:tasky_flutter/data/habitdatabase.dart';
 import 'package:tasky_flutter/data/taskdatabase.dart';
 import 'package:tasky_flutter/presentation/habitinfo.dart';
 import 'package:tasky_flutter/presentation/updatetask.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-import '../data/gamedatabase.dart';
 import 'addtask.dart';
+import 'note.dart';
 
 class Home extends StatefulWidget{
   final String? login;
-  const Home({super.key, this.login,});
+  const Home({super.key, this.login});
 
 
   @override
@@ -20,21 +21,12 @@ class Home extends StatefulWidget{
 
 
 }
+
 class _HomeState extends State<Home> {
 
   final DatePickerController _controller = DatePickerController();
   var _selectedDate = DateTime.now();
-  var _kapikoinCount;
 
-  @override
-  void initState() {
-    super.initState();
-    _kapikoinCount = _getKapikoinCount();
-  }
-
-  Future<int> _getKapikoinCount() async {
-    return await GameDatabase().getMoney();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,102 +41,131 @@ class _HomeState extends State<Home> {
             }
           });
         },
-
-        child: Icon(
-          Icons.add_box,
+        backgroundColor: const Color(0xFF93D7FF),
+        elevation: 0,
+        child: const Icon(
+          Icons.add,
+          size: 30,
           color: Colors.white,
-
         ),
-        backgroundColor: Colors.blue,
       ),
       body: Stack(
         children: [
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            const Icon(
-                              Icons.attach_money,
-                              color: Colors.black,
-                              size: 20,
-                            ),
-                            const SizedBox(height: 2),
-                            FutureBuilder<int>(
-                              future: _kapikoinCount,
-                              builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return const Center(
-                                        child:  SizedBox.shrink(),
-                                      );
-                                    } else if (snapshot.hasError) {
-                                      return const Center(
-                                        child: SizedBox.shrink(),
-                                      );
-                                    } else {
-                                    return Text(
-                                      snapshot.data.toString(),
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  ),
-                                );}
-                              }
-                            ),
-                            const SizedBox(height: 2),
-                            const Text(
-                              'kapikoin',
-                              style: TextStyle(
-                                color: Color(0xFF747686),
-                                fontSize: 10,
-                              ),
-                            ),
-                          ],
+          SizedBox.expand(
+            child: Container(
+              color: Colors.white,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 15.0, top: 13),
+            child: Text(
+              "Привет, ${widget.login}",
+              style: GoogleFonts.comfortaa(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+              )
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 60),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  width: 160,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                        // ToDo переход на создание новой записи блокнота
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0x88FFFFFF),
+                      elevation: 0,
+                    ),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Запиши свои\nмысли          >',
+                        textAlign: TextAlign.left,
+                        style: GoogleFonts.comfortaa(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
                         ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-          Container(
-            child: DatePicker(
-              DateTime.now().subtract(Duration(days: 2)),
-              controller: _controller,
-              locale: "ru_RU",
-              initialSelectedDate: DateTime.now(),
-              selectionColor: Colors.blue,
-              selectedTextColor: Colors.white,
-              dateTextStyle: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey
-              ),
-              monthTextStyle: const TextStyle(
-                  fontSize: 10,
-              ),
-              dayTextStyle:  const TextStyle(
-                fontSize: 10,
-              ),
-              onDateChange: (date) {
-                setState(() {
-                  _selectedDate = date;
-                });
-                // _showTasks();
-              },
+                SizedBox(
+                  width: 90,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Обработчик нажатия для второй кнопки
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0x88FFFFFF),
+                      elevation: 0,
+                    ),
+                    child: Text('Button 2'),
+                  ),
+                ),
+                SizedBox(
+                  width: 120,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Обработчик нажатия для третьей кнопки
+                    },
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Какой ты сегодня?',
+                        textAlign: TextAlign.left,
+                        style: GoogleFonts.comfortaa(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-            ],
+
+          Padding(
+            padding: const EdgeInsets.only(top:210.0),
+            child: Container(
+              margin: const EdgeInsets.only(top: 20, bottom: 20),
+              child: DatePicker(
+                DateTime.now().subtract(Duration(days: 2)),
+                controller: _controller,
+                locale: "ru_RU",
+                initialSelectedDate: DateTime.now(),
+                selectionColor: Colors.blue,
+                selectedTextColor: Colors.white,
+                dateTextStyle: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey
+                ),
+                monthTextStyle: const TextStyle(
+                    fontSize: 10,
+                ),
+                dayTextStyle:  const TextStyle(
+                  fontSize: 10,
+                ),
+                onDateChange: (date) {
+                  setState(() {
+                    _selectedDate = date;
+                  });
+                  // _showTasks();
+                },
+              ),
+            ),
           ),
           FutureBuilder(
             future: Future.delayed(Duration(milliseconds: 100)),

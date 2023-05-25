@@ -11,7 +11,7 @@ import 'package:tasky_flutter/presentation/person.dart';
 import 'package:tasky_flutter/presentation/signin.dart';
 import 'package:tasky_flutter/vidgets/options.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'data/userdatabase.dart';
 import 'firebase_options.dart';
@@ -43,32 +43,24 @@ class _BottomBarState extends State<Bar> {
   int _selectedIndex = 0;
   List pages = [];
   int _kapikoinCount = 0;
-  late String _userAvatar = "https://firebasestorage.googleapis.com/v0/b/tasky-3f0ce.appspot.com/o/images%2F1684981544841?alt=media&token=ab9e8659-70a7-420e-bb94-178563a9d5e4";
   GameDatabase mGame = GameDatabase();
-  UserFirebase mUser = UserFirebase();
 
 
   @override initState(){
     super.initState();
     updateCoin();
-    getAvatar();
     pages = [
       Home(login: widget.login),
       NoteScreen(login: widget.login,),
       Game(login: widget.login),
       Forum(login: widget.login,),
-      Person(login: widget.login, avatar: _userAvatar),
+      Person(login: widget.login, avatar: '',),
       Settings()
     ];
-
   }
 
   Future<void> updateCoin() async{
     _kapikoinCount = await mGame.getMoney();
-  }
-
-  Future<void> getAvatar() async{
-    _userAvatar = await mUser.getUserAvatar(widget.login);
   }
 
   void _onItemTapped(int index) {
@@ -132,16 +124,13 @@ class _BottomBarState extends State<Bar> {
                       circularStrokeCap: CircularStrokeCap.round,
                     ),
                   ),
-                  InkWell(
-                    onTap: () {
-                      _onProfileIconPressed;
-                    },
-                    child: Image.network(
-                      _userAvatar,  // Путь к изображению
-                      width: 50,  // Ширина изображения
-                      height: 50, // Высота изображения
+                  IconButton(
+                    icon: Icon(
+                      Icons.person,
+                      color: Colors.black,
                     ),
-                  )
+                    onPressed: _onProfileIconPressed,
+                  ),
                 ],
               ),
             ),
@@ -162,19 +151,19 @@ class _BottomBarState extends State<Bar> {
                 SizedBox(height: 2),
                 Text(
                   _kapikoinCount.toString(),
-                  style: TextStyle(
+                  style: GoogleFonts.comfortaa(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
-                  ),
+                  )
                 ),
                 const SizedBox(height: 2),
-                const Text(
+                Text(
                   'kapikoin',
-                  style: TextStyle(
+                  style: GoogleFonts.comfortaa(
                     color: Color(0xFF747686),
-                      fontSize: 12,
-                  ),
+                    fontSize: 14,
+                  )
                 ),
               ],
             ),
