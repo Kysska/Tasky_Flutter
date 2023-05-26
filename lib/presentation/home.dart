@@ -58,79 +58,132 @@ class _HomeState extends State<Home> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 15.0, top: 13),
-            child: Text(
-              "Привет, ${widget.login}",
-              style: GoogleFonts.comfortaa(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
-              )
+            padding: const EdgeInsets.only(top: 20),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('images/background_image.png'), // Замените на путь к вашей картинке
+                        fit: BoxFit.cover,
+                        alignment: Alignment.topCenter,
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 15),
+                  child: Text(
+                    "Привет, ${widget.login}",
+                    style: GoogleFonts.comfortaa(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 60),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            child: Stack(
+              alignment: Alignment.topCenter,
               children: [
-                SizedBox(
-                  width: 160,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                        // ToDo переход на создание новой записи блокнота
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0x88FFFFFF),
-                      elevation: 0,
-                    ),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Запиши свои\nмысли          >',
-                        textAlign: TextAlign.left,
-                        style: GoogleFonts.comfortaa(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    SizedBox(
+                      width: 160,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // ToDo переход на создание новой записи блокнота
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0x88FFFFFF),
+                          elevation: 0,
+                        ),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Запиши свои\nмысли          >',
+                            textAlign: TextAlign.left,
+                            style: GoogleFonts.comfortaa(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-                SizedBox(
-                  width: 90,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Обработчик нажатия для второй кнопки
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0x88FFFFFF),
-                      elevation: 0,
+                    SizedBox(
+                      width: 90,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Обработчик нажатия для второй кнопки
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0x88FFFFFF),
+                          elevation: 0,
+                        ),
+                        child: Text(''),
+                      ),
                     ),
-                    child: Text('Button 2'),
-                  ),
-                ),
-                SizedBox(
-                  width: 120,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Обработчик нажатия для третьей кнопки
-                    },
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Какой ты сегодня?',
-                        textAlign: TextAlign.left,
-                        style: GoogleFonts.comfortaa(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
+                    SizedBox(
+                      width: 120,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Обработчик нажатия для третьей кнопки
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0x88FFFFFF),
+                          elevation: 0,
+                        ),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Какой ты сегодня?',
+                            textAlign: TextAlign.left,
+                            style: GoogleFonts.comfortaa(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
                         ),
                       ),
                     ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.only(top: 120, left: 15),
+            child: Row(
+              children: [
+                Text(
+                  "Август 2023",
+                  style: GoogleFonts.comfortaa(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    // ToDo Обработчик нажатия на кнопку календаря
+                  },
+                  icon: const Icon(
+                    Icons.calendar_today_outlined,
+                    size: 20,
                   ),
                 ),
               ],
@@ -138,35 +191,53 @@ class _HomeState extends State<Home> {
           ),
 
           Padding(
-            padding: const EdgeInsets.only(top:210.0),
-            child: Container(
-              margin: const EdgeInsets.only(top: 20, bottom: 20),
-              child: DatePicker(
-                DateTime.now().subtract(Duration(days: 2)),
-                controller: _controller,
-                locale: "ru_RU",
-                initialSelectedDate: DateTime.now(),
-                selectionColor: Colors.blue,
-                selectedTextColor: Colors.white,
-                dateTextStyle: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey
-                ),
-                monthTextStyle: const TextStyle(
-                    fontSize: 10,
-                ),
-                dayTextStyle:  const TextStyle(
-                  fontSize: 10,
-                ),
-                onDateChange: (date) {
-                  setState(() {
-                    _selectedDate = date;
-                  });
-                  // _showTasks();
-                },
+            padding: const EdgeInsets.only(top: 160, left: 15),
+            child: Text(
+              "Сегодня:",
+              style: GoogleFonts.comfortaa(
+                color: Color(0xFF747686),
+                fontSize: 18,
               ),
             ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.only(top:180.0),
+              child: Container(
+                margin: const EdgeInsets.only(top: 20, bottom: 20),
+                child: DatePicker(
+                  DateTime.now().subtract(Duration(days: 2)),
+                  controller: _controller,
+                  width: 65,
+                  height: 75,
+                  locale: "ru_RU",
+                  initialSelectedDate: DateTime.now(),
+                  selectionColor: Colors.black,
+                  selectedTextColor: Colors.white,
+
+                  dateTextStyle: GoogleFonts.comfortaa(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                  monthTextStyle: GoogleFonts.comfortaa(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11,
+                  ),
+                  dayTextStyle:  GoogleFonts.comfortaa(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11,
+                  ),
+                  onDateChange: (date) {
+                    setState(() {
+                      _selectedDate = date;
+                    });
+                    // _showTasks();
+                  },
+                ),
+              ),
           ),
           FutureBuilder(
             future: Future.delayed(Duration(milliseconds: 100)),
@@ -249,39 +320,77 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                 topRight: Radius.circular(30.0),
                 topLeft: Radius.circular(30.0),
               ),
-              boxShadow: [
-                BoxShadow(
-                  blurRadius: 2.0,
-                  spreadRadius: 10.0,
-                  offset: const Offset(0.0, 5.0),
-                  color: Colors.black.withOpacity(0.1),
-                )
-              ],
               color: Colors.white,
             ),
             child:
               Column(
                 children: [
-                  const SizedBox(height: 20),
                   Align(
-                    alignment: Alignment.bottomCenter,
-                    child: ToggleButtons(
-                      constraints: BoxConstraints(minWidth: 70, maxWidth: 70, minHeight: kMinInteractiveDimension),
-                      isSelected: _isSelected,
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      fillColor: Colors.blueAccent,
-                      color: Colors.black87,
-                      selectedColor: Colors.white,
-                      onPressed: (int index) {
-                        setState(() {
-                          _isSelected[0] = !_isSelected[0];
-                          _isSelected[1] = !_isSelected[1];
-                        });
-                      },
-                      children: const <Widget>[
-                        Text("Задачи"),
-                        Text("Привычки"),
-                      ],
+                    alignment: Alignment.bottomLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left:15.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            height: 40,
+                            width: 110,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: Size(10, kMinInteractiveDimension),
+                                primary: _isSelected[0] ? Colors.black : Colors.white,
+                                onPrimary: _isSelected[0] ? Colors.white : Colors.black,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                ),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isSelected[0] = !_isSelected[0];
+                                  _isSelected[1] = !_isSelected[1];
+                                });
+                              },
+                              child: Text(
+                                  "Задачи",
+                                  style: GoogleFonts.comfortaa(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Container(
+                            height: 40,
+                            width: 110,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: Size(70, kMinInteractiveDimension),
+                                primary: _isSelected[1] ? Colors.black : Colors.white,
+                                onPrimary: _isSelected[1] ? Colors.white : Colors.black,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+
+                                ),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isSelected[0] = !_isSelected[0];
+                                  _isSelected[1] = !_isSelected[1];
+                                });
+                              },
+                              child: Text(
+                                "Привычки",
+                                style: GoogleFonts.comfortaa(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -295,7 +404,15 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                             return Center(child: Text('Загрузка..'));
                           }
                           return snapshot.data!.isEmpty
-                              ? Center(child: Text('Задач нет'),)
+                              ? Center(child: Text(
+                                'Ещё нет задач, добавим?',
+                                  style: GoogleFonts.comfortaa(
+                                    color: Color(0xFF6A7791),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                          )
                               : ListView.builder(
                             controller: scrollController,
                             itemCount: snapshot.data!.length,
@@ -345,73 +462,84 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                                     );
                                   },
                                   child: Card(
-                                    color: snapshot.data![index].isCompleted
-                                        ? Colors.grey[300]
-                                        : Colors.white,
+                                    elevation: 0,
+                                    color: snapshot.data![index].isCompleted ? Color(0xFFD9DCE2) : Colors.white,
                                     child: ListTile(
-                                      title: Text(snapshot.data![index].title),
-                                      subtitle: Text(snapshot.data![index].time),
+                                      title: Text(
+                                        snapshot.data![index].title,
+                                        style: GoogleFonts.comfortaa(
+                                          color: snapshot.data![index].isCompleted ? Color(0xFF111010) : Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                      subtitle: Text(
+                                        snapshot.data![index].time,
+                                        style: GoogleFonts.comfortaa(
+                                          color:  snapshot.data![index].isCompleted ? Color(0xFF80919B) : Color(0xFF6A7791),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
                                       trailing:
                                       Row(
-                                          mainAxisSize: MainAxisSize.min,
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          snapshot.data![index].tag == ""
-                                              ? SizedBox.shrink()
-                                              : Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(14.0),
-                                              border: Border.all(
-                                                width: 1.0,
-                                                color: Colors.grey,
+                                          if (snapshot.data![index].tag != "")
+                                            Container(
+                                              padding: const EdgeInsets.all(4.0),
+                                              child: Text(
+                                                snapshot.data![index].tag,
+                                                style: GoogleFonts.comfortaa(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                                ),
                                               ),
                                             ),
-                                            padding: const EdgeInsets.all(4.0),
-                                            child: Text(
-                                              snapshot.data![index].tag,
-                                              style: const TextStyle(fontSize: 14.0),
-                                            ),
-                                          ),
-                                          snapshot.data![index].isCompleted
-                                              ? IconButton(
-                                                icon: const Icon(
+                                          if (snapshot.data![index].isCompleted)
+                                            IconButton(
+                                              icon: const Icon(
                                                 Icons.check_circle_outline,
                                                 color: Colors.pink,
-                                            ),
-                                            onPressed: () async {
-                                              return await showDialog(
-                                                context: context,
-                                                builder: (BuildContext context) {
-                                                  return AlertDialog(
-                                                    title: const Text("Отменить выполнененную задачу"),
-                                                    content: const Text("Вы правда хотите отменить выполнение задачи?"),
-                                                    actions: <Widget>[
-                                                      TextButton(
-                                                          onPressed: () async{
+                                              ),
+                                              onPressed: () async {
+                                                final confirm = await showDialog(
+                                                  context: context,
+                                                  builder: (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: const Text("Отменить выполненную задачу"),
+                                                      content: const Text("Вы правда хотите отменить выполнение задачи?"),
+                                                      actions: <Widget>[
+                                                        TextButton(
+                                                          onPressed: () async {
                                                             await mTask.updateCompleted(snapshot.data![index].title, 0);
-                                                            Navigator.of(context).pop(true);},
-                                                          child: const Text("Да")
-                                                      ),
-                                                      TextButton(
-                                                        onPressed: () => Navigator.of(context).pop(false),
-                                                        child: const Text("Нет"),
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                              );
-                                            },
-                                              )
-                                              : IconButton(
-                                            icon: const Icon(
-                                              Icons.circle_outlined,
-                                              color: Colors.pink,
+                                                            Navigator.of(context).pop(true);
+                                                          },
+                                                          child: const Text("Да"),
+                                                        ),
+                                                        TextButton(
+                                                          onPressed: () => Navigator.of(context).pop(false),
+                                                          child: const Text("Нет"),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                            )
+                                          else
+                                            IconButton(
+                                              icon: const Icon(
+                                                Icons.circle_outlined,
+                                                color: Colors.pink,
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  mTask.updateCompleted(snapshot.data![index].title, 1);
+                                                });
+                                              },
                                             ),
-                                            onPressed: () {
-                                              setState(() {
-                                                mTask.updateCompleted(snapshot.data![index].title, 1);
-                                              });
-                                            },
-                                          ),
                                         ],
                                       ),
                                       onTap: (){

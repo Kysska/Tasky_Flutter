@@ -50,6 +50,8 @@ dependencies:
   shared_preferences:
   firebase_storage: ^11.1.1
   google_nav_bar: ^5.0.6
+  awesome_notifications:
+  google_fonts:
 
 dev_dependencies:
   flutter_test:

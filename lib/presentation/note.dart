@@ -34,11 +34,12 @@ class _NoteScreenState extends State<NoteScreen> {
         },
 
         child: Icon(
-          Icons.add_box,
+          Icons.add,
+          size: 30,
           color: Colors.white,
-
         ),
-        backgroundColor: Colors.blue,
+        elevation: 0,
+        backgroundColor: const Color(0xFF93D7FF),
       ),
       body: ListNote(login: widget.login,),
 
