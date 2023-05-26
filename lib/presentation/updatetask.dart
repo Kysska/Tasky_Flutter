@@ -179,9 +179,9 @@ class _UpdateTaskState extends State<UpdateTask>{
         print(item);
         if(_selectedTag == item) {
           return ItemTags(
-          index: index, // required
+          index: index,
           title: item,
-          active: true, //xnjnjfhjf
+          active: true,
           pressEnabled: true,
           singleItem: true,
           textStyle: TextStyle( fontSize: 14, ),

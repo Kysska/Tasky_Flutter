@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:tasky_flutter/vidgets/customappbar.dart';
 import 'package:tasky_flutter/vidgets/shop.dart';
 
 import '../data/gamedatabase.dart';
@@ -21,21 +20,70 @@ class _GameState extends State<Game> {
   InventoryFirebase mInventoryFire = InventoryFirebase();
   InventoryDatabase mInventory = InventoryDatabase.instance;
   late Map<String, int> listFood = {};
+  late ImageProvider myImageProvider;
   var _kapikoinCount;
+  late final List<String> gifList = [
+    "images/Sit-1.gif",
+    "images/Sit-2.gif",
+    "images/Sleep-1.gif",
+    "images/Sleep-2.gif",
+  ];
+  late final List<String> gifTapList = [
+    "images/Tap-1.gif",
+    "images/Tap-2.gif",
+  ];
+  String gifAnimation = "images/Sit-1.gif";
+  int _currentGifIndex = 0;
+  int _currentGifTapIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    myImageProvider= AssetImage(gifAnimation);
+    _precacheGifs();
     _kapikoinCount = _getKapikoinCount();
+    Timer.periodic(Duration(seconds: 48), (timer) {
+      setState(() {
+        _currentGifIndex =
+            (_currentGifIndex + 1) % gifList.length;
+        gifAnimation = gifList[_currentGifIndex];
+      });
+    });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _precacheGifs();
+  }
+
+  void _precacheGifs() async {
+    await precacheImage(myImageProvider, context);
+    for (var gifPath in gifList) {
+      await precacheImage(AssetImage(gifPath), context);
+    }
+    for (var gifTapPath in gifTapList) {
+      await precacheImage(AssetImage(gifTapPath), context);
+    }
+  }
   Future<int> _getKapikoinCount() async {
     return await GameDatabase().getMoney();
   }
 
+  _startAnimation(){
+    _currentGifTapIndex =
+        (_currentGifTapIndex + 1) % gifTapList.length;
+    gifAnimation = gifTapList[_currentGifTapIndex];
+    Future.delayed(Duration(seconds: 4), () {
+      setState(() {
+        gifAnimation = gifList[_currentGifIndex];
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+
     final _scrollController = ScrollController();
     return Scaffold(
         body: Container(
@@ -140,11 +188,14 @@ class _GameState extends State<Game> {
                       children: [
                         GestureDetector(
                           onTap: (){
+                            setState(() {
+                              _startAnimation();
+                            });
                           },
                           child: Stack(
                               children: [DragTarget<String>(builder: (context, candidateData, rejectedData){
                                  return Image.asset(
-                                   "images/Kapibara_1.gif",
+                                   gifAnimation,
                                   );
                               },
                                   onWillAccept: (data) {

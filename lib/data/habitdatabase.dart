@@ -138,9 +138,9 @@ class DatabaseHelperHabit{
     return await db.update('habit', habit.toMap(), where: 'id = ?', whereArgs: [habit.id]);
   }
 
-  Future<void> updateCompleted(String title, List<String> isCompleted) async{
+  Future<void> updateCompleted(String title, List<String> isCompleted, int sumCompleted) async{
     Database db = await instance.database;
     String isCompletedString = isCompleted.join(',');
-    await db.rawUpdate('UPDATE habit SET isCompleted = ? WHERE title = ?', [isCompletedString, title]);
+    await db.rawUpdate('UPDATE habit SET isCompleted = ?, sumCompleted WHERE title = ?', [isCompletedString, sumCompleted, title]);
   }
 }

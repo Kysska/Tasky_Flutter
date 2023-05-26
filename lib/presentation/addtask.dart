@@ -1,4 +1,7 @@
 
+import 'dart:math';
+
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tags/flutter_tags.dart';
@@ -23,9 +26,9 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
   late TabController _tabController;
   TaskFirebase mTaskFire = TaskFirebase();
   DatabaseHelperTask mTask = DatabaseHelperTask.instance;
-  var _selectedDate;
+  var _selectedDate = DateFormat.yMd().format(DateTime.now());
   var _selectedNotice;
-  var _selectedTime;
+  var _selectedTime = TimeOfDay.now().toString();
   late String _selectedTag = "";
 
   List<String> NoticeList = <String>[
@@ -119,7 +122,7 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                               children: [
                                 MyInputField(title: "Название", hint: "Введите название задачи", controller: _titleController,),
                                 SizedBox(height: 18,),
-                                MyInputField(title: "Дата", hint: DateFormat.yMd().format(DateTime.now()),
+                                MyInputField(title: "Дата", hint: _selectedDate,
                                   widget: IconButton(
                                     icon: Icon(Icons.calendar_month),
                                     onPressed: (){
@@ -128,7 +131,7 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                                   ),
                                 ),
                                 SizedBox(height: 18,),
-                                MyInputField(title: "Время", hint: DateFormat.Hm().format(DateTime.now()),
+                                MyInputField(title: "Время", hint: _selectedTime,
                                   widget: IconButton(
                                     icon: Icon(Icons.access_time),
                                     onPressed: (){
@@ -274,10 +277,11 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
 
   }
 
-  _validateData() {
+  _validateData()  async{
     if(_titleController.text.isNotEmpty || _selectedTime != null || _selectedDate != null){
       _selectedNotice ??= "0";
       _selectedTag ??= "";
+      await NotifyTask('habit');
       _dbTaskAdd();
     }
     else if(_titleController.text.isEmpty || _selectedTime == null || _selectedDate == null){
@@ -286,6 +290,23 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
+  }
+  Future NotifyTask(String chanel) async{
+    String timesone = await AwesomeNotifications().getLocalTimeZoneIdentifier();
+    final timeParts = _selectedTime.split(':');
+    final hours = int.parse(timeParts[0]);
+    final minutes = int.parse(timeParts[1]);
+    DateTime dateTime = DateFormat("M/d/yyyy").parse(_selectedDate);
+
+    await AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: Random().nextInt(100),
+        channelKey: chanel,
+        title: 'У вас есть запланированное дело',
+        body: _titleController.text,
+      ),
+      schedule: NotificationCalendar(timeZone: timesone, hour: hours, minute: minutes, day: dateTime.day, month: dateTime.month, year: dateTime.year),
+    );
   }
 }
 
@@ -303,7 +324,7 @@ class _AddHabitState extends State<AddHabit>{
   HabitFirebase mHabitFire = HabitFirebase();
   DatabaseHelperHabit mHabit = DatabaseHelperHabit.instance;
   var _selectedNotice;
-  var _selectedTime;
+  var _selectedTime = TimeOfDay.now().toString();
   late String _selectedTag = "";
 
   List<String> NoticeList = <String>[
@@ -343,7 +364,7 @@ class _AddHabitState extends State<AddHabit>{
   Widget build(BuildContext context) {
     return Column(
       children: [
-        MyInputField(title: "Название", hint: "Введите название задачи", controller: _titleController,),
+        MyInputField(title: "Название", hint: "Введите название привычки", controller: _titleController,),
         const SizedBox(height: 18,),
         WeekdaySelector(
           onChanged: (v) {
@@ -355,7 +376,7 @@ class _AddHabitState extends State<AddHabit>{
           values: isSelectedWeekday,
         ),
         const SizedBox(height: 18,),
-        MyInputField(title: "Время для уведомлений", hint:  DateFormat.Hm().format(DateTime.now()),
+        MyInputField(title: "Время для уведомлений", hint:  _selectedTime,
           widget: IconButton(
             icon: Icon(Icons.access_time),
             onPressed: (){
@@ -482,10 +503,15 @@ class _AddHabitState extends State<AddHabit>{
     );
   }
 
-  _validateData() {
+  _validateData() async{
     if(_titleController.text.isNotEmpty){
       _selectedTime ??= "15:00";
       _selectedNotice ??= "0";
+      for (int i = 0; i < isSelectedWeekday.length; i++) {
+        if (isSelectedWeekday[i]) {
+          await Notify('habit', i + 1);
+        }
+      }
       _dbHabitAdd();
     }
     else if(_titleController.text.isEmpty){
@@ -494,6 +520,23 @@ class _AddHabitState extends State<AddHabit>{
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
+  }
+
+  Future Notify(String chanel, int week) async{
+    String timesone = await AwesomeNotifications().getLocalTimeZoneIdentifier();
+    final timeParts = _selectedTime.split(':');
+    final hours = int.parse(timeParts[0]);
+    final minutes = int.parse(timeParts[1]);
+
+    await AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: Random().nextInt(100),
+        channelKey: chanel,
+        title: _titleController.text,
+        body: 'Пришло время действовать!',
+      ),
+      schedule: NotificationCalendar(weekday: week, timeZone: timesone, hour: hours, minute: minutes,),
+    );
   }
 
 }
