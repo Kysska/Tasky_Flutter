@@ -27,11 +27,18 @@ class _HomeState extends State<Home> {
 
   final DatePickerController _controller = DatePickerController();
   var _selectedDate = DateTime.now();
-
+  bool isEmotionVisible = false;
+  String emotionalKapibara = 'images/normal_emotions.png';
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return GestureDetector(
+        onTap: () {
+          setState(() {
+            isEmotionVisible = false; // Скрыть контент при нажатии в другое место экрана
+          });
+        },
+    child: Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           Navigator.push(context, MaterialPageRoute(builder: (context) => AddTask(login: widget.login,))).then((
@@ -123,15 +130,22 @@ class _HomeState extends State<Home> {
                     SizedBox(
                       width: 90,
                       height: 50,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Обработчик нажатия для второй кнопки
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isEmotionVisible = !isEmotionVisible; // Изменяем состояние видимости контента при нажатии на кнопку
+                          });
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0x88FFFFFF),
-                          elevation: 0,
+                        child: Container(
+                          width: 75,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(emotionalKapibara),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
-                        child: Text(''),
                       ),
                     ),
                     SizedBox(
@@ -139,7 +153,9 @@ class _HomeState extends State<Home> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Обработчик нажатия для третьей кнопки
+                          setState(() {
+                            isEmotionVisible = !isEmotionVisible; // Изменяем состояние видимости контента при нажатии на кнопку
+                          });
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0x88FFFFFF),
@@ -239,6 +255,120 @@ class _HomeState extends State<Home> {
                 ),
               ),
           ),
+      Padding(
+        padding: const EdgeInsets.only(top: 115.0),
+        child: Stack(
+          children: [
+            Visibility(
+              visible: isEmotionVisible,
+              child: SizedBox(
+                height: 80,
+                child: Container(
+                  color: Colors.black.withOpacity(0.7), // Фоновый цвет подложки
+                ),
+              ),
+            ),
+            Visibility(
+              visible: isEmotionVisible,
+              child: Padding(
+              padding: const EdgeInsets.only(top:6, left: 10.0),
+              child: ButtonBar(
+                alignment: MainAxisAlignment.start,
+                buttonPadding: EdgeInsets.only(right: 6),
+                children: [
+                  GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          emotionalKapibara = 'images/sad_emotions.png';
+                        });
+                      },
+                      child: Container(
+                        width: 75,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('images/sad_emotions.png'),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        emotionalKapibara = 'images/less_sad_emotions.png';
+                      });
+                    },
+                    child: Container(
+                      width: 75,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('images/less_sad_emotions.png'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        emotionalKapibara = 'images/normal_emotions.png';
+                      });
+                    },
+                    child: Container(
+                      width: 75,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('images/normal_emotions.png'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        emotionalKapibara = 'images/less_happy_emotions.png';
+                      });
+                    },
+                    child: Container(
+                      width: 75,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('images/less_happy_emotions.png'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        emotionalKapibara = 'images/happy_emotions.png';
+                      });
+                    },
+                    child: Container(
+                      width: 75,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('images/happy_emotions.png'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ),
+          ],
+        ),
+      ),
+
           FutureBuilder(
             future: Future.delayed(Duration(milliseconds: 100)),
             builder: (context, snapshot) {
@@ -253,10 +383,10 @@ class _HomeState extends State<Home> {
             },
           ),
         ],
-      )
-      );
-    
-  }
+      ),
+      ),
+    );
+}
   refreshPage(){
     setState(() {
       _selectedDate = DateTime.now();
