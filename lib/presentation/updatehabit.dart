@@ -48,8 +48,8 @@ class _UpdateHabitState extends State<UpdateHabit>{
   ];
 
   _dbHabitUpdate() async{
-    await mHabit.update(Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], notice: _selectedNotice, time: _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: 0,));
-    await mHabitFire.updateCountHabit(widget.login!, Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], notice: _selectedNotice, time:  _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: 0,));
+    await mHabit.update(Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], notice: _selectedNotice, time: _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted,));
+    await mHabitFire.updateCountHabit(widget.login!, Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], notice: _selectedNotice, time:  _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted,));
   }
 
   @override

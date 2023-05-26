@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -496,11 +497,50 @@ class _HabitsCardsState extends State<HabitsCards> {
                 List<String> selectedFormatDate = snapshot.data![index].isCompleted;
                 String selectedFormatDay = DateFormat.yMd().format(_selectedDay);
                 bool dayInList = selectedFormatDate.contains(selectedFormatDay);
+
+                updateCompletedDate(selectedFormatDate, snapshot.data![index].title);
+
                 if(selectedFormatWeek) {
                   return Padding(
                   padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                   child: Dismissible(
                     key: Key(snapshot.data![index].id),
+                    background: Container(
+                      color: Colors.red,
+                      child: Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: const <Widget>[
+                            Icon(Icons.delete, color: Colors.white),
+                            Text('Удалить', style: TextStyle(color: Colors.white)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    confirmDismiss: (DismissDirection direction) async {
+                      return await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text("Удалить привычку"),
+                            content: const Text("Вы правда хотите удалить привычку?"),
+                            actions: <Widget>[
+                              TextButton(
+                                  onPressed: () async{
+                                    await mHabit.remove(snapshot.data![index].id);
+                                    Navigator.of(context).pop(true);},
+                                  child: const Text("Удалить")
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(false),
+                                child: const Text("Закрыть"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
                     child: Card(
                       color: Colors.white,
                       // snapshot.data![index].isCompleted
@@ -540,13 +580,14 @@ class _HabitsCardsState extends State<HabitsCards> {
                                     context: context,
                                     builder: (BuildContext context) {
                                       return AlertDialog(
-                                        title: const Text("Отменить выполнененную задачу"),
-                                        content: const Text("Вы правда хотите отменить выполнение задачи?"),
+                                        title: const Text("Отменить выполнененную привычку"),
+                                        content: const Text("Вы правда хотите отменить выполнение привычки сегодня?"),
                                         actions: <Widget>[
                                           TextButton(
                                               onPressed: () async{
                                                 selectedFormatDate.remove(selectedFormatDay);
-                                                await mHabit.updateCompleted(snapshot.data![index].title, selectedFormatDate);
+                                                await mHabit.updateCompleted(snapshot.data![index].title, selectedFormatDate, snapshot.data![index].sumCompleted - 1);
+                                                _refreshPage();
                                                 Navigator.of(context).pop(true);},
                                               child: const Text("Да")
                                           ),
@@ -567,7 +608,7 @@ class _HabitsCardsState extends State<HabitsCards> {
                                 ),
                                 onPressed: () async{
                                       selectedFormatDate.add(selectedFormatDay);
-                                      await mHabit.updateCompleted(snapshot.data![index].title, selectedFormatDate);
+                                      await mHabit.updateCompleted(snapshot.data![index].title, selectedFormatDate, snapshot.data![index].sumCompleted + 1);
                                       _refreshPage();
                                 },
                               ),
@@ -600,6 +641,15 @@ class _HabitsCardsState extends State<HabitsCards> {
 
   _refreshPage(){
     setState(() {});
+  }
+
+  updateCompletedDate(List<String> selectedFormatDate, String title) async {
+    DateTime lastDate =  await DateFormat("dd/MM/yyyy").parse(selectedFormatDate.last);
+    DateTime dayBeforeYesterday = await DateTime.now().subtract(Duration(days: 1));
+
+    if (lastDate.isBefore(dayBeforeYesterday)) {
+      await mHabit.updateCompleted(title, selectedFormatDate, 0);
+    }
   }
 
 }

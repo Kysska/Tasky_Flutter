@@ -1,6 +1,10 @@
+import 'dart:typed_data';
+
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:tasky_flutter/data/gamedatabase.dart';
 import 'package:tasky_flutter/presentation/forum.dart';
@@ -11,7 +15,6 @@ import 'package:tasky_flutter/presentation/person.dart';
 import 'package:tasky_flutter/presentation/signin.dart';
 import 'package:tasky_flutter/vidgets/options.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 
 import 'data/userdatabase.dart';
 import 'firebase_options.dart';
@@ -24,7 +27,23 @@ Future<void> main() async{
   );
   final firestore = FirebaseFirestore.instance;
   firestore.settings = const Settings(persistenceEnabled: true);
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   String? login = await SHUser().getUserLogin();
+  AwesomeNotifications().initialize(
+      null,
+      [
+        NotificationChannel(
+            channelKey: 'habit',
+            channelName: 'Proto Coders Point',
+            channelDescription: 'Notification example',
+            defaultColor: Color(0XFF9050DD),
+            ledColor: Colors.white,
+            enableLights: true,
+            enableVibration: false,
+            playSound: false,
+           vibrationPattern: Int64List(0),
+        )
+      ]);
   runApp(MaterialApp(home: login == null ? SignInPage(): Bar(login: login)));
 }
 
@@ -64,7 +83,7 @@ class _BottomBarState extends State<Bar> {
   }
 
   Future<void> updateCoin() async{
-    _kapikoinCount = await mGame.getMoney();
+    _kapikoinCount = await GameDatabase().getMoney();
   }
 
   Future<void> getAvatar() async{
@@ -137,9 +156,9 @@ class _BottomBarState extends State<Bar> {
                       _onProfileIconPressed;
                     },
                     child: Image.network(
-                      _userAvatar,  // Путь к изображению
-                      width: 50,  // Ширина изображения
-                      height: 50, // Высота изображения
+                      _userAvatar,
+                      width: 50,
+                      height: 50,
                     ),
                   )
                 ],
