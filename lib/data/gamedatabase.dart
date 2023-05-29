@@ -1,16 +1,19 @@
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/src/widgets/editable_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tasky_flutter/data/userdatabase.dart';
 
 class GameDatabase{
+
+  Future setHpScale(hungerScale) async{
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.setInt('hpScale', hungerScale);
+  }
 
   Future setHungerScale(hungerScale) async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
     preferences.setInt('hungerScale', hungerScale);
   }
+
 
   Future setAssetSkin(assetSkin) async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -32,9 +35,14 @@ class GameDatabase{
     preferences.setInt('money', money);
   }
 
-  Future getHungerScale() async{
+  Future<int?> getHpScale() async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    preferences.getInt('hungerScale');
+    return preferences.getInt('hpScale');
+  }
+
+  Future<int?> getHungerScale() async{
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return preferences.getInt('hungerScale');
   }
 
   Future getAssetSkin() async{
@@ -55,6 +63,16 @@ class GameDatabase{
   Future getMoney() async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
     return preferences.getInt('money');
+  }
+
+  Future<int?> getLastHunger() async{
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return preferences.getInt('lastHunger');
+  }
+
+  Future setLastHunger(int lastHunger) async{
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return preferences.setInt('lastHunger', lastHunger);
   }
 }
 

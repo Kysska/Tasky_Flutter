@@ -89,7 +89,6 @@ class _SignUpPageState extends State<SignUpPage> {
           if(await _validateData()){
             _addUser();
 
-
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => Welcome(login: _login,)));
           }

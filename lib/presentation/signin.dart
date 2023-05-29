@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tasky_flutter/data/gamedatabase.dart';
 import 'package:tasky_flutter/data/userdatabase.dart';
 
 import '../main.dart';
@@ -17,6 +18,7 @@ class _SignInPageState extends State<SignInPage> {
   String _login = "";
   String _password = "";
   UserFirebase userFirebase = UserFirebase();
+  GameDatabase gameDatabase = GameDatabase();
   late final User userData;
 
   _changeLogin(String text){
@@ -39,24 +41,24 @@ class _SignInPageState extends State<SignInPage> {
           return true;
         }
         else{
-          final snackBar = SnackBar(
-              content: const Text('Неверный пароль')
+          const snackBar = SnackBar(
+              content: Text('Неверный пароль')
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           return false;
         }
       }
       else{
-        final snackBar = SnackBar(
-            content: const Text('Неверный логин')
+        const snackBar = SnackBar(
+            content: Text('Неверный логин')
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         return false;
       }
     }
     else{
-      final snackBar = SnackBar(
-          content: const Text('Логин или пароль имеет неправильный формат')
+      const snackBar = SnackBar(
+          content: Text('Логин или пароль имеет неправильный формат')
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return false;
@@ -93,6 +95,8 @@ class _SignInPageState extends State<SignInPage> {
         onPressed: () async {
          if(await _validateData()){
            //TODO PathProvider
+           await gameDatabase.setHpScale(3);
+           await gameDatabase.setHungerScale(100);
            Navigator.pushReplacement(
                context, MaterialPageRoute(builder: (context) => Bar(login: _login,)));
          }

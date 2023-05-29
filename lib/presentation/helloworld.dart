@@ -73,6 +73,7 @@ class _WelcomeHome extends State<Welcome>{
     String namePet = _titleController.text;
     if(namePet.isNotEmpty){
       game.setNamePet(namePet);
+      game.setHpScale(3);
       game.setHungerScale(100);
       game.setAssetSkin('images/default_capibara.png');
       game.setMoney(500);
