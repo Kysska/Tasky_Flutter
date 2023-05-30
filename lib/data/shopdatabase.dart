@@ -13,6 +13,13 @@ class ShopFirebase{
         return eatList;
   }
 
+  Future<List<EatInShop>> getMedicList()async {
+    var medSnapshot = await firestore.collection('medicaments').get();
+    List<EatInShop> medList =  medSnapshot.docs
+        .map((e) => EatInShop.fromMap(e.data())).toList();
+    return medList;
+  }
+
 }
 
 
@@ -41,5 +48,3 @@ class EatInShop{
     };
   }
 }
-
-

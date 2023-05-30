@@ -21,7 +21,7 @@ class _GameState extends State<Game> {
   InventoryFirebase mInventoryFire = InventoryFirebase();
   InventoryDatabase mInventory = InventoryDatabase.instance;
   GameDatabase mGame = GameDatabase();
-  Timer _hungerTimer = Timer.periodic(const Duration(minutes: 30), (timer) {});
+  Timer _hungerTimer = Timer.periodic(const Duration(minutes: 10), (timer) {});
   Timer _gifTimer = Timer.periodic(const Duration(minutes: 48), (timer) {});
   late Map<String, int> listFood = {};
   late ImageProvider myImageProvider;
@@ -114,18 +114,20 @@ class _GameState extends State<Game> {
   }
 
   void _startTimers() {
-    _hungerTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _hungerTimer = Timer.periodic(const Duration(minutes: 10), (timer) {
       setState(() {
-        _hungerScale--;
         if(_hungerScale <= 0 && _hp > 0){
           _hungerScale = 100;
           _hp--;
           _changeHearts();
         }
-        if(_hungerScale <= 0 && _hp == 0){
+        else if(_hungerScale <= 0 && _hp == 0){
+          print("тут");
           _gifTimer.cancel();
           _hungerTimer.cancel();
-          _showBlock();
+        }
+        else{
+          _hungerScale--;
         }
       });
       _saveData();
@@ -137,14 +139,10 @@ class _GameState extends State<Game> {
     final int lastHungerValue = await lastHunger as int;
     final int hpValue = await hp as int;
     final int hungerValue = await hunger as int;
-    print(lastHungerValue);
-    print(hpValue);
-    print(hungerValue);
     if (lastHunger != null) {
       final difference = (now - (lastHungerValue)) / 1000; // calculate difference in seconds
       final decrease = difference ~/ 1800; // decrease hunger by 1 for every minute
       final newHunger = (hungerValue) - decrease;
-      print(newHunger);
 
       if(newHunger > 0 ){
         setState(() {
@@ -157,7 +155,7 @@ class _GameState extends State<Game> {
       else{
         if(hpValue == 0){
           setState(() {
-            _hungerScale = 100;
+            _hungerScale = 0;
             _hp = hpValue;
           });
           _changeHearts();
@@ -169,7 +167,6 @@ class _GameState extends State<Game> {
             _hp = 0;
           });
           _changeHearts();
-          _showBlock();
         }
 
       }
@@ -222,10 +219,31 @@ class _GameState extends State<Game> {
   }
 
   void _feedPet(){
-    if(_hungerScale + 10 < 100){
+    if(_hungerScale + 10 <= 100){
       setState(() {
         _hungerScale += 10; //10 - кол-во поднятия шкалы голода
       });
+      _saveData();
+    }
+  }
+
+  Future<void> _medic1Pet() async {
+    if(_hp < 3){
+      setState(() {
+        _hp +=1;
+      });
+      _changeHearts();
+      await mGame.setHpScale(_hp);
+    }
+  }
+
+  Future<void> _medic2Pet() async {
+    if(_hp < 3){
+      setState(() {
+        _hp =3;
+      });
+      _changeHearts();
+      await mGame.setHpScale(_hp);
     }
   }
 
@@ -310,29 +328,40 @@ class _GameState extends State<Game> {
                           },
                           child: Stack(
                               children: [DragTarget<String>(builder: (context, candidateData, rejectedData){
-                                if(_hungerScale >0 && _hp != 0){
+                                if(_hungerScale <= 0 && _hp == 0){
+                                  return Column(
+                                    children: [
+                                      const Text("Он ушёл, но обещал вернуться"),
+                                      const Text("Восстановить здоровье"),
+                                      TextButton(onPressed: _showBlock, child: const Text("1000 kapikount"))
+                                    ],
+                                  );
+                                }
+                                else{
                                   return Image.asset(
                                     gifAnimation,
                                   );
-                                }
-                                 else{
-                                   return Column(
-                                     children: [
-                                       Text("Он ушёл, но обещал вернуться"),
-                                       Text("Восстановить здоровье"),
-                                       TextButton(onPressed: _showBlock, child: Text("1000 kapikount"))
-                                     ],
-                                   );
                                 }
                               },
                                   onWillAccept: (data) {
                                     return data == data;
                                   },
                                   onAccept: (data) async {
+                                if(_hungerScale > 0){
+                                  if(data == "Таблетка(1 здоровье)"){
+                                    _medic1Pet();
+                                  }
+                                  else if(data == "Аптечка(3 здоровья)"){
+                                    _medic2Pet();
+                                  }
+                                  else {
                                     _feedPet();
-                                    await mInventory.updateCount(listFood[data]! - 1,  data);
-                                    _refreshPage();
-                                    await  mInventoryFire.updateCountEat(widget.login, listFood[data]! - 1, data);
+                                  }
+                                  await mInventory.updateCount(listFood[data]! - 1,  data);
+                                  _refreshPage();
+                                  await  mInventoryFire.updateCountEat(widget.login, listFood[data]! - 1, data);
+                                }
+
                                   }
                               ),
                               ]
