@@ -141,6 +141,6 @@ class DatabaseHelperHabit{
   Future<void> updateCompleted(String title, List<String> isCompleted, int sumCompleted) async{
     Database db = await instance.database;
     String isCompletedString = isCompleted.join(',');
-    await db.rawUpdate('UPDATE habit SET isCompleted = ?, sumCompleted WHERE title = ?', [isCompletedString, sumCompleted, title]);
+    await db.rawUpdate('UPDATE habit SET isCompleted = ?, sumCompleted = ? WHERE title = ?', [isCompletedString, sumCompleted, title]);
   }
 }

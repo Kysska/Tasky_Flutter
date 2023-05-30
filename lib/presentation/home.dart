@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tasky_flutter/data/gamedatabase.dart';
 import 'package:tasky_flutter/data/habitdatabase.dart';
 import 'package:tasky_flutter/data/taskdatabase.dart';
 import 'package:tasky_flutter/presentation/habitinfo.dart';
@@ -29,15 +32,32 @@ class _HomeState extends State<Home> {
   var _selectedDate = DateTime.now();
   bool isEmotionVisible = false;
   String emotionalKapibara = 'images/normal_emotions.png';
+  late DateTime _currentDateTime;
+
+  @override
+  initState(){
+    super.initState();
+    _currentDateTime = DateTime.now();
+  }
+
+  String _getMonthName(now) {
+    int currentMonth = now.month;
+    List<String> monthNames = [
+      'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+      'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+    ];
+
+    return monthNames[currentMonth - 1];
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () {
-          setState(() {
-            isEmotionVisible = false; // Скрыть контент при нажатии в другое место экрана
-          });
-        },
+        // // onTap: () {
+        //   setState(() {
+        //     isEmotionVisible = false; // Скрыть контент при нажатии в другое место экрана
+        //   });
+        // },
     child: Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: (){
@@ -132,10 +152,10 @@ class _HomeState extends State<Home> {
                       height: 50,
                       child: GestureDetector(
                         onTap: () {
-                          setState(() {
-                            isEmotionVisible = !isEmotionVisible; // Изменяем состояние видимости контента при нажатии на кнопку
-                          });
-                        },
+                        // setState(() {
+                        //   isEmotionVisible = !isEmotionVisible;
+                        // });
+                      },
                         child: Container(
                           width: 75,
                           height: 60,
@@ -152,15 +172,16 @@ class _HomeState extends State<Home> {
                       width: 120,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            isEmotionVisible = !isEmotionVisible; // Изменяем состояние видимости контента при нажатии на кнопку
-                          });
-                        },
+                        // onPressed: () {
+                        //   setState(() {
+                        //     isEmotionVisible = !isEmotionVisible; // Изменяем состояние видимости контента при нажатии на кнопку
+                        //   });
+                        // },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0x88FFFFFF),
                           elevation: 0,
                         ),
+                        onPressed: () {  },
                         child: Align(
                           alignment: Alignment.center,
                           child: Text(
@@ -186,7 +207,7 @@ class _HomeState extends State<Home> {
             child: Row(
               children: [
                 Text(
-                  "Август 2023",
+                  "${_getMonthName(_currentDateTime)} ${_currentDateTime.year}",
                   style: GoogleFonts.comfortaa(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
@@ -209,7 +230,7 @@ class _HomeState extends State<Home> {
           Padding(
             padding: const EdgeInsets.only(top: 160, left: 15),
             child: Text(
-              "Сегодня:",
+              "${_selectedDate.day} ${_getMonthName(_selectedDate)}",
               style: GoogleFonts.comfortaa(
                 color: Color(0xFF747686),
                 fontSize: 18,
@@ -283,7 +304,7 @@ class _HomeState extends State<Home> {
                         });
                       },
                       child: Container(
-                        width: MediaQuery.of(context).size.width/5 - 12,
+                        width: 72,
                         height: 60,
                         decoration: BoxDecoration(
                           image: DecorationImage(
@@ -300,7 +321,7 @@ class _HomeState extends State<Home> {
                       });
                     },
                     child: Container(
-                      width: MediaQuery.of(context).size.width/5 - 12,
+                      width: 72,
                       height: 60,
                       decoration: BoxDecoration(
                         image: DecorationImage(
@@ -317,7 +338,7 @@ class _HomeState extends State<Home> {
                       });
                     },
                     child: Container(
-                      width: MediaQuery.of(context).size.width/5 - 12,
+                      width: 72,
                       height: 60,
                       decoration: BoxDecoration(
                         image: DecorationImage(
@@ -334,7 +355,7 @@ class _HomeState extends State<Home> {
                       });
                     },
                     child: Container(
-                      width: MediaQuery.of(context).size.width/5 - 12,
+                      width: 72,
                       height: 60,
                       decoration: BoxDecoration(
                         image: DecorationImage(
@@ -351,7 +372,7 @@ class _HomeState extends State<Home> {
                       });
                     },
                     child: Container(
-                      width: MediaQuery.of(context).size.width/5 - 12,
+                      width: 72,
                       height: 60,
                       decoration: BoxDecoration(
                         image: DecorationImage(
@@ -413,7 +434,11 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
   DatabaseHelperTask mTask = DatabaseHelperTask.instance;
   final List<bool> _isSelected = [true, false];
   var _selectedDate = DateTime.now();
+  int _kapikountMoney = 0;
 
+  _getMoney() async{
+    _kapikountMoney = await GameDatabase().getMoney();
+  }
 
   @override
   void initState() {
@@ -421,6 +446,7 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
     _selectedDate = widget.selectedDate;
     retrievedListTask = mTask.getTasks();
     getListTask();
+    _getMoney();
   }
 
   @override
@@ -436,6 +462,18 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
     return mListTask;
   }
 
+  plusMoney() async{
+    Random random = Random();
+    int randomNumber = random.nextInt(41) + 20;
+    _kapikountMoney += randomNumber;
+    await GameDatabase().setMoney(_kapikountMoney);
+  }
+
+  minusMoney() async{
+    _kapikountMoney -= 10;
+    await GameDatabase().setMoney(_kapikountMoney);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -445,8 +483,8 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
       maxChildSize: 0.9,
       builder: (BuildContext context, ScrollController scrollController) {
         return Container(
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.only(
                 topRight: Radius.circular(30.0),
                 topLeft: Radius.circular(30.0),
               ),
@@ -579,7 +617,11 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                                             TextButton(
                                                 onPressed: () async{
                                                   await mTask.remove(snapshot.data![index].id);
-                                                  Navigator.of(context).pop(true);},
+                                                  Navigator.of(context).pop(true);
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('Задача удалена')),
+                                                  );
+                                                  },
                                                 child: const Text("Удалить")
                                             ),
                                             TextButton(
@@ -643,7 +685,9 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                                                       actions: <Widget>[
                                                         TextButton(
                                                           onPressed: () async {
+                                                            minusMoney();
                                                             await mTask.updateCompleted(snapshot.data![index].title, 0);
+                                                            _refreshPage();
                                                             Navigator.of(context).pop(true);
                                                           },
                                                           child: const Text("Да"),
@@ -664,10 +708,10 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                                                 Icons.circle_outlined,
                                                 color: Colors.pink,
                                               ),
-                                              onPressed: () {
-                                                setState(() {
-                                                  mTask.updateCompleted(snapshot.data![index].title, 1);
-                                                });
+                                              onPressed: () async{
+                                                  plusMoney();
+                                                  await mTask.updateCompleted(snapshot.data![index].title, 1);
+                                                  _refreshPage();
                                               },
                                             ),
                                         ],
@@ -696,7 +740,7 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                     ),
                   ),
                   if(_isSelected[1])
-                    HabitsCards(login: widget.login, selectedWeekday: _selectedDate.weekday, selectedDay: _selectedDate,),
+                    HabitsCards(login: widget.login, selectedWeekday: _selectedDate.weekday, selectedDay: _selectedDate, kapikountMoney: _kapikountMoney,),
                 ],
               ),
           );
@@ -713,7 +757,8 @@ class HabitsCards extends StatefulWidget {
   final String? login;
   final selectedWeekday;
   final selectedDay;
-  const HabitsCards({super.key, this.login, this.selectedWeekday, this.selectedDay});
+  final kapikountMoney;
+  const HabitsCards({super.key, this.login, this.selectedWeekday, this.selectedDay, this.kapikountMoney});
 
   @override
   _HabitsCardsState createState() =>
@@ -729,6 +774,7 @@ class _HabitsCardsState extends State<HabitsCards> {
   DatabaseHelperHabit mHabit = DatabaseHelperHabit.instance;
   var _selectedWeekday;
   var _selectedDay;
+  late int _kapikountMoney;
 
   @override
   void initState() {
@@ -736,6 +782,7 @@ class _HabitsCardsState extends State<HabitsCards> {
     _selectedWeekday = widget.selectedWeekday;
     _selectedDay = widget.selectedDay;
     retrievedListHabit = mHabit.getHabit();
+    _kapikountMoney = widget.kapikountMoney;
     getListHabit();
   }
 
@@ -755,167 +802,217 @@ class _HabitsCardsState extends State<HabitsCards> {
     }
   }
 
+  plusMoney() async{
+    Random random = Random();
+    int randomNumber = random.nextInt(41) + 20;
+    _kapikountMoney += randomNumber;
+    await GameDatabase().setMoney(_kapikountMoney);
+  }
+
+  minusMoney() async{
+    _kapikountMoney -= 10;
+    await GameDatabase().setMoney(_kapikountMoney);
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Scrollbar(
-        child: FutureBuilder<List<Habit>>(
-          future: retrievedListHabit,
-          builder: (BuildContext context, AsyncSnapshot<List<Habit>> snapshot) {
-            if (!snapshot.hasData) {
-              return Center(child: Text('Загрузка..'));
-            }
-            return snapshot.data!.isEmpty
-                ? Center(child: Text('Привычек нет'),)
-                : ListView.builder(
-              controller: scrollController,
-              itemCount: snapshot.data!.length,
-              itemBuilder: (BuildContext context, int index) {
-                bool selectedFormatWeek = snapshot.data![index].listWeek[_selectedWeekday - 1];
-                List<String> selectedFormatDate = snapshot.data![index].isCompleted;
-                String selectedFormatDay = DateFormat.yMd().format(_selectedDay);
-                bool dayInList = selectedFormatDate.contains(selectedFormatDay);
+        return Expanded(
+          child: Scrollbar(
+            child: FutureBuilder<List<Habit>>(
+              future: retrievedListHabit,
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<Habit>> snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(child: Text('Загрузка..'));
+                }
+                return snapshot.data!.isEmpty
+                    ? Center(child: Text('Привычек нет'),)
+                    : ListView.builder(
+                  controller: scrollController,
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    bool selectedFormatWeek = snapshot.data![index]
+                        .listWeek[_selectedWeekday - 1];
+                    List<String> selectedFormatDate = snapshot.data![index]
+                        .isCompleted;
+                    String selectedFormatDay = DateFormat.yMd().format(
+                        _selectedDay);
+                    bool dayInList = selectedFormatDate.contains(
+                        selectedFormatDay);
 
-                updateCompletedDate(selectedFormatDate, snapshot.data![index].title);
+                    updateCompletedDate(
+                        selectedFormatDate, snapshot.data![index].title);
 
-                if(selectedFormatWeek) {
-                  return Padding(
-                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                  child: Dismissible(
-                    key: Key(snapshot.data![index].id),
-                    background: Container(
-                      color: Colors.red,
-                      child: Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: const <Widget>[
-                            Icon(Icons.delete, color: Colors.white),
-                            Text('Удалить', style: TextStyle(color: Colors.white)),
-                          ],
-                        ),
-                      ),
-                    ),
-                    confirmDismiss: (DismissDirection direction) async {
-                      return await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text("Удалить привычку"),
-                            content: const Text("Вы правда хотите удалить привычку?"),
-                            actions: <Widget>[
-                              TextButton(
-                                  onPressed: () async{
-                                    await mHabit.remove(snapshot.data![index].id);
-                                    Navigator.of(context).pop(true);},
-                                  child: const Text("Удалить")
+                    if (selectedFormatWeek) {
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                        child: Dismissible(
+                          key: Key(snapshot.data![index].id),
+                          background: Container(
+                            color: Colors.red,
+                            child: Padding(
+                              padding: const EdgeInsets.all(15),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: const <Widget>[
+                                  Icon(Icons.delete, color: Colors.white),
+                                  Text('Удалить',
+                                      style: TextStyle(color: Colors.white)),
+                                ],
                               ),
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(false),
-                                child: const Text("Закрыть"),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    child: Card(
-                      color: Colors.white,
-                      // snapshot.data![index].isCompleted
-                      //     ? Colors.grey[300]
-                      //     : Colors.white,
-                      child: ListTile(
-                          title: Text(snapshot.data![index].title),
-                          subtitle: Text(snapshot.data![index].time),
-                          trailing:
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              snapshot.data![index].tag == ""
-                                  ? SizedBox.shrink()
-                                  : Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(14.0),
-                                  border: Border.all(
-                                    width: 1.0,
-                                    color: Colors.grey,
+                            ),
+                          ),
+                          confirmDismiss: (DismissDirection direction) async {
+                            return await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text("Удалить привычку"),
+                                  content: const Text(
+                                      "Вы правда хотите удалить привычку?"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                        onPressed: () async {
+                                          await mHabit.remove(
+                                              snapshot.data![index].id);
+                                          Navigator.of(context).pop(true);
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('Привычка удалена')),
+                                          );
+                                        },
+                                        child: const Text("Удалить")
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                      child: const Text("Закрыть"),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: Card(
+                            color: Colors.white,
+                            // snapshot.data![index].isCompleted
+                            //     ? Colors.grey[300]
+                            //     : Colors.white,
+                            child: ListTile(
+                              title: Text(snapshot.data![index].title),
+                              subtitle: Text(snapshot.data![index].time),
+                              trailing:
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  snapshot.data![index].tag == ""
+                                      ? SizedBox.shrink()
+                                      : Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(14.0),
+                                      border: Border.all(
+                                        width: 1.0,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Text(
+                                      snapshot.data![index].tag,
+                                      style: const TextStyle(fontSize: 14.0),
+                                    ),
                                   ),
-                                ),
-                                padding: const EdgeInsets.all(4.0),
-                                child: Text(
-                                  snapshot.data![index].tag,
-                                  style: const TextStyle(fontSize: 14.0),
-                                ),
-                              ),
-                              dayInList
-                                  ? IconButton(
-                                icon: const Icon(
-                                  Icons.check_circle_outline,
-                                  color: Colors.pink,
-                                ),
-                                onPressed: () async {
-                                  return await showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: const Text("Отменить выполнененную привычку"),
-                                        content: const Text("Вы правда хотите отменить выполнение привычки сегодня?"),
-                                        actions: <Widget>[
-                                          TextButton(
-                                              onPressed: () async{
-                                                selectedFormatDate.remove(selectedFormatDay);
-                                                await mHabit.updateCompleted(snapshot.data![index].title, selectedFormatDate, snapshot.data![index].sumCompleted - 1);
-                                                _refreshPage();
-                                                Navigator.of(context).pop(true);},
-                                              child: const Text("Да")
-                                          ),
-                                          TextButton(
-                                            onPressed: () => Navigator.of(context).pop(false),
-                                            child: const Text("Нет"),
-                                          ),
-                                        ],
+                                  dayInList
+                                      ? IconButton(
+                                    icon: const Icon(
+                                      Icons.check_circle_outline,
+                                      color: Colors.pink,
+                                    ),
+                                    onPressed: () async {
+                                      return await showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text(
+                                                "Отменить выполнененную привычку"),
+                                            content: const Text(
+                                                "Вы правда хотите отменить выполнение привычки сегодня?"),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                  onPressed: () async {
+                                                    minusMoney();
+                                                    selectedFormatDate.remove(
+                                                        selectedFormatDay);
+                                                    await mHabit
+                                                        .updateCompleted(
+                                                        snapshot.data![index]
+                                                            .title,
+                                                        selectedFormatDate,
+                                                        snapshot.data![index]
+                                                            .sumCompleted - 1);
+                                                    _refreshPage();
+                                                    Navigator.of(context).pop(
+                                                        true);
+                                                  },
+                                                  child: const Text("Да")
+                                              ),
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.of(context).pop(
+                                                        false),
+                                                child: const Text("Нет"),
+                                              ),
+                                            ],
+                                          );
+                                        },
                                       );
                                     },
-                                  );
-                                },
-                              )
-                                  : IconButton(
-                                icon: const Icon(
-                                  Icons.circle_outlined,
-                                  color: Colors.pink,
-                                ),
-                                onPressed: () async{
+                                  )
+                                      : IconButton(
+                                    icon: const Icon(
+                                      Icons.circle_outlined,
+                                      color: Colors.pink,
+                                    ),
+                                    onPressed: () async {
+                                      plusMoney();
                                       selectedFormatDate.add(selectedFormatDay);
-                                      await mHabit.updateCompleted(snapshot.data![index].title, selectedFormatDate, snapshot.data![index].sumCompleted + 1);
+                                      await mHabit.updateCompleted(
+                                          snapshot.data![index].title,
+                                          selectedFormatDate,
+                                          snapshot.data![index].sumCompleted +
+                                              1);
                                       _refreshPage();
-                                },
+                                    },
+                                  ),
+                                ],
                               ),
-                            ],
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(
+                                    builder: (context) => HabitInfo(
+                                      login: widget.login,
+                                      sumCompleted: selectedFormatDate.length -
+                                          1,
+                                      habit: snapshot.data![index],)))
+                                    .then((value) =>
+                                {
+                                  if(value != null && value == true){
+                                    _refreshPage()
+                                  }
+                                });
+                              },
+                            ),
                           ),
-                          onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => HabitInfo(login: widget.login, sumCompleted: selectedFormatDate.length - 1, habit: snapshot.data![index],))).then((
-                                value) =>
-                            {
-                              if(value!=null && value == true){
-                                _refreshPage()
-                              }
-                            });
-                            },
-                      ),
-                    ),
-                  ),
+                        ),
+                      );
+                    }
+                    else {
+                      return const SizedBox.shrink();
+                    }
+                  },
                 );
-                }
-                else{
-                  return const SizedBox.shrink();
-                }
               },
-            );
-          },
-        ),
-      ),
-    );
+            ),
+          ),
+        );
   }
 
   _refreshPage(){
@@ -923,11 +1020,19 @@ class _HabitsCardsState extends State<HabitsCards> {
   }
 
   updateCompletedDate(List<String> selectedFormatDate, String title) async {
-    DateTime lastDate =  await DateFormat("dd/MM/yyyy").parse(selectedFormatDate.last);
-    DateTime dayBeforeYesterday = await DateTime.now().subtract(Duration(days: 1));
+    if (selectedFormatDate.isNotEmpty) {
+      String lastDateStr = selectedFormatDate.last;
+      print(selectedFormatDate.last);
+      if (lastDateStr.isNotEmpty) {
+        DateTime lastDate = await DateFormat("M/d/yyyy").parse(lastDateStr);
+        DateTime dayBeforeYesterday = await DateTime.now().subtract(Duration(days: 2));
+        print(lastDate);
+        print(dayBeforeYesterday);
 
-    if (lastDate.isBefore(dayBeforeYesterday)) {
-      await mHabit.updateCompleted(title, selectedFormatDate, 0);
+        if (lastDate.isBefore(dayBeforeYesterday)){
+          await mHabit.updateCompleted(title, selectedFormatDate, 0);
+        }
+      }
     }
   }
 

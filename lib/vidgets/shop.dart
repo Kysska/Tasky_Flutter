@@ -206,7 +206,16 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                               TextButton(
                                 child: const Text('Купить'),
                                 onPressed: () async {
-                                  _updateKapicoin(_kapikoinCount - mListEat![index].money);
+                                  int newCount = _kapikoinCount - mListEat![index].money;
+                                  if(newCount <= _kapikoinCount){
+                                    _updateKapicoin(_kapikoinCount - mListEat![index].money);
+                                  }
+                                  else{
+                                    const snackBar = SnackBar(
+                                        content: Text('Не хватает монет')
+                                    );
+                                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                  }
                                   bool foodIn = await mInventory.checkIfExists(mListEat![index].title);
                                   if(foodIn){
                                     int count = await mInventory.getCount(mListEat![index].title);
@@ -216,19 +225,8 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                                   }
                                   else{
                                     await mInventory.add(EatInInventory(title: mListEat![index].title, asset: mListEat![index].asset, money: mListEat![index].money, count: 1));
-                                    print(widget.login);
                                     await mInventoryFire.setDataEatList(widget.login, EatInInventory(title: mListEat![index].title, asset: mListEat![index].asset, money: mListEat![index].money, count: 1));
                                   }
-
-                                 //  bool check  = await mInventory.getCheckFood(widget.login, mListEat![index].title);
-                                 // if(check){
-                                 //   int count = await mInventory.getCount(widget.login, mListEat![index].title);
-                                 //   count+=1;
-                                 //   await mInventory.updateCountEat(widget.login, count, mListEat![index].title);
-                                 // }
-                                 // else{
-                                 //   await mInventory.setDataEatList(widget.login, EatInInventory(title: mListEat![index].title, asset: mListEat![index].asset, money: mListEat![index].money, count: 1));
-                                 // }
                                 },
                               ),
                             ],

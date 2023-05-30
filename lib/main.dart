@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tasky_flutter/data/gamedatabase.dart';
 import 'package:tasky_flutter/presentation/forum.dart';
 import 'package:tasky_flutter/presentation/game.dart';
@@ -64,7 +65,17 @@ class _BottomBarState extends State<Bar> {
   }
 
   Future<void> updateCoin() async{
-    _kapikoinCount = await mGame.getMoney();
+    SharedPreferences.getInstance().then((prefs) {
+      Stream<int> valueStream = Stream.periodic(Duration(seconds: 1), (_) {
+        return prefs.getInt('money') ?? 0;
+      });
+      valueStream.listen((value) {
+        setState(() {
+          _kapikoinCount = value;
+        });
+      });
+    });
+    // _kapikoinCount = await mGame.getMoney();
   }
 
   Future<void> getAvatar() async{
