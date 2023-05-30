@@ -283,7 +283,7 @@ class _HomeState extends State<Home> {
                         });
                       },
                       child: Container(
-                        width: 75,
+                        width: MediaQuery.of(context).size.width/5 - 12,
                         height: 60,
                         decoration: BoxDecoration(
                           image: DecorationImage(
@@ -300,7 +300,7 @@ class _HomeState extends State<Home> {
                       });
                     },
                     child: Container(
-                      width: 75,
+                      width: MediaQuery.of(context).size.width/5 - 12,
                       height: 60,
                       decoration: BoxDecoration(
                         image: DecorationImage(
@@ -317,7 +317,7 @@ class _HomeState extends State<Home> {
                       });
                     },
                     child: Container(
-                      width: 75,
+                      width: MediaQuery.of(context).size.width/5 - 12,
                       height: 60,
                       decoration: BoxDecoration(
                         image: DecorationImage(
@@ -334,7 +334,7 @@ class _HomeState extends State<Home> {
                       });
                     },
                     child: Container(
-                      width: 75,
+                      width: MediaQuery.of(context).size.width/5 - 12,
                       height: 60,
                       decoration: BoxDecoration(
                         image: DecorationImage(
@@ -351,7 +351,7 @@ class _HomeState extends State<Home> {
                       });
                     },
                     child: Container(
-                      width: 75,
+                      width: MediaQuery.of(context).size.width/5 - 12,
                       height: 60,
                       decoration: BoxDecoration(
                         image: DecorationImage(

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' hide Text;
 import 'package:tasky_flutter/data/notedatabase.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../presentation/addnote.dart';
 
@@ -20,7 +21,6 @@ class ListNoteState extends State<ListNote> {
   late List<Note>? notes;
   late List<Note>? searchNotes = [];
   late List<Note>? fullNotes = [];
-
 
   _runFilter(String text){
     searchNotes?.clear();
@@ -42,136 +42,194 @@ class ListNoteState extends State<ListNote> {
         .size;
     final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
     final double itemWidth = size.width / 2;
+
     return Scaffold(
-      backgroundColor: Colors.grey.shade200,
+      backgroundColor: Colors.white,
       body: CustomScrollView(
           slivers: [
-            SliverAppBar(
-              floating: true,
-              pinned: true,
-              snap: false,
-              centerTitle: false,
-              title: AppBar(
-                title: Container(
-                  width: double.infinity,
-                  height: 40,
-                  color: Colors.white,
-                  child: Center(
-                    child: TextField(
-                      onChanged: (text){
-                        _runFilter(text);
-                      },
-                      decoration: const InputDecoration(
-                        hintText: 'Search for something',
-                        prefixIcon: Icon(Icons.search),),
+            Container(
+              child: SliverAppBar(
+                floating: true,
+                pinned: true,
+                snap: false,
+                centerTitle: false,
+                elevation: 0,
+                backgroundColor: Colors.white,
+                title: AppBar(
+                  elevation: 0,
+                  backgroundColor: Colors.white,
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Блокнот",
+                        style: GoogleFonts.comfortaa(
+                            fontWeight: FontWeight.bold,
+                            fontSize:24,
+                            color: Colors.black,
+                        ),
+                      ),
+                      Text(
+                        "Заметок: ", //ToDo Число заметок
+                        style: GoogleFonts.comfortaa(
+                          fontWeight: FontWeight.bold,
+                          fontSize:18,
+                          color: Color(0xff6A7791),
+                        ),
+                      ),
+                    ],
+                    /*
+                    */
+                  ),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15.0, right: 15, top: 10),
+                child: Container(
+                width: 10,
+                height: 40,
+                child: Center(
+                  child: TextField(
+                    onChanged: (text){
+                      _runFilter(text);
+                    },
+                    cursorColor: Colors.black,
+                    style: GoogleFonts.comfortaa(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,),
+                    decoration: const InputDecoration(
+                      iconColor: Colors.black,
+                      hintText: 'Найди свою заметку',
+                      prefixIcon: Icon(Icons.search),
+                      prefixIconColor: Colors.black,
+                      focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.black
+                          )
+                      ),
+                      enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.black
+                          )
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      hintStyle: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     ),
                   ),
                 ),
               ),
             ),
-            SliverList(
-                delegate: SliverChildListDelegate([ FutureBuilder<List<Note>>(
-                  future: DatabaseHelperNote.instance.getNotes(),
-                  builder: (context, snapshot) {
-                    if(searchNotes!.isEmpty){
-                      notes = snapshot.data;
-                      fullNotes = snapshot.data;
-                    }
-                    else{
-                      notes = searchNotes;
-                    }
-                    if (notes == null) {
-                      return const Center(
-                        child: SizedBox(
-                          height: 200,
-                          child: CircularProgressIndicator(color: Colors.grey),
-                        ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text(snapshot.error.toString()),
-                      );
-                    } else if (notes!.isNotEmpty) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: SingleChildScrollView(
-                          child: Center(
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
+            Container(
+              child: SliverList(
+                  delegate: SliverChildListDelegate([ FutureBuilder<List<Note>>(
+                    future: DatabaseHelperNote.instance.getNotes(),
+                    builder: (context, snapshot) {
+                      if(searchNotes!.isEmpty){
+                        notes = snapshot.data;
+                        fullNotes = snapshot.data;
+                      }
+                      else{
+                        notes = searchNotes;
+                      }
+                      if (notes == null) {
+                        return const Center(
+                          child: SizedBox(
+                            height: 200,
+                            child: CircularProgressIndicator(color: Colors.grey),
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Text(snapshot.error.toString()),
+                        );
+                      } else if (notes!.isNotEmpty) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: SingleChildScrollView(
+                            child: Center(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      children: [
+                                        for (int i = 0; i < notes!.length; i += 2)
+                                          GestureDetector(
+                                              onTap:
+                                                  () {
+                                                Navigator.push(context, MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        AddNote(note: notes![i], isEdit: true, login: widget.login,))).then((
+                                                    value) =>
+                                                {
+                                                  if(value!=null && value == true){
+                                                    _refreshPage()
+                                                  }
+                                                });
+                                              },
+                                              // => Get.to(() => DetailsScreen(id: note.id)),
+                                              child: BaseContainer(note: notes![i])),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      children: [
+                                        for (int i = 1; i < notes!.length; i += 2)
+                                          GestureDetector(
+                                              onTap:
+                                                  () {
+                                                Navigator.push(context, MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        AddNote(note: notes![i], isEdit: true, login: widget.login,))).then((
+                                                    value) =>
+                                                {
+                                                  if(value!=null && value == true){
+                                                    _refreshPage()
+                                                  }
+                                                });
+                                              },
+                                              // => Get.to(() => DetailsScreen(id: note.id)),
+                                              child: BaseContainer(note: notes![i])),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      } else if (notes!.isEmpty) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 250),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Expanded(
-                                  child: Column(
-                                    children: [
-                                      for (int i = 0; i < notes!.length; i += 2)
-                                        GestureDetector(
-                                            onTap:
-                                                () {
-                                              Navigator.push(context, MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      AddNote(note: notes![i], isEdit: true, login: widget.login,))).then((
-                                                  value) =>
-                                              {
-                                                if(value!=null && value == true){
-                                                  _refreshPage()
-                                                }
-                                              });
-                                            },
-                                            // => Get.to(() => DetailsScreen(id: note.id)),
-                                            child: BaseContainer(note: notes![i])),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    children: [
-                                      for (int i = 1; i < notes!.length; i += 2)
-                                        GestureDetector(
-                                            onTap:
-                                                () {
-                                              Navigator.push(context, MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      AddNote(note: notes![i], isEdit: true, login: widget.login,))).then((
-                                                  value) =>
-                                              {
-                                                if(value!=null && value == true){
-                                                  _refreshPage()
-                                                }
-                                              });
-                                            },
-                                            // => Get.to(() => DetailsScreen(id: note.id)),
-                                            child: BaseContainer(note: notes![i])),
-                                    ],
-                                  ),
+                                Text(
+                                  "Ещё нет заметок, добавим?",
+                                  style: GoogleFonts.comfortaa(
+                                    color: Color(0xff6A7791),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,),
                                 ),
                               ],
                             ),
                           ),
-                        ),
-                      );
-                    } else if (notes!.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "No notes",
-                              style: TextStyle(
-                                  color: Colors.grey.shade700,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            const SizedBox(height: 20),
-                            Text("Tap the Add button to create a note",
-                                style:
-                                TextStyle(color: Colors.grey.shade500, fontSize: 17)),
-                          ],
-                        ),
-                      );
-                    }
-                    return const Text('No Data Found');
-                  },
-                ),]
-                )
+                        );
+                      }
+                      return const Text('No Data Found');
+                    },
+                  ),]
+                  )
+              ),
             )
           ]
       ),
@@ -195,10 +253,7 @@ class BaseContainer extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
       child: Container(
-        width: MediaQuery
-            .of(context)
-            .size
-            .width * 0.55,
+        width: MediaQuery.of(context).size.width * 0.55,
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(30)),
         child: Padding(
@@ -249,7 +304,6 @@ class BaseContainer extends StatelessWidget {
                 autoFocus: false,
                 expands: false,
               )
-
             ],
           ),
         ),
