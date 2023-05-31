@@ -9,21 +9,19 @@ class Task{
   late final String id;
   late final String title;
   late final String date;
-  final String notice;
   final String time;
   final String tag;
   late final bool isCompleted;
   final List<String> daysOfWeek;
 
   Task ( {required this.id, required this.title,
-    required this.date, required this.isCompleted, required this.notice, required this.time, required this.tag, required this.daysOfWeek
+    required this.date, required this.isCompleted, required this.time, required this.tag, required this.daysOfWeek
   });
 
   factory Task.fromMap(Map<String, dynamic> json) => Task(
     id: json['id'],
     title: json['title'],
     date: json['date'],
-    notice: json['notice'],
     time: json['time'],
     tag: json['tag'],
     isCompleted: _boolFromJson(json['isCompleted']),
@@ -35,7 +33,6 @@ class Task{
       'id': id,
       'title': title,
       'date': date,
-      'notice': notice,
       'time': time,
       'tag': tag,
       'isCompleted': _boolToJson(isCompleted),
@@ -120,7 +117,6 @@ class DatabaseHelperTask{
     title TEXT,
     date TEXT,
     time TEXT,
-    notice TEXT,
     tag TEXT,
     daysOfWeek TEXT,
     isCompleted BOOL

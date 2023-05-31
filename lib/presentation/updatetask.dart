@@ -20,21 +20,9 @@ class _UpdateTaskState extends State<UpdateTask>{
   DatabaseHelperTask mTask = DatabaseHelperTask.instance;
   late var _selectedTitle;
   late var _selectedDate;
-  late var _selectedNotice;
   late var _selectedTime;
   late String _selectedTag;
   late final TextEditingController _titleController;
-
-  List<String> NoticeList = <String>[
-    "15 минут",
-    "30 минут",
-    "1 час",
-    "2 часа",
-    "4 часа",
-    "8 часов",
-    "12 часов",
-    "1 день",
-  ];
 
   List<String> TagsList = [
     "Работа",
@@ -55,15 +43,14 @@ class _UpdateTaskState extends State<UpdateTask>{
       _selectedTitle = widget.task.title;
       _selectedDate = widget.task.date;
       _selectedTag = widget.task.tag;
-      _selectedNotice = widget.task.notice;
       _selectedTime = widget.task.time;
       _titleController = TextEditingController(text: _selectedTitle);
     });
   }
 
   _updateTask() async{
-    await mTask.update(Task(title: _titleController.text, id: widget.task.id, date: _selectedDate, isCompleted: false, notice: _selectedNotice, time: _selectedTime, tag: _selectedTag, daysOfWeek: [],));
-    await mTaskFire.updateTask(widget.login!, Task(title: _titleController.text, id: widget.task.id, date: _selectedDate, isCompleted: false, notice: _selectedNotice, time:  _selectedTime, tag: _selectedTag, daysOfWeek: [],));
+    await mTask.update(Task(title: _titleController.text, id: widget.task.id, date: _selectedDate, isCompleted: false, time: _selectedTime, tag: _selectedTag, daysOfWeek: [],));
+    await mTaskFire.updateTask(widget.login!, Task(title: _titleController.text, id: widget.task.id, date: _selectedDate, isCompleted: false, time:  _selectedTime, tag: _selectedTag, daysOfWeek: [],));
   }
 
   @override
@@ -116,8 +103,6 @@ class _UpdateTaskState extends State<UpdateTask>{
                                     },
                                   ),
                                 ),
-                                SizedBox(height: 18,),
-                                _getNoticeFromUser(),
                                 SizedBox(height: 18,),
                                 _getTagsFromUser(),
                                 SizedBox(height: 18,),
@@ -245,36 +230,10 @@ class _UpdateTaskState extends State<UpdateTask>{
     }
   }
 
-  _getNoticeFromUser() {
-    return DropdownButton<String>(
-      hint: const Text(
-        'Уведомлять до',
-      ),
-      isExpanded: true,
-      value: _selectedNotice,
-      items: NoticeList.map((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(
-            value,
-          ),
-        );
-      }).toList(),
-      onChanged: (_) {
-        FocusScope.of(context).requestFocus(FocusNode());
-        FocusScope.of(context).requestFocus(FocusNode());
-        setState(() {
-          _selectedNotice = _!;
-        });
-      },
-    );
-
-  }
 
   _validateData() {
     if(_titleController.text.isNotEmpty || _selectedTime != null || _selectedDate != null){
       setState(() {
-        _selectedNotice ??= "0";
         _selectedTag ??= "";
       });
       _updateTask();

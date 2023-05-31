@@ -11,6 +11,7 @@ import 'package:tasky_flutter/data/taskdatabase.dart';
 import 'package:tasky_flutter/presentation/habitinfo.dart';
 import 'package:tasky_flutter/presentation/updatetask.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tasky_flutter/vidgets/emotional_selection.dart';
 
 import 'addtask.dart';
 import 'note.dart';
@@ -30,35 +31,27 @@ class _HomeState extends State<Home> {
 
   final DatePickerController _controller = DatePickerController();
   var _selectedDate = DateTime.now();
-  bool isEmotionVisible = false;
+  var isEmotionVisible = false;
   String emotionalKapibara = 'images/normal_emotions.png';
-  late DateTime _currentDateTime;
 
   @override
   initState(){
     super.initState();
-    _currentDateTime = DateTime.now();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _controller.jumpToSelection();
+    });
   }
 
-  String _getMonthName(now) {
-    int currentMonth = now.month;
-    List<String> monthNames = [
-      'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-      'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
-    ];
-
-    return monthNames[currentMonth - 1];
+  changeEmotionVisible(){
+    setState(() {
+      isEmotionVisible = !isEmotionVisible;
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        // // onTap: () {
-        //   setState(() {
-        //     isEmotionVisible = false; // Скрыть контент при нажатии в другое место экрана
-        //   });
-        // },
-    child: Scaffold(
+    return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           Navigator.push(context, MaterialPageRoute(builder: (context) => AddTask(login: widget.login,))).then((
@@ -116,126 +109,7 @@ class _HomeState extends State<Home> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 60),
-            child: Stack(
-              alignment: Alignment.topCenter,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    SizedBox(
-                      width: 160,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // ToDo переход на создание новой записи блокнота
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0x88FFFFFF),
-                          elevation: 0,
-                        ),
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            'Запиши свои\nмысли          >',
-                            textAlign: TextAlign.left,
-                            style: GoogleFonts.comfortaa(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 90,
-                      height: 50,
-                      child: GestureDetector(
-                        onTap: () {
-                        // setState(() {
-                        //   isEmotionVisible = !isEmotionVisible;
-                        // });
-                      },
-                        child: Container(
-                          width: 75,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(emotionalKapibara),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 120,
-                      height: 50,
-                      child: ElevatedButton(
-                        // onPressed: () {
-                        //   setState(() {
-                        //     isEmotionVisible = !isEmotionVisible; // Изменяем состояние видимости контента при нажатии на кнопку
-                        //   });
-                        // },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0x88FFFFFF),
-                          elevation: 0,
-                        ),
-                        onPressed: () {  },
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            'Какой ты сегодня?',
-                            textAlign: TextAlign.left,
-                            style: GoogleFonts.comfortaa(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.only(top: 120, left: 15),
-            child: Row(
-              children: [
-                Text(
-                  "${_getMonthName(_currentDateTime)} ${_currentDateTime.year}",
-                  style: GoogleFonts.comfortaa(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    // ToDo Обработчик нажатия на кнопку календаря
-                  },
-                  icon: const Icon(
-                    Icons.calendar_today_outlined,
-                    size: 20,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.only(top: 160, left: 15),
-            child: Text(
-              "${_selectedDate.day} ${_getMonthName(_selectedDate)}",
-              style: GoogleFonts.comfortaa(
-                color: Color(0xFF747686),
-                fontSize: 18,
-              ),
-            ),
+            child: EmotionSelection(),
           ),
 
           Padding(
@@ -243,7 +117,7 @@ class _HomeState extends State<Home> {
               child: Container(
                 margin: const EdgeInsets.only(top: 20, bottom: 20),
                 child: DatePicker(
-                  DateTime.now().subtract(Duration(days: 2)),
+                  DateTime.now().subtract(Duration(days: 30)),
                   controller: _controller,
                   width: 65,
                   height: 75,
@@ -276,125 +150,11 @@ class _HomeState extends State<Home> {
                 ),
               ),
           ),
-      Padding(
-        padding: const EdgeInsets.only(top: 115.0),
-        child: Stack(
-          children: [
-            Visibility(
-              visible: isEmotionVisible,
-              child: SizedBox(
-                height: 80,
-                child: Container(
-                  color: Colors.black.withOpacity(0.7), // Фоновый цвет подложки
-                ),
-              ),
-            ),
-            Visibility(
-              visible: isEmotionVisible,
-              child: Padding(
-              padding: const EdgeInsets.only(top:6, left: 10.0),
-              child: ButtonBar(
-                alignment: MainAxisAlignment.start,
-                buttonPadding: EdgeInsets.only(right: 6),
-                children: [
-                  GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          emotionalKapibara = 'images/sad_emotions.png';
-                        });
-                      },
-                      child: Container(
-                        width: 72,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('images/sad_emotions.png'),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        emotionalKapibara = 'images/less_sad_emotions.png';
-                      });
-                    },
-                    child: Container(
-                      width: 72,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('images/less_sad_emotions.png'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        emotionalKapibara = 'images/normal_emotions.png';
-                      });
-                    },
-                    child: Container(
-                      width: 72,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('images/normal_emotions.png'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        emotionalKapibara = 'images/less_happy_emotions.png';
-                      });
-                    },
-                    child: Container(
-                      width: 72,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('images/less_happy_emotions.png'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        emotionalKapibara = 'images/happy_emotions.png';
-                      });
-                    },
-                    child: Container(
-                      width: 72,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('images/happy_emotions.png'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            ),
-          ],
-        ),
-      ),
-
           FutureBuilder(
             future: Future.delayed(Duration(milliseconds: 100)),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                return MyDraggableScrollableSheet(
+                return  MyDraggableScrollableSheet(
                   login: widget.login,
                   selectedDate: _selectedDate,
                 );
@@ -405,8 +165,7 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      ),
-    );
+      );
 }
   refreshPage(){
     setState(() {
@@ -418,6 +177,7 @@ class _HomeState extends State<Home> {
 class MyDraggableScrollableSheet extends StatefulWidget {
   final String? login;
   final selectedDate;
+
 
   const MyDraggableScrollableSheet({super.key, this.login, this.selectedDate});
 
@@ -1022,12 +782,9 @@ class _HabitsCardsState extends State<HabitsCards> {
   updateCompletedDate(List<String> selectedFormatDate, String title) async {
     if (selectedFormatDate.isNotEmpty) {
       String lastDateStr = selectedFormatDate.last;
-      print(selectedFormatDate.last);
       if (lastDateStr.isNotEmpty) {
         DateTime lastDate = await DateFormat("M/d/yyyy").parse(lastDateStr);
         DateTime dayBeforeYesterday = await DateTime.now().subtract(Duration(days: 2));
-        print(lastDate);
-        print(dayBeforeYesterday);
 
         if (lastDate.isBefore(dayBeforeYesterday)){
           await mHabit.updateCompleted(title, selectedFormatDate, 0);

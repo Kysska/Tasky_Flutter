@@ -9,14 +9,15 @@ class Habit{
   late final String id;
   late final String title;
   late final String time;
-  late final String notice;
   late final List<bool> listWeek;
   final String tag;
   late final List<String> isCompleted;
   late final int sumCompleted;
+  late final List<String> assets;
 
   Habit({required this.id, required this.title,
-    required this.isCompleted, required this.tag, required this.time, required this.listWeek, required this.notice, required this.sumCompleted,
+    required this.isCompleted, required this.tag, required this.time, required this.listWeek, required this.sumCompleted,
+    required this.assets
   });
 
   factory Habit.fromMap(Map<String, dynamic> json) => Habit(
@@ -26,8 +27,8 @@ class Habit{
       tag: json['tag'],
       time: json['time'],
       listWeek: (json['listWeek'].split(',') as List).map((str) => str.toLowerCase() == 'true').toList(),
-      notice: json['notice'],
       sumCompleted: json['sumCompleted'],
+      assets: json['assets'].split(','),
   );
 
   Map<String, dynamic> toMap(){
@@ -38,8 +39,8 @@ class Habit{
       'tag': tag,
       'time': time,
       'listWeek': listWeek.join(','),
-      'notice': notice,
       'sumCompleted': sumCompleted,
+      'assets': assets.join(','),
     };
   }
 }
@@ -104,10 +105,10 @@ class DatabaseHelperHabit{
     title TEXT,
     tag TEXT,
     time TEXT,
-    notice TEXT,
     listWeek TEXT,
     sumCompleted INT,
-    isCompleted TEXT
+    isCompleted TEXT,
+    assets TEXT
     )
     ''');
   }

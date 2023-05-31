@@ -20,6 +20,9 @@ class _HabitInfoState extends State<HabitInfo> {
   late int sumCompleted;
   late double percentageCompleted;
   late double percentage2Completed;
+  late DateTime firstDate;
+  late DateTime now = DateTime.now();
+  late var differ;
 
   @override
   void initState() {
@@ -27,6 +30,8 @@ class _HabitInfoState extends State<HabitInfo> {
     sumCompleted = widget.sumCompleted;
     percentageCompleted = sumCompleted / 21;
     percentage2Completed = sumCompleted / 50;
+    firstDate = DateTime.parse(widget.habit.id);
+    differ = firstDate.difference(now).inDays;
   }
 
 
@@ -42,7 +47,7 @@ class _HabitInfoState extends State<HabitInfo> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: widget.habit, )));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: widget.habit, isPattern: false, )));
             },
             icon: const Icon(
               Icons.edit,
@@ -55,6 +60,11 @@ class _HabitInfoState extends State<HabitInfo> {
           children: [
             Text(widget.habit.title),
             Text(widget.habit.tag),
+            Row(
+              children: [
+                Text("Привычка была добавлена: ${firstDate.day.toString()}-${firstDate.month.toString()}-${firstDate.year.toString()}"),
+              ],
+            ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(
@@ -70,14 +80,14 @@ class _HabitInfoState extends State<HabitInfo> {
                         color: const Color(0xffff5722)),
                     HomeTaskCountCard(
                         size: size,
-                        count: widget.habit.isCompleted.length,
+                        count: widget.habit.isCompleted.length - 1,
                         desc: 'Привычка завершена',
                         image: 'image2',
                         color: const Color(0xff03a9f4)),
                     HomeTaskCountCard(
                         size: size,
-                        count: widget.habit.isCompleted.length,
-                        desc: 'Доля завершённых',
+                        count: differ,
+                        desc: 'Кол-во прошедших дней',
                         image: 'image3',
                         color: const Color(0xff03a9f4)),
                   ],
@@ -98,7 +108,7 @@ class _HabitInfoState extends State<HabitInfo> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12),
-                        child: Image.asset("images/Donut.png"),
+                        child: Image.asset(widget.habit.assets.first),
                       ),
                       const Text("1 подарок",
                       style: TextStyle(
@@ -141,7 +151,7 @@ class _HabitInfoState extends State<HabitInfo> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12),
-                        child: Image.asset("images/Ice-cream.png"),
+                        child: Image.asset(widget.habit.assets.last),
                       ),
                       const Text(
                         "2 подарок",
