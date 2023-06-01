@@ -9,8 +9,9 @@ import '../vidgets/input_field.dart';
 
 class UpdateHabit extends StatefulWidget{
   final String? login;
+  final bool isPattern;
   final Habit habit;
-  const UpdateHabit({super.key, required this.login, required this.habit});
+  const UpdateHabit({super.key, required this.login, required this.habit, required this.isPattern});
 
   @override
   State<UpdateHabit> createState() => _UpdateHabitState();
@@ -21,7 +22,6 @@ class _UpdateHabitState extends State<UpdateHabit>{
   late var _titleController = TextEditingController(text: widget.habit.title);
   HabitFirebase mHabitFire = HabitFirebase();
   DatabaseHelperHabit mHabit = DatabaseHelperHabit.instance;
-  late var _selectedNotice = widget.habit.notice;
   late var _selectedTime = widget.habit.time;
   late String _selectedTag = widget.habit.tag;
 
@@ -47,9 +47,14 @@ class _UpdateHabitState extends State<UpdateHabit>{
     "Прогулка"
   ];
 
+  _dbHabitAdd() async{
+    await mHabit.add(Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], time: _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: [],));
+    await mHabitFire.setDataHabitList(widget.login!, Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], time:  _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: [],));
+  }
+
   _dbHabitUpdate() async{
-    await mHabit.update(Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], notice: _selectedNotice, time: _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted,));
-    await mHabitFire.updateCountHabit(widget.login!, Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], notice: _selectedNotice, time:  _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted,));
+    await mHabit.update(Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], time: _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: [],));
+    await mHabitFire.updateCountHabit(widget.login!, Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [],  time:  _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: [],));
   }
 
   @override
@@ -95,8 +100,6 @@ class _UpdateHabitState extends State<UpdateHabit>{
               },
             ),
           ),
-          SizedBox(height: 18,),
-          _getNoticeFromUser(),
           SizedBox(height: 18,),
           _getTagsFromUser(),
           SizedBox(height: 18,),
@@ -152,32 +155,6 @@ class _UpdateHabitState extends State<UpdateHabit>{
     }
   }
 
-  _getNoticeFromUser() {
-    return DropdownButton<String>(
-      hint: const Text(
-        'Уведомлять до',
-      ),
-      isExpanded: true,
-      value: _selectedNotice,
-      items: NoticeList.map((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(
-            value,
-          ),
-        );
-      }).toList(),
-      onChanged: (_) {
-        FocusScope.of(context).requestFocus(FocusNode());
-        FocusScope.of(context).requestFocus(FocusNode());
-        setState(() {
-          _selectedNotice = _!;
-        });
-      },
-    );
-
-  }
-
   _getTagsFromUser(){
     return Tags(
       // textField: TagsTextField(
@@ -220,8 +197,12 @@ class _UpdateHabitState extends State<UpdateHabit>{
   _validateData() async {
     if(_titleController.text.isNotEmpty){
       _selectedTime ??= "15:00";
-      _selectedNotice ??= "0";
-      await _dbHabitUpdate();
+      if(widget.isPattern == false){
+        await _dbHabitUpdate();
+      }
+      else {
+        await _dbHabitAdd();
+      }
     }
     else if(_titleController.text.isEmpty){
       final snackBar = SnackBar(
