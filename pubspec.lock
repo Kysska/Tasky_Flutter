@@ -9,14 +9,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
-  anim_search_bar:
-    dependency: "direct main"
-    description:
-      name: anim_search_bar
-      sha256: f44954e19fbccdc6d87705c069bdd6395a994576098ce155faf91c4f0f399e46
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.3"
   args:
     dependency: transitive
     description:
@@ -241,6 +233,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.1"
+  fl_chart:
+    dependency: "direct main"
+    description:
+      name: fl_chart
+      sha256: "48a1b69be9544e2b03d9a8e843affd89e43f3194c9248776222efcb4206bb1ec"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.62.0"
   flutter:
     dependency: "direct main"
     description: flutter

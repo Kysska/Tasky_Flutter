@@ -61,6 +61,7 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
 
     final emailField = TextField(
+      maxLength: 15,
       onChanged: _changeLogin,
       obscureText: false,
       decoration: InputDecoration(
@@ -70,6 +71,7 @@ class _SignUpPageState extends State<SignUpPage> {
           OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
     final passwordField = TextField(
+      maxLength: 15,
       onChanged: _changePassword,
       obscureText: true,
       decoration: InputDecoration(

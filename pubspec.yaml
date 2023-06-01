@@ -47,6 +47,7 @@ dependencies:
   date_picker_timeline:
   flutter_quill:
   flutter_tags:
+  fl_chart:
   shared_preferences:
   firebase_storage: ^11.1.1
   google_nav_bar: ^5.0.6

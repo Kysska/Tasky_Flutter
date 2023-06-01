@@ -16,7 +16,6 @@ import 'package:tasky_flutter/presentation/person.dart';
 import 'package:tasky_flutter/presentation/signin.dart';
 import 'package:tasky_flutter/vidgets/options.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 
 import 'data/userdatabase.dart';
 import 'firebase_options.dart';
