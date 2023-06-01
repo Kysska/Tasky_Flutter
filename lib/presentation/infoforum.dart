@@ -2,6 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:tasky_flutter/data/forumdatabase.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+
+import 'addarticle.dart';
+
 
 class PostScreen extends StatefulWidget {
   late String login;
@@ -49,6 +54,15 @@ class _PostScreenState extends State<PostScreen> {
     }
   }
 
+  String formatDate(String dateString) {
+    DateTime date = DateFormat('yyyy-MM-dd – HH:mm').parse(dateString);
+
+    String formattedTime = DateFormat('HH:mm').format(date);
+    String formattedDate = DateFormat('dd MMMM yyyy').format(date);
+
+    return '$formattedTime, $formattedDate';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,40 +95,55 @@ class _PostScreenState extends State<PostScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Container(
-                      height: 60,
+                      height: 50,
                       color: Colors.white,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Row(
                             children: <Widget>[
-                              CircleAvatar(
-                                backgroundImage: AssetImage('images/default_avatar.png'),
-                                radius: 22,
+                              const CircleAvatar(
+                                backgroundImage: AssetImage(
+                                    'images/default_avatar.png'),
+                                radius: 16,
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
+                                padding: const EdgeInsets.only(left: 15.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
-                                    Container(
+                                    Row(
+                                      children: <Widget>[
+                                        widget.article.anonim ?
+                                        Text(
+                                          "Анонимная Капибара",
+                                          style: GoogleFonts.comfortaa(
+                                            color: Color(0xff7e7c7c),
+                                            fontSize: 18,
+                                          ),
+                                        )
+                                            : Text(
+                                          widget.article.login,
+                                          style: GoogleFonts.comfortaa(
+                                            color: Color(0xff7e7c7c),
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 2.0),
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width * 0.65,
                                       child: Text(
-                                        widget.article.login,
-                                        style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            letterSpacing: .4
+                                        "${widget.article.title.length >= 25 ? widget.article.title.substring(0, 25) + '..' : widget.article.title}",
+                                        style: GoogleFonts.comfortaa(
+                                          color: Color(0xff111111),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(height: 2.0),
-                                    Text(
-                                      widget.article.date,
-                                      style: const TextStyle(
-                                          color: Colors.grey
-                                      ),
-                                    )
                                   ],
                                 ),
                               )
@@ -123,54 +152,70 @@ class _PostScreenState extends State<PostScreen> {
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 15.0),
-                      child: Text(
-                        widget.article.title,
-                        style: TextStyle(
-                          fontSize: 24,
-                          color: Colors.black.withOpacity(0.8),
-                          fontWeight: FontWeight.bold,
+                    Container(
+                      height: 120,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Colors.grey.withOpacity(0.5),
+                              width: 1.0,
+                            ),
+                          ),
+                        ),
+                        child: Align(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            "${widget.article.desc.length >= 281 ? widget.article.desc.substring(0, 281) + '..' : widget.article.desc}",
+                            style: TextStyle(
+                              color: Color(0xff111111),
+                              fontSize: 15,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                    Text(
-                      widget.article.desc,
-                      style: TextStyle(
-                          color: Colors.black.withOpacity(0.4),
-                          fontSize: 17,
-                          letterSpacing: .2
+                    SizedBox(height: 2),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 5),
+                        child: Row(
+                          children: <Widget>[
+                            IconButton(
+                              onPressed: toggleFavorite,
+                              icon: const Icon(Icons.favorite, size: 22,),
+                              color: isFavorite
+                                  ? Colors.red
+                                  : Colors.grey.withOpacity(0.5),
+
+                            ),
+                            SizedBox(width: 4.0),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 5),
+                              child: Text(
+                                "${_countLike} like",
+                                style: GoogleFonts.comfortaa(
+                                  fontSize: 14,
+                                  color: Color(0xff7e7c7c),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 120.0),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 5),
+                              child: Text(
+                                formatDate(widget.article.date),
+                                style: GoogleFonts.comfortaa(
+                                  color: Color(0xff7e7c7c),
+                                  fontSize: 14,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              IconButton(
-                                onPressed: toggleFavorite,
-                                icon: const Icon(Icons.favorite),
-                                color: isFavorite
-                                    ? Colors.red
-                                    : Colors.grey.withOpacity(0.5),
-                              ),
-                              const SizedBox(width: 4.0),
-                              Text(
-                                "${_countLike} votes",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey.withOpacity(0.5),
-                                ),
-                              )
-                            ],
-                          ),
-                          SizedBox(width: 15.0),
-                        ],
-                      ),
-                    )
                   ],
                 ),
               ),

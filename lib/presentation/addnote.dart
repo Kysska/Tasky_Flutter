@@ -4,6 +4,8 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 import '../data/notedatabase.dart';
 
@@ -75,13 +77,18 @@ class _AddNoteState extends State<AddNote> {
     await mNoteFire.deleteNote(widget.login, widget.note.id);
   }
 
+  final CustomStyle = GoogleFonts.comfortaa(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+  );
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
         leading: BackButton(
           onPressed: () {
@@ -108,7 +115,7 @@ class _AddNoteState extends State<AddNote> {
               icon: const Icon(
                 Icons.push_pin_outlined,
               ),
-              color: Colors.black12,
+              color: Colors.black45,
             ),
           if(_isEdit)
           IconButton(
@@ -118,6 +125,7 @@ class _AddNoteState extends State<AddNote> {
             },
             icon: const Icon(
               Icons.delete,
+              color: Colors.black45,
             ),
           ),
         ],
@@ -125,6 +133,7 @@ class _AddNoteState extends State<AddNote> {
       bottomNavigationBar: Padding(
         padding: MediaQuery.of(context).viewInsets,
         child: QuillToolbar.basic(controller: _controller,
+
         showInlineCode: false,
           showFontFamily: false,
           showCodeBlock: false,
@@ -135,43 +144,53 @@ class _AddNoteState extends State<AddNote> {
           showSubscript: false,
           showSuperscript: false,
           showClearFormat: false,
+
         ),
       ),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(
             children: [
-              TextFormField(
-                initialValue: _title ?? "",
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 20,
-                ),
-                decoration: const InputDecoration(
-                  hintText: "Enter title",
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide.none,
+              Padding(
+                padding: const EdgeInsets.only(left: 15.0, right: 15),
+                child: TextFormField(
+                  initialValue: _title ?? "",
+                  style: GoogleFonts.comfortaa(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                  ),
+                  cursorColor: Colors.black,
+                  decoration: const InputDecoration(
+                    hintText: "Введите заголовок",
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.black
+                        )
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.black
+                        )
+                    ),
 
+                  ),
+                  onChanged: _changeTitle,
                 ),
-                onChanged: _changeTitle,
               ),
               Padding(
                 padding: const EdgeInsets.all(17),
                   child: QuillEditor(
-                      controller: _controller,
-                      readOnly: false,
-                      locale: const Locale('ru'),
+                    controller: _controller,
+                    readOnly: false,
+                    locale: const Locale('ru'),
                     scrollController: ScrollController(),
                     scrollable: true,
                     autoFocus: false,
-                    placeholder: 'Enter the shift note text here...',
+                    placeholder: 'Запишите всю важную для вас информацию...',
                     expands: false,
                     padding: EdgeInsets.zero,
                     focusNode: _focusNode,
+
                   ),
               ),
               // TextFormField(

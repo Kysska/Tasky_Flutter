@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../data/forumdatabase.dart';
@@ -57,10 +58,7 @@ class _AddArticleState extends State<AddArticle> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
+        /* actions: [
         TextButton(
           onPressed: () {
           if(_isEdit) _updateArticle();
@@ -82,9 +80,23 @@ class _AddArticleState extends State<AddArticle> {
       ),
         ],
 
-        iconTheme: const IconThemeData(color: Colors.black),
-        actionsIconTheme: const IconThemeData(color: Colors.black),
-      ),
+         CheckboxListTile(
+                    title: Text(
+                      'Разместить пост анонимно?',
+                      style: GoogleFonts.comfortaa(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    value: anonymityEnabled,
+                    onChanged: (newValue) {
+                      setState(() {
+                        anonymityEnabled = newValue!;
+                      });
+                    },
+                    controlAffinity: ListTileControlAffinity.trailing,
+                  ),
+         */
       body:
       Stack(
         children: [
@@ -93,21 +105,46 @@ class _AddArticleState extends State<AddArticle> {
         alignment: Alignment.bottomCenter,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              CheckboxListTile(
-                title: Text('Анонимность'),
-                value: anonymityEnabled,
-                onChanged: (newValue) {
-                  setState(() {
-                    anonymityEnabled = newValue!;
-                  });
-                },
-                controlAffinity: ListTileControlAffinity.trailing,
+          child: Align(
+            alignment: Alignment.bottomRight,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                        FloatingActionButton(
+                          onPressed: () {
+                            if (_isEdit)
+                              _updateArticle();
+                            else
+                              _addArticle();
+                            Navigator.pop(context, true);
+                          },
+                          backgroundColor: const Color(0xFF93D7FF),
+                          elevation: 0,
+                          child: const Icon(
+                            Icons.add,
+                            size: 30,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(width: 10,),
+                        FloatingActionButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          },
+                        backgroundColor: const Color(0xFF6A7791),
+                        elevation: 0,
+                        child: Transform.rotate(
+                          angle: 45 * 3.1415926535 / 180,
+                          child: const Icon(
+                            Icons.add,
+                            size: 30,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
               ),
-            ],
-          ),
         ),
       ),
           SingleChildScrollView(

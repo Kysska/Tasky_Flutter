@@ -44,7 +44,7 @@ class ListNoteState extends State<ListNote> {
     final double itemWidth = size.width / 2;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFF),
       body: CustomScrollView(
           slivers: [
             Container(
@@ -255,7 +255,17 @@ class BaseContainer extends StatelessWidget {
       child: Container(
         width: MediaQuery.of(context).size.width * 0.55,
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(30)),
+            color: Colors.white, borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+        BoxShadow(
+        color:
+        Colors.black26.withOpacity(0.05),
+          offset: Offset(0.0, 6.0),
+          blurRadius: 10.0,
+          spreadRadius: 0.10)
+        ]
+        ),
+
         child: Padding(
           padding: const EdgeInsets.all(13.0),
           child: Column(
