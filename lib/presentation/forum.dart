@@ -331,7 +331,7 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                                             "${question.title.length >= 25 ? question.title.substring(0, 25) + '..' : question.title}",
                                                             style: GoogleFonts.comfortaa(
                                                               color: Color(0xff111111),
-                                                              fontSize: 16,
+                                                              fontSize: 15,
                                                               fontWeight: FontWeight.bold,
                                                             ),
                                                           ),
@@ -503,7 +503,7 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                                           "${question.title.length >= 25 ? question.title.substring(0, 25) + '..' : question.title}",
                                                           style: GoogleFonts.comfortaa(
                                                             color: Color(0xff111111),
-                                                            fontSize: 16,
+                                                            fontSize: 15,
                                                             fontWeight:
                                                             FontWeight.bold,
                                                           ),

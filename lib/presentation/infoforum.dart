@@ -95,7 +95,6 @@ class _PostScreenState extends State<PostScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Container(
-                      height: 50,
                       color: Colors.white,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -133,17 +132,7 @@ class _PostScreenState extends State<PostScreen> {
                                       ],
                                     ),
                                     const SizedBox(height: 2.0),
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width * 0.65,
-                                      child: Text(
-                                        "${widget.article.title.length >= 25 ? widget.article.title.substring(0, 25) + '..' : widget.article.title}",
-                                        style: GoogleFonts.comfortaa(
-                                          color: Color(0xff111111),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
+
                                   ],
                                 ),
                               )
@@ -152,8 +141,19 @@ class _PostScreenState extends State<PostScreen> {
                         ],
                       ),
                     ),
-                    Container(
-                      height: 120,
+                    Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Text(
+                        widget.article.title,
+                        style: GoogleFonts.comfortaa(
+                          color: Color(0xff111111),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top:15.0, left: 15, right: 15),
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                           border: Border(
@@ -165,11 +165,14 @@ class _PostScreenState extends State<PostScreen> {
                         ),
                         child: Align(
                           alignment: Alignment.topLeft,
-                          child: Text(
-                            "${widget.article.desc.length >= 281 ? widget.article.desc.substring(0, 281) + '..' : widget.article.desc}",
-                            style: TextStyle(
-                              color: Color(0xff111111),
-                              fontSize: 15,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Text(
+                              widget.article.desc,
+                              style: GoogleFonts.comfortaa(
+                                color: Color(0xff111111),
+                                fontSize: 15,
+                              ),
                             ),
                           ),
                         ),
