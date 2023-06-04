@@ -1,25 +1,29 @@
 import 'dart:io';
 
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class Mood{
-  late final String id;
+  late final int id;
+  late final String date;
   late final int mood;
 
-  Mood({required this.id, required this.mood,
+  Mood({required this.id, required this.mood, required this.date
   });
 
   factory Mood.fromMap(Map<String, dynamic> json) => Mood(
     id: json['id'],
     mood: json['mood'],
+    date: json['date'],
   );
 
   Map<String, dynamic> toMap(){
     return{
       'id': id,
       'mood': mood,
+      'date': date
     };
   }
 }
@@ -43,33 +47,75 @@ class DatabaseHelperMood{
   Future _onCreate(Database db, int version) async {
     await db.execute('''
     CREATE TABLE mood(
-    id TEXT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT,
     mood INT
     )
     ''');
   }
 
 
-  Future<List<String>> getMood() async {
+  Future<List<int>> getMood() async {
     Database db = await instance.database;
-    var moods = await db.query('mood');
-    List<String> moodList = moods.isNotEmpty
-        ? moods.map((e) => e['id']).toList().cast<String>()
+    var moods = await db.query(
+      'mood',
+      columns: ['mood'],
+      orderBy: 'id DESC',
+      limit: 7
+    );
+    List<int> moodList = moods.isNotEmpty
+        ? moods.map((e) => e['mood'] as int).toList()
         : [];
     return moodList;
   }
 
-  Future<Map<String, dynamic>> getLastMood() async {
+  Future<int?> getLastMood() async {
     Database db = await instance.database;
-    List<Map<String, dynamic>> moods = await db.query('mood', orderBy: 'id DESC', limit: 1);
-    return moods.isNotEmpty ? moods.first : {};
+    List<Map<String, dynamic>> moods = await db.query('mood', columns: ['mood'], orderBy: 'id ASC');
+    List<int> moodList = moods.isNotEmpty
+        ? moods.map((e) => e['mood'] as int).toList()
+        : [];
+    if(moodList.isEmpty) {
+      return 3;
+    } else {
+      return moodList.last;
+    }
   }
 
-  Future<int> add(String id, int mood) async {
+  Future<String?> getLastMoodId() async {
+    Database db = await instance.database;
+    List<Map<String, dynamic>> moods = await db.query('mood', columns: ['date'], orderBy: 'id ASC');
+    List<String> moodList = moods.isNotEmpty
+        ? moods.map((e) => e['date'] as String).toList()
+        : [];
+    print(moodList);
+    if(moodList.isEmpty) {
+      return null;
+    } else {
+      return moodList.last;
+    }
+  }
+  Future<int> add(String date, int mood) async {
     Database db = await database;
+
+    List<Map<String, dynamic>> existingRows = await db.query(
+      'mood',
+      where: 'date = ?',
+      whereArgs: [date],
+    );
+
+    if (existingRows.isNotEmpty) {
+      return await db.update(
+        'mood',
+        {'mood': mood},
+        where: 'date = ?',
+        whereArgs: [date],
+      );
+    }
+
     return await db.insert(
       'mood',
-      {'id': id, 'mood': mood},
+      {'date': date, 'mood': mood},
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }

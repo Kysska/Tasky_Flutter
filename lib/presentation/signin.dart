@@ -68,6 +68,7 @@ class _SignInPageState extends State<SignInPage> {
   Widget build(BuildContext context) {
 
     final emailField = TextField(
+      maxLength: 15,
       onChanged: _changeLogin,
       obscureText: false,
       decoration: InputDecoration(
@@ -77,6 +78,7 @@ class _SignInPageState extends State<SignInPage> {
           OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
     final passwordField = TextField(
+      maxLength: 15,
       onChanged: _changePassword,
       obscureText: true,
       decoration: InputDecoration(

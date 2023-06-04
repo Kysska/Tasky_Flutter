@@ -5,6 +5,7 @@ import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tasky_flutter/data/emotionalDatabase.dart';
 import 'package:tasky_flutter/data/gamedatabase.dart';
 import 'package:tasky_flutter/data/habitdatabase.dart';
 import 'package:tasky_flutter/data/taskdatabase.dart';
@@ -398,7 +399,7 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                                     color: snapshot.data![index].isCompleted ? Color(0xFFD9DCE2) : Colors.white,
                                     child: ListTile(
                                       title: Text(
-                                        snapshot.data![index].title,
+                                        snapshot.data![index].title.length >= 25 ? "${snapshot.data![index].title.substring(0, 25)}..." : snapshot.data![index].title,
                                         style: GoogleFonts.comfortaa(
                                           color: snapshot.data![index].isCompleted ? Color(0xFF111010) : Colors.black,
                                           fontWeight: FontWeight.bold,
@@ -659,7 +660,7 @@ class _HabitsCardsState extends State<HabitsCards> {
                             //     ? Colors.grey[300]
                             //     : Colors.white,
                             child: ListTile(
-                              title: Text(snapshot.data![index].title),
+                              title: Text(snapshot.data![index].title.length >= 25 ? '${snapshot.data![index].title.substring(0, 25)}...' : snapshot.data![index].title),
                               subtitle: Text(snapshot.data![index].time),
                               trailing:
                               Row(

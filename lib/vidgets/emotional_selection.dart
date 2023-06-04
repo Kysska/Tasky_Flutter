@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:tasky_flutter/data/emotionaldatabase.dart';
 
 class EmotionSelection extends StatefulWidget {
   @override
@@ -8,13 +10,80 @@ class EmotionSelection extends StatefulWidget {
 
 class _EmotionSelectionState extends State<EmotionSelection> {
   bool isEmotionVisible = false;
-  String emotionalKapibara = 'images/less_sad_emotions.png';
+  int emotionalKapibara = 2;
+  DatabaseHelperMood mMood = DatabaseHelperMood.instance;
   late DateTime _currentDateTime;
+  String formattedDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
+  bool isFunctionCalled = false;
+
+  List<String> emotionalList = [
+    'images/sad_emotions.png',
+    'images/less_sad_emotions.png',
+    'images/normal_emotions.png',
+    'images/less_happy_emotions.png',
+    'images/happy_emotions.png'
+  ];
 
   @override
   void initState() {
     super.initState();
+    _getEmotional();
     _currentDateTime = DateTime.now();
+    if (!isFunctionCalled) {
+      insertMood();
+      isFunctionCalled = true;
+    }
+  }
+
+
+  Future<void> insertMood() async{
+    print("Мы тут");
+    DateFormat formatter = DateFormat('dd/MM/yyyy');
+    String? lastId = await mMood.getLastMoodId();
+    print(lastId);
+    DateTime today = DateTime.now();
+    DateTime sevenDaysAgo = today.subtract(Duration(days: 7));
+    if(lastId == null){
+      for (int i = 7; i >= 0; i--) {
+        DateTime previousDay = today.subtract(Duration(days: i));
+        String formattedPreviousDay = formatter.format(previousDay);
+        await mMood.add(formattedPreviousDay, 3);
+      }
+    }
+    else{
+      DateTime dateTime = formatter.parse(lastId);
+      print(dateTime);
+      if(dateTime.isBefore(sevenDaysAgo)){
+        for (int i = 7; i >= 0; i--) {
+          DateTime previousDay = today.subtract(Duration(days: i));
+          String formattedPreviousDay = formatter.format(previousDay);
+          print(formattedPreviousDay);
+          await mMood.add(formattedPreviousDay, 3);
+        }
+      }
+      else if(dateTime.isAfter(sevenDaysAgo)){
+        Duration difference = today.difference(dateTime);
+        int numberOfDays = difference.inDays;
+        print(numberOfDays);
+        if(numberOfDays == 0){
+          return;
+        }
+        for (int i = numberOfDays; i >= 0; i--) {
+          print("v?");
+          DateTime previousDay = today.subtract(Duration(days: i));
+          String formattedPreviousDay = formatter.format(previousDay);
+          await mMood.add(formattedPreviousDay, 4);
+        }
+      }
+    }
+  }
+
+
+  Future _getEmotional() async{
+    int? emotional = await mMood.getLastMood();
+    if(emotional != null){
+      emotionalKapibara = emotional - 1;
+    }
   }
 
   void changeEmotionVisible() {
@@ -64,22 +133,34 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                 ),
               ),
             ),
-            SizedBox(
-              width: 90,
-              height: 50,
-              child: GestureDetector(
-                onTap: changeEmotionVisible,
-                child: Container(
-                  width: 75,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(emotionalKapibara),
-                      fit: BoxFit.cover,
+            FutureBuilder(
+              future: Future.delayed(Duration(milliseconds: 10)),
+              builder: (context, snapshot){
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return SizedBox(
+                    width: 90,
+                    height: 50,
+                    child: GestureDetector(
+                      onTap: changeEmotionVisible,
+                      child: emotionalKapibara != null ? Container(
+                        width: 75,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(emotionalList[emotionalKapibara]),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ) : Container(),
                     ),
-                  ),
-                ),
-              ),
+                  );
+                } else {
+                  return const SizedBox(
+                    width: 90,
+                    height: 50,
+                  );
+                }
+              },
             ),
             SizedBox(
               width: 120,
@@ -163,10 +244,11 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                     buttonPadding: EdgeInsets.only(right: 2),
                     children: [
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async{
                           setState(() {
-                            emotionalKapibara = 'images/sad_emotions.png';
+                            emotionalKapibara = 0;
                           });
+                          await mMood.add(formattedDate, 1);
                         },
                         child: Container(
                           width: 72,
@@ -180,10 +262,11 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async{
                           setState(() {
-                            emotionalKapibara = 'images/less_sad_emotions.png';
+                            emotionalKapibara = 1;
                           });
+                          await mMood.add(formattedDate, 2);
                         },
                         child: Container(
                           width: 72,
@@ -197,10 +280,11 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async{
                           setState(() {
-                            emotionalKapibara = 'images/normal_emotions.png';
+                            emotionalKapibara = 2;
                           });
+                          await mMood.add(formattedDate, 3);
                         },
                         child: Container(
                           width: 72,
@@ -214,10 +298,11 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async{
                           setState(() {
-                            emotionalKapibara = 'images/less_happy_emotions.png';
+                            emotionalKapibara = 3;
                           });
+                          await mMood.add(formattedDate, 4);
                         },
                         child: Container(
                           width: 72,
@@ -231,10 +316,11 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async{
                           setState(() {
-                            emotionalKapibara = 'images/happy_emotions.png';
+                            emotionalKapibara = 4;
                           });
+                          await mMood.add(formattedDate, 5);
                         },
                         child: Container(
                           width: 72,

@@ -16,7 +16,7 @@ import 'package:tasky_flutter/presentation/person.dart';
 import 'package:tasky_flutter/presentation/signin.dart';
 import 'package:tasky_flutter/vidgets/options.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 
 import 'data/userdatabase.dart';
 import 'firebase_options.dart';
@@ -193,16 +193,16 @@ class _BottomBarState extends State<Bar> {
                 SizedBox(height: 2),
                 Text(
                   _kapikoinCount.toString(),
-                  style: GoogleFonts.comfortaa(
+                  style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
+                const Text(
                   'kapikoin',
-                  style: GoogleFonts.comfortaa(
+                  style: TextStyle(
                     color: Color(0xFF747686),
                       fontSize: 12,
                   ),

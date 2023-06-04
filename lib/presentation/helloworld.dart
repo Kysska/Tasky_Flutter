@@ -39,7 +39,16 @@ class _WelcomeHome extends State<Welcome>{
                   ),
                   Padding(
                     padding: const EdgeInsets.all(30.0),
-                    child: MyInputField(title: "Придумайте ему имя:", hint: "", controller: _titleController,),
+                    child: TextField(
+                      maxLength: 15,
+                      controller: _titleController,
+                      obscureText: false,
+                      decoration: InputDecoration(
+                          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                          hintText: "Придумайте ему имя",
+                          border:
+                          OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
