@@ -82,7 +82,7 @@ class DatabaseHelperNote{
 
   Future<List<Note>> getNotes() async{
     Database db = await instance.database;
-    var notes = await db.query('note', orderBy: "isImportant DESC, date DESC");
+    var notes = await db.query('note', orderBy: "isImportant DESC");
     List<Note> noteList = notes.isNotEmpty
         ? notes.map((c) => Note.fromMap(c)).toList()
         : [];

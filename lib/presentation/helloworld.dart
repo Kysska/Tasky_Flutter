@@ -81,6 +81,8 @@ class _WelcomeHome extends State<Welcome>{
   _validateData(){
     String namePet = _titleController.text;
     if(namePet.isNotEmpty){
+      var now = DateTime.now().millisecondsSinceEpoch;
+      game.setLastHunger(now);
       game.setNamePet(namePet);
       game.setHpScale(3);
       game.setHungerScale(100);

@@ -64,7 +64,7 @@ class DatabaseHelperMood{
       limit: 7
     );
     List<int> moodList = moods.isNotEmpty
-        ? moods.map((e) => e['mood'] as int).toList()
+        ? moods.map((e) => e['mood'] as int).toList().reversed.toList()
         : [];
     return moodList;
   }

@@ -50,7 +50,7 @@ class _UpdateTaskState extends State<UpdateTask>{
 
   _updateTask() async{
     await mTask.update(Task(title: _titleController.text, id: widget.task.id, date: _selectedDate, isCompleted: false, time: _selectedTime, tag: _selectedTag, daysOfWeek: [],));
-    await mTaskFire.updateTask(widget.login!, Task(title: _titleController.text, id: widget.task.id, date: _selectedDate, isCompleted: false, time:  _selectedTime, tag: _selectedTag, daysOfWeek: [],));
+    mTaskFire.updateTask(widget.login!, Task(title: _titleController.text, id: widget.task.id, date: _selectedDate, isCompleted: false, time:  _selectedTime, tag: _selectedTag, daysOfWeek: [],));
   }
 
   @override
@@ -115,7 +115,6 @@ class _UpdateTaskState extends State<UpdateTask>{
                                         ElevatedButton(
                                             onPressed: () {
                                               _validateData();
-                                              Navigator.of(context).pop(true);
                                             },
                                             style: ElevatedButton.styleFrom(
                                                 padding: const EdgeInsets.all(0),
@@ -146,16 +145,6 @@ class _UpdateTaskState extends State<UpdateTask>{
 
   _getTagsFromUser(){
     return Tags(
-      // textField: TagsTextField(
-      //   textStyle: const TextStyle(fontSize: 14),
-      //   suggestions: [],
-      //   onSubmitted:  (String str) {
-      //     print(str);
-      //     setState(() {
-      //       TagsList.add(str);
-      //     });
-      //   },
-      // ), //TODO исправить
       horizontalScroll: true,
       itemCount: TagsList.length,
       itemBuilder: (int index){
@@ -232,13 +221,11 @@ class _UpdateTaskState extends State<UpdateTask>{
 
 
   _validateData() {
-    if(_titleController.text.isNotEmpty || _selectedTime != null || _selectedDate != null){
-      setState(() {
-        _selectedTag ??= "";
-      });
+    if(_titleController.text.isNotEmpty){
       _updateTask();
+      Navigator.of(context).pop(true);
     }
-    else if(_titleController.text.isEmpty || _selectedTime == null || _selectedDate == null){
+    else if(_titleController.text.isEmpty ){
       const snackBar = SnackBar(
           content: Text('Введите название')
       );

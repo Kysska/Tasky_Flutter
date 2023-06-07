@@ -143,10 +143,76 @@ class ArticleFirebase{
         .update({'likes': newLike});
   }
 
+  Future<void> setLikeArticleUser(int newLike, String articleId, String login)async {
+    await firestore.collection('user').doc(login).collection('articles').doc(articleId)
+        .update({'likes': newLike});
+  }
+
   Future<int> getLikesUser(String articleId) async {
     DocumentSnapshot articleSnapshot = await FirebaseFirestore.instance.collection('articles').doc(articleId).get();
     Map<String, dynamic> articleData = articleSnapshot.data() as Map<String, dynamic>;
     int likes = articleData['likes'] ?? 0;
     return likes;
   }
+}
+
+class Comment{
+  late final String id;
+  late final String login;
+  late final String desc;
+  late final String date;
+  late final bool anonim;
+
+  Comment({required this.id, required this.login, required this.desc, required this.date, required this.anonim
+  });
+
+  factory Comment.fromMap(Map<String, dynamic> json) => Comment(
+    id: json['id'],
+    login: json['login'],
+    desc: json['desc'],
+    date: json['date'],
+    anonim: json['anonim'],
+  );
+
+  Map<String, dynamic> toMap(){
+    return{
+      'id': id,
+      'login': login,
+      'desc': desc,
+      'date': date,
+      'anonim': anonim,
+    };
+  }
+}
+
+
+class CommentFirebase{
+  final firestore = FirebaseFirestore.instance;
+
+
+  Future<List<Comment>> getCommentList(String idArticle)async {
+    var articleSnapshot = await firestore.collection('articles').doc(idArticle).collection('comment').get();
+    if (articleSnapshot.docs.isEmpty) {
+      return [];
+    }
+    List<Comment> articleList = articleSnapshot.docs.map((doc) {
+      Comment article = Comment.fromMap(doc.data());
+      return article;
+    }).toList();
+    return articleList;
+  }
+
+
+  Future<void> setDataArticleList(Comment comment, String idArticle) async{
+    await firestore.collection('articles').doc(idArticle).collection('comment').doc(comment.id)
+        .set({'id': comment.id,  'desc': comment.desc, 'date': comment.date, 'login': comment.login, 'anonim': comment.anonim});
+  }
+
+
+  Future<void> deleteArticle(String idArticle, String idComment, String login) async {
+    await firestore.collection('user').doc(login).collection('articles').doc(idArticle).collection('comment').doc(idComment).delete();
+    await firestore.collection('articles').doc(idArticle).collection('comment').doc(idComment)
+        .delete();
+  }
+
 }

@@ -48,6 +48,8 @@ dependencies:
   flutter_quill:
   flutter_tags:
   fl_chart:
+  table_calendar:
+  cached_network_image:
   shared_preferences:
   firebase_storage: ^11.1.1
   google_nav_bar: ^5.0.6

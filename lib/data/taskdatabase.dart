@@ -154,4 +154,18 @@ class DatabaseHelperTask{
     Database db = await instance.database;
     await db.rawUpdate('UPDATE task SET isCompleted = ? WHERE title = ?', [isCompleted, title]);
   }
+
+  Future<int> countCompletedTasks() async {
+    Database db = await instance.database;
+    var result = await db.rawQuery('SELECT COUNT(*) FROM task WHERE isCompleted = 1');
+    int count = Sqflite.firstIntValue(result) ?? 0;
+    return count;
+  }
+
+  Future<int> countTasks() async {
+    Database db = await instance.database;
+    var result = await db.rawQuery('SELECT COUNT(*) FROM task WHERE isCompleted = 0');
+    int count = Sqflite.firstIntValue(result) ?? 0;
+    return count;
+  }
 }

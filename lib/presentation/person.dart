@@ -1,14 +1,17 @@
 
 import 'dart:io';
 
-import 'package:date_picker_timeline/extra/color.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:tasky_flutter/data/emotionalDatabase.dart';
+import 'package:tasky_flutter/data/habitdatabase.dart';
+import 'package:tasky_flutter/data/taskdatabase.dart';
 import 'package:tasky_flutter/data/userdatabase.dart';
 
 class Person extends StatefulWidget{
@@ -27,8 +30,13 @@ class _PersonState extends State<Person> {
   late String _imagePath;
   var _imageUrl;
   UserFirebase mUser = UserFirebase();
+  DatabaseHelperTask mTask = DatabaseHelperTask.instance;
+  DatabaseHelperHabit mHabit = DatabaseHelperHabit.instance;
   DatabaseHelperMood mMood = DatabaseHelperMood.instance;
   late final emotionValues;
+  late int activeTasks = 0;
+  late int countTasks = 0;
+  late int countHabit = 0;
 
 
 
@@ -45,6 +53,14 @@ class _PersonState extends State<Person> {
     super.initState();
     _initImage();
     _getMood();
+    _getStatictics();
+  }
+
+  _getStatictics() async{
+    countTasks = await mTask.countCompletedTasks();
+    activeTasks = await mTask.countCompletedTasks();
+    countHabit = await mHabit.countTasks();
+    setState(() {});
   }
 
   Future<void> _imgFromGallery() async {
@@ -84,117 +100,200 @@ class _PersonState extends State<Person> {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      body: Center(
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: (){
-                 _imgFromGallery();
-              },
-              child: CircleAvatar(
-                backgroundColor: Color(0xffFDCF09),
-                radius: 50,
-                child: _imageUrl != null
-                    ? ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: Image.network(
-                    _imageUrl,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  ),
-                )
-                    : Container(
-                  decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(50)),
-                  width: 100,
-                  height: 100,
-                  child: Icon(
-                    Icons.camera_alt,
-                    color: Colors.grey[800],
+      body: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+         return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Expanded(
+                    flex: 15,
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 40),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text(
+                            'Профиль',
+                            style: GoogleFonts.comfortaa(
+                                color: Colors.black87,
+                                fontWeight: FontWeight.w300,
+                                fontSize: 16),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            FutureBuilder(
-              future: mMood.getMood(),
-              builder: (BuildContext context, snapshot){
-                List<int> mood = (snapshot.data ?? []).map((item) => item as int).toList();
-                print(mood);
-                if (!snapshot.hasData) {
-                  return Center(child: Text('Загрузка..'));
-                }
-                return Container(
-                  padding: const EdgeInsets.all(10),
-                  width: double.infinity,
-                  height: 290,
-                  child: LineChart(
-                    LineChartData(
-                        minX: 0,
-                        maxX: 7,
-                        minY: 0,
-                        maxY: 5,
-                      borderData: FlBorderData(
-                        show: true,
-                        border: Border.all(color: const Color(0xff37434d)),
+                GestureDetector(
+                  onTap: (){
+                     _imgFromGallery();
+                  },
+                  child: CircleAvatar(
+                    radius: 50,
+                    child: _imageUrl != null
+                        ? ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: CachedNetworkImage(
+                        imageUrl: _imageUrl,
+                        placeholder: (context, url) => const CircularProgressIndicator(color: Colors.black, strokeWidth: 2.0,),
+                        errorWidget: (context, url, error) => const Icon(Icons.error),
                       ),
-                      gridData: FlGridData(
-                        show: true,
-                        drawVerticalLine: true,
-                        horizontalInterval: 1,
-                        verticalInterval: 1,
-                        getDrawingHorizontalLine: (value) {
-                          return FlLine(
-                            color: Colors.deepPurple,
-                            strokeWidth: 1,
-                          );
-                        },
-                        getDrawingVerticalLine: (value) {
-                          return FlLine(
-                            color: Colors.black54,
-                            strokeWidth: 1,
-                          );
-                        },
+                    )
+                        : Container(
+                      decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(50)),
+                      width: 100,
+                      height: 100,
+                      child: Icon(
+                        Icons.camera_alt,
+                        color: Colors.grey[800],
                       ),
-                        lineBarsData: [
-                      LineChartBarData(
-                        spots: mood.asMap().entries.map((entry) {
-                      final x = entry.key.toDouble();
-                      final y = entry.value.toDouble();
-                      return FlSpot(x, y);
-                    }).toList(),
-                      isCurved: true,
-                      gradient: LinearGradient(
-                        colors: gradientColors,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 15,
+                  child: Text(
+                    widget.login,
+                    style: GoogleFonts.comfortaa(
+                        color: Colors.black,
+                        fontSize: 36,
+                        fontWeight: FontWeight.w400),
+                  ),
+                ),
+                Expanded(
+                  flex: 25,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Text(countHabit.toString(),
+                                  style: GoogleFonts.poppins(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w400)),
+                              const Text('Активных привычек')
+                            ],
+                          ),
+                          Column(
+                            children: <Widget>[
+                              Text(activeTasks.toString(),
+                                  style: GoogleFonts.poppins(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w400)),
+                              const Text('Выполненных задач')
+                            ],
+                          ),
+                          Column(
+                            children: <Widget>[
+                              Text(countHabit.toString(),
+                                  style: GoogleFonts.poppins(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w400)),
+                              const Text('Активных задач')
+                            ],
+                          )
+                        ],
                       ),
-                      barWidth: 5,
-                      isStrokeCapRound: true,
-                      dotData: FlDotData(
-                        show: false,
-                      ),
-                      belowBarData: BarAreaData(
-                        show: true,
-                        gradient: LinearGradient(
-                          colors: gradientColors
-                              .map((color) => color.withOpacity(0.3))
-                              .toList(),
-                        ),
-                      ),),
                     ],
-                      titlesData: FlTitlesData(
-                        bottomTitles: AxisTitles(sideTitles: _bottomTitles),
-                        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                      ),
-
-                ),
                   ),
-                );
-              },
-            ),
-          ],
-        ),
+                ),
+                Center(
+                  child: Text(
+                    'Диаграмма настроения',
+                    style: GoogleFonts.comfortaa(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w300,
+                        fontSize: 16),
+                  ),
+                ),
+                FutureBuilder(
+                  future: mMood.getMood(),
+                  builder: (BuildContext context, snapshot){
+                    List<int> mood = (snapshot.data ?? []).map((item) => item as int).toList();
+                    print(mood);
+                    if (!snapshot.hasData) {
+                      return Center(child: Text('Загрузка..'));
+                    }
+                    return Container(
+                      padding: const EdgeInsets.all(10),
+                      width: double.infinity,
+                      height: 290,
+                      child: LineChart(
+                        LineChartData(
+                            minX: 0,
+                            maxX: 6,
+                            minY: 1,
+                            maxY: 5,
+                          borderData: FlBorderData(
+                            show: true,
+                            border: Border.all(color: const Color(0xff37434d)),
+                          ),
+                          gridData: FlGridData(
+                            show: true,
+                            drawVerticalLine: true,
+                            horizontalInterval: 1,
+                            verticalInterval: 1,
+                            getDrawingHorizontalLine: (value) {
+                              return FlLine(
+                                color: Colors.deepPurple,
+                                strokeWidth: 1,
+                              );
+                            },
+                            getDrawingVerticalLine: (value) {
+                              return FlLine(
+                                color: Colors.black54,
+                                strokeWidth: 1,
+                              );
+                            },
+                          ),
+                            lineBarsData: [
+                          LineChartBarData(
+                            spots: mood.asMap().entries.map((entry) {
+                          final x = entry.key.toDouble();
+                          final y = entry.value.toDouble();
+                          return FlSpot(x, y);
+                        }).toList(),
+                          isCurved: true,
+                          gradient: LinearGradient(
+                            colors: gradientColors,
+                          ),
+                          barWidth: 5,
+                          isStrokeCapRound: true,
+                          dotData: FlDotData(
+                            show: false,
+                          ),
+                          belowBarData: BarAreaData(
+                            show: true,
+                            gradient: LinearGradient(
+                              colors: gradientColors
+                                  .map((color) => color.withOpacity(0.3))
+                                  .toList(),
+                            ),
+                          ),),
+                        ],
+                          titlesData: FlTitlesData(
+                            bottomTitles: AxisTitles(sideTitles: _bottomTitles),
+                            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                          ),
+
+                    ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );}
       ),
     );
   }
@@ -209,8 +308,8 @@ class _PersonState extends State<Person> {
         int intValue = value.toInt();
         if (intValue == 7) {
           return Text(formattedLastDay);
-        } else if (intValue <= 7) {
-          DateTime day = currentDate.subtract(Duration(days: 7- intValue));
+        } else if (intValue < 7) {
+          DateTime day = currentDate.subtract(Duration(days: 6- intValue));
           return Text(formatter.format(day));
         }
         return Text('');

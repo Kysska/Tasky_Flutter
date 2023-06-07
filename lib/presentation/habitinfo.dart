@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tasky_flutter/presentation/updatehabit.dart';
 
 import '../data/habitdatabase.dart';
+import '../vidgets/table_calendar.dart';
 
 class HabitInfo extends StatefulWidget {
   final String? login;
@@ -23,6 +24,7 @@ class _HabitInfoState extends State<HabitInfo> {
   late DateTime firstDate;
   late DateTime now = DateTime.now();
   late var differ;
+  late List<DateTime> toHighlight = [];
 
   @override
   void initState() {
@@ -31,7 +33,25 @@ class _HabitInfoState extends State<HabitInfo> {
     percentageCompleted = sumCompleted / 21;
     percentage2Completed = sumCompleted / 50;
     firstDate = DateTime.parse(widget.habit.id);
-    differ = firstDate.difference(now).inDays;
+    differ = now.difference(firstDate).inDays;
+    _getDateString();
+  }
+
+  _getDateString(){
+    List<String> dateString = widget.habit.isCompleted;
+    for(int i = 0; i < dateString.length; i++){
+      if("" == dateString[i]){
+        continue;
+      }
+      else{
+        List<String> dateParts = dateString[i].split('/');
+        int month = int.parse(dateParts[0]);
+        int day = int.parse(dateParts[1]);
+        int year = int.parse(dateParts[2]);
+        DateTime date = DateTime(year, month, day);
+        toHighlight.add(date);
+      }
+    }
   }
 
 
@@ -55,136 +75,139 @@ class _HabitInfoState extends State<HabitInfo> {
           ),
         ],
       ),
-      body: Padding(padding: const EdgeInsets.only(left: 25.0),
-        child: Column(
-          children: [
-            Text(widget.habit.title),
-            Text(widget.habit.tag),
-            Row(
-              children: [
-                Text("Привычка была добавлена: ${firstDate.day.toString()}-${firstDate.month.toString()}-${firstDate.year.toString()}"),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SizedBox(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    HomeTaskCountCard(
-                        size: size,
-                        count: widget.habit.sumCompleted,
-                        desc: 'Текущая серия',
-                        image: 'image1',
-                        color: const Color(0xffff5722)),
-                    HomeTaskCountCard(
-                        size: size,
-                        count: widget.habit.isCompleted.length - 1,
-                        desc: 'Привычка завершена',
-                        image: 'image2',
-                        color: const Color(0xff03a9f4)),
-                    HomeTaskCountCard(
-                        size: size,
-                        count: differ,
-                        desc: 'Кол-во прошедших дней',
-                        image: 'image3',
-                        color: const Color(0xff03a9f4)),
-                  ],
-                ),
+      body: SingleChildScrollView(
+        child: Padding(padding: const EdgeInsets.only(left: 25.0),
+          child: Column(
+            children: [
+              Text(widget.habit.title),
+              Text(widget.habit.tag),
+              Row(
+                children: [
+                  Text("Привычка была добавлена: ${firstDate.day.toString()}-${firstDate.month.toString()}-${firstDate.year.toString()}"),
+                ],
               ),
-            ),
-            Row(
-              children: [
-                Container(
-                  width: 150,
-                  height: 240,
-                  padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.deepPurple[100],
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                  child: Column(
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SizedBox(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12),
-                        child: Image.asset(widget.habit.assets.first),
-                      ),
-                      const Text("1 подарок",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                      ),
-                      const SizedBox(height: 10),
-                      LinearProgressIndicator(
-                        value: percentageCompleted,
-                        backgroundColor: Colors.grey,
-                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
-                      ),
-                      Text(
-                          "${sumCompleted}/21"
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(Colors.deepPurple.shade400,),
-                        ),
-                        child: Text("Забрать"),
-                        onPressed:() {
-
-                        },
-                      )
+                      HomeTaskCountCard(
+                          size: size,
+                          count: widget.habit.sumCompleted,
+                          desc: 'Текущая серия',
+                          image: 'image1',
+                          color: const Color(0xffff5722)),
+                      HomeTaskCountCard(
+                          size: size,
+                          count: widget.habit.isCompleted.length - 1,
+                          desc: 'Привычка завершена',
+                          image: 'image2',
+                          color: const Color(0xff03a9f4)),
+                      HomeTaskCountCard(
+                          size: size,
+                          count: differ,
+                          desc: 'Кол-во прошедших дней',
+                          image: 'image3',
+                          color: const Color(0xff03a9f4)),
                     ],
                   ),
-      ),
-                SizedBox(width: 10), // Расстояние между контейнерами
-                Container(
-                  width: 150,
-                  height: 240,
-                  padding: const EdgeInsets.all(20),
+                ),
+              ),
+              Row(
+                children: [
+                  Container(
+                    width: 150,
+                    height: 240,
+                    padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.deepOrangeAccent[100],
+                    color: Colors.deepPurple[100],
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12),
-                        child: Image.asset(widget.habit.assets.last),
-                      ),
-                      const Text(
-                        "2 подарок",
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12),
+                          child: Image.asset(widget.habit.assets.first),
+                        ),
+                        const Text("1 подарок",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      LinearProgressIndicator(
-                        value: percentage2Completed,
-                        backgroundColor: Colors.grey,
-                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
-                      ),
-                      Text(
-                          "${sumCompleted}/50"
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(Colors.deepOrangeAccent.shade400,),
                         ),
-                        child: Text("Забрать"),
-                        onPressed:() {
+                        const SizedBox(height: 10),
+                        LinearProgressIndicator(
+                          value: percentageCompleted,
+                          backgroundColor: Colors.grey,
+                          valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+                        ),
+                        Text(
+                            "${widget.habit.sumCompleted}/21"
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(Colors.deepPurple.shade400,),
+                          ),
+                          child: Text("Забрать"),
+                          onPressed:() {
 
-                        },
-                      )
-                    ],
+                          },
+                        )
+                      ],
+                    ),
+        ),
+                  SizedBox(width: 10), // Расстояние между контейнерами
+                  Container(
+                    width: 150,
+                    height: 240,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.deepOrangeAccent[100],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12),
+                          child: Image.asset(widget.habit.assets.last),
+                        ),
+                        const Text(
+                          "2 подарок",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        LinearProgressIndicator(
+                          value: percentage2Completed,
+                          backgroundColor: Colors.grey,
+                          valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+                        ),
+                        Text(
+                            "${widget.habit.sumCompleted}/50"
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(Colors.deepOrangeAccent.shade400,),
+                          ),
+                          child: Text("Забрать"),
+                          onPressed:() {
+
+                          },
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+              CalendarPage(toHighlight: toHighlight,),
+            ],
+          ),
         ),
       ),
     );

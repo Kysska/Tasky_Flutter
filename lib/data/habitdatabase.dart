@@ -144,4 +144,11 @@ class DatabaseHelperHabit{
     String isCompletedString = isCompleted.join(',');
     await db.rawUpdate('UPDATE habit SET isCompleted = ?, sumCompleted = ? WHERE title = ?', [isCompletedString, sumCompleted, title]);
   }
+
+  Future<int> countTasks() async {
+    Database db = await instance.database;
+    var result = await db.rawQuery('SELECT COUNT(*) FROM habit');
+    int count = Sqflite.firstIntValue(result) ?? 0;
+    return count;
+  }
 }

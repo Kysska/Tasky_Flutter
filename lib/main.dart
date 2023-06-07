@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +16,6 @@ import 'package:tasky_flutter/presentation/note.dart';
 import 'package:tasky_flutter/presentation/person.dart';
 import 'package:tasky_flutter/presentation/signin.dart';
 import 'package:tasky_flutter/vidgets/options.dart';
-import 'package:percent_indicator/percent_indicator.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 
 import 'data/userdatabase.dart';
 import 'firebase_options.dart';
@@ -145,32 +144,14 @@ class _BottomBarState extends State<Bar> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  Transform.rotate(
-                    angle: -145 * 3.1415927 / 180, // Поворот на 75 градусов
-                    child: CircularPercentIndicator(
-                      radius: 20,
-                      lineWidth: 3.0,
-                      percent: 0.7,
-                      linearGradient: LinearGradient(
-                        colors: [
-                          Color(0xFF9FDDFF),
-                          Color(0xFF6688FF),
-                        ],
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                      ),
-                      backgroundColor: Colors.transparent,
-                      circularStrokeCap: CircularStrokeCap.round,
-                    ),
-                  ),
                   InkWell(
                     onTap: () {
                       _onProfileIconPressed;
                     },
-                    child: Image.network(
-                      _userAvatar,  // Путь к изображению
-                      width: 50,  // Ширина изображения
-                      height: 50, // Высота изображения
+                    child: CachedNetworkImage(
+                      imageUrl: _userAvatar,
+                      placeholder: (context, url) => const CircularProgressIndicator(color: Colors.black, strokeWidth: 2.0,),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
                     ),
                   )
                 ],
@@ -244,40 +225,6 @@ class _BottomBarState extends State<Bar> {
           ),
         ),
       ),
-        /*
-        type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_filled),
-            label: "",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book_rounded),
-            label: "",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: "",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.videogame_asset_rounded),
-            label: "",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.accessibility_new),
-            label: "",
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xFF6688FF),
-        unselectedItemColor: Colors.black,
-        onTap: _onItemTapped,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-      ),
-    */
     );
   }
 }

@@ -66,15 +66,15 @@ class _AddNoteState extends State<AddNote> {
   _addNote(jsonStr) async{
     var id = DateTime.now().toString();
     await mNote.add( Note(id: id, title: _title, desc: jsonStr, date: DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now()).toString(), isImportant: _isImportant));
-    await mNoteFire.setDataNoteList(widget.login, Note( id: id, title: _title, desc: jsonStr, date: DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now()).toString(), isImportant: _isImportant));
+    mNoteFire.setDataNoteList(widget.login, Note( id: id, title: _title, desc: jsonStr, date: DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now()).toString(), isImportant: _isImportant));
   }
   _updateNote(jsonStr) async{
     await mNote.update( Note(id: widget.note.id, title: _title, desc: jsonStr, date: DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now()).toString(), isImportant: _isImportant));
-    await mNoteFire.updateNote(widget.login, Note(id: widget.note.id, title: _title, desc: jsonStr, date: DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now()).toString(), isImportant: _isImportant));
+    mNoteFire.updateNote(widget.login, Note(id: widget.note.id, title: _title, desc: jsonStr, date: DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now()).toString(), isImportant: _isImportant));
   }
   _deleteNote() async{
     await mNote.remove(widget.note.id);
-    await mNoteFire.deleteNote(widget.login, widget.note.id);
+    mNoteFire.deleteNote(widget.login, widget.note.id);
   }
 
   final CustomStyle = GoogleFonts.comfortaa(

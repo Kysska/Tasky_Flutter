@@ -60,7 +60,7 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
 
   _dbTaskAdd() async{
     await mTask.add(Task(title: _titleController.text, id: id, date: _selectedDate, isCompleted: false,  time: _selectedTime, tag: _selectedTag, daysOfWeek: [],));
-    await mTaskFire.setDataTaskList(widget.login!, Task(title: _titleController.text, id: id, date: _selectedDate, isCompleted: false, time:  _selectedTime, tag: _selectedTag, daysOfWeek: [],));
+    mTaskFire.setDataTaskList(widget.login!, Task(title: _titleController.text, id: id, date: _selectedDate, isCompleted: false, time:  _selectedTime, tag: _selectedTag, daysOfWeek: [],));
   }
 
   @override
@@ -198,7 +198,6 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                                         ElevatedButton(
                                             onPressed: () {
                                               _validateData();
-                                              Navigator.of(context).pop(true);
                                             },
                                             style: ElevatedButton.styleFrom(
                                                 padding: const EdgeInsets.all(0),
@@ -297,12 +296,13 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
   }
 
   _validateData()  async{
-    if(_titleController.text.isNotEmpty || _selectedTime != null || _selectedDate != null){
+    if(_titleController.text.isNotEmpty){
       _selectedTag ??= "";
       await NotifyTask('habit');
       _dbTaskAdd();
+      Navigator.of(context).pop(true);
     }
-    else if(_titleController.text.isEmpty || _selectedTime == null || _selectedDate == null){
+    else if(_titleController.text.isEmpty){
       final snackBar = SnackBar(
           content: const Text('Введите название')
       );
@@ -358,8 +358,8 @@ class _AddHabitState extends State<AddHabit>{
 
   _dbHabitAdd() async{
     var id = DateTime.now().toString();
-    await mHabit.add(Habit(title: _titleController.text, id: id, isCompleted: [],  time: _selectedTime, tag: _selectedTag, listWeek: isSelectedWeekday, sumCompleted: 0, assets: ['images/medic-1.png', 'images/medic-2.png'],));
-    await mHabitFire.setDataHabitList(widget.login!, Habit(title: _titleController.text, id: id, isCompleted: [],  time:  _selectedTime, tag: _selectedTag, listWeek: [], sumCompleted: 0, assets: [],));
+    await mHabit.add(Habit(title: _titleController.text, id: id, isCompleted: [],  time: _selectedTime, tag: _selectedTag, listWeek: isSelectedWeekday, sumCompleted: 0, assets: ['images/medic_1.png', 'images/medic_2.png'],));
+    mHabitFire.setDataHabitList(widget.login!, Habit(title: _titleController.text, id: id, isCompleted: [],  time:  _selectedTime, tag: _selectedTag, listWeek: [], sumCompleted: 0, assets: ['images/medic_1.png', 'images/medic_2.png'],));
   }
 
   @override
@@ -409,7 +409,6 @@ class _AddHabitState extends State<AddHabit>{
                 ElevatedButton(
                     onPressed: () {
                       _validateData();
-                      Navigator.of(context).pop(true);
                     },
                     style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.all(0),
@@ -497,6 +496,7 @@ class _AddHabitState extends State<AddHabit>{
         }
       }
       _dbHabitAdd();
+      Navigator.of(context).pop(true);
     }
     else if(_titleController.text.isEmpty){
       final snackBar = SnackBar(

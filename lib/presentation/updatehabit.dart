@@ -25,16 +25,6 @@ class _UpdateHabitState extends State<UpdateHabit>{
   late var _selectedTime = widget.habit.time;
   late String _selectedTag = widget.habit.tag;
 
-  List<String> NoticeList = <String>[
-    "15 минут",
-    "30 минут",
-    "1 час",
-    "2 часа",
-    "4 часа",
-    "8 часов",
-    "12 часов",
-    "1 день",
-  ];
 
   List<String> TagsList = [
     "Работа",
@@ -48,13 +38,13 @@ class _UpdateHabitState extends State<UpdateHabit>{
   ];
 
   _dbHabitAdd() async{
-    await mHabit.add(Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], time: _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: [],));
-    await mHabitFire.setDataHabitList(widget.login!, Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], time:  _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: [],));
+    await mHabit.add(Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], time: _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: widget.habit.assets,));
+    mHabitFire.setDataHabitList(widget.login!, Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], time:  _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: widget.habit.assets,));
   }
 
   _dbHabitUpdate() async{
-    await mHabit.update(Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], time: _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: [],));
-    await mHabitFire.updateCountHabit(widget.login!, Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [],  time:  _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: [],));
+    await mHabit.update(Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], time: _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: ['images/medic_1.png', 'images/medic_2.png'],));
+    mHabitFire.updateCountHabit(widget.login!, Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [],  time:  _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: ['images/medic_1.png', 'images/medic_2.png'],));
   }
 
   @override
@@ -112,8 +102,6 @@ class _UpdateHabitState extends State<UpdateHabit>{
                   ElevatedButton(
                       onPressed: () {
                         _validateData();
-                        Navigator.pop(context, true);
-                        Navigator.pop(context, true);
                       },
                       style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.all(0),
@@ -157,16 +145,6 @@ class _UpdateHabitState extends State<UpdateHabit>{
 
   _getTagsFromUser(){
     return Tags(
-      // textField: TagsTextField(
-      //   textStyle: const TextStyle(fontSize: 14),
-      //   suggestions: [],
-      //   onSubmitted:  (String str) {
-      //     print(str);
-      //     setState(() {
-      //       TagsList.add(str);
-      //     });
-      //   },
-      // ), //TODO исправить
       horizontalScroll: true,
       itemCount: TagsList.length,
       itemBuilder: (int index){
@@ -196,13 +174,14 @@ class _UpdateHabitState extends State<UpdateHabit>{
 
   _validateData() async {
     if(_titleController.text.isNotEmpty){
-      _selectedTime ??= "15:00";
       if(widget.isPattern == false){
         await _dbHabitUpdate();
       }
       else {
         await _dbHabitAdd();
       }
+      Navigator.pop(context, true);
+      Navigator.pop(context, true);
     }
     else if(_titleController.text.isEmpty){
       final snackBar = SnackBar(

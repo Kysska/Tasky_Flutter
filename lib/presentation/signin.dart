@@ -97,6 +97,8 @@ class _SignInPageState extends State<SignInPage> {
         onPressed: () async {
          if(await _validateData()){
            //TODO PathProvider
+           var now = DateTime.now().millisecondsSinceEpoch;
+           await gameDatabase.setLastHunger(now);
            await gameDatabase.setHpScale(3);
            await gameDatabase.setHungerScale(100);
            Navigator.pushReplacement(

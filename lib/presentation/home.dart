@@ -1,11 +1,9 @@
 import 'dart:math';
 
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tasky_flutter/data/emotionalDatabase.dart';
 import 'package:tasky_flutter/data/gamedatabase.dart';
 import 'package:tasky_flutter/data/habitdatabase.dart';
 import 'package:tasky_flutter/data/taskdatabase.dart';
@@ -15,7 +13,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:tasky_flutter/vidgets/emotional_selection.dart';
 
 import 'addtask.dart';
-import 'note.dart';
 
 class Home extends StatefulWidget{
   final String? login;
@@ -110,7 +107,7 @@ class _HomeState extends State<Home> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 60),
-            child: EmotionSelection(),
+            child: EmotionSelection(login: widget.login,),
           ),
 
           Padding(
@@ -191,7 +188,6 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
 
   TaskFirebase mTaskFire = TaskFirebase();
   List<Task>? mListTask;
-  Future<List<Task>>? retrievedListTask;
   DatabaseHelperTask mTask = DatabaseHelperTask.instance;
   final List<bool> _isSelected = [true, false];
   var _selectedDate = DateTime.now();
@@ -205,7 +201,6 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
   void initState() {
     super.initState();
     _selectedDate = widget.selectedDate;
-    retrievedListTask = mTask.getTasks();
     getListTask();
     _getMoney();
   }
@@ -225,7 +220,7 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
 
   plusMoney() async{
     Random random = Random();
-    int randomNumber = random.nextInt(41) + 20;
+    int randomNumber = random.nextInt(21) + 5;
     _kapikountMoney += randomNumber;
     await GameDatabase().setMoney(_kapikountMoney);
   }
@@ -327,7 +322,7 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                   Expanded(
                     child: Scrollbar(
                       child: FutureBuilder<List<Task>>(
-                        future: retrievedListTask,
+                        future: mTask.getTasks(),
                         builder: (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
                           if (!snapshot.hasData) {
                             return Center(child: Text('Загрузка..'));
@@ -437,7 +432,7 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                                                 color: Colors.pink,
                                               ),
                                               onPressed: () async {
-                                                final confirm = await showDialog(
+                                                await showDialog(
                                                   context: context,
                                                   builder: (BuildContext context) {
                                                     return AlertDialog(
@@ -512,6 +507,7 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
   _refreshPage(){
     setState(() {});
   }
+
 }
 
 class HabitsCards extends StatefulWidget {
@@ -531,7 +527,6 @@ class _HabitsCardsState extends State<HabitsCards> {
   ScrollController scrollController = ScrollController();
   HabitFirebase mHabitFire = HabitFirebase();
   List<Habit>? mListHabit;
-  Future<List<Habit>>? retrievedListHabit;
   DatabaseHelperHabit mHabit = DatabaseHelperHabit.instance;
   var _selectedWeekday;
   var _selectedDay;
@@ -542,7 +537,6 @@ class _HabitsCardsState extends State<HabitsCards> {
     super.initState();
     _selectedWeekday = widget.selectedWeekday;
     _selectedDay = widget.selectedDay;
-    retrievedListHabit = mHabit.getHabit();
     _kapikountMoney = widget.kapikountMoney;
     getListHabit();
   }
@@ -565,7 +559,7 @@ class _HabitsCardsState extends State<HabitsCards> {
 
   plusMoney() async{
     Random random = Random();
-    int randomNumber = random.nextInt(41) + 20;
+    int randomNumber = random.nextInt(21) + 5;
     _kapikountMoney += randomNumber;
     await GameDatabase().setMoney(_kapikountMoney);
   }
@@ -581,7 +575,7 @@ class _HabitsCardsState extends State<HabitsCards> {
         return Expanded(
           child: Scrollbar(
             child: FutureBuilder<List<Habit>>(
-              future: retrievedListHabit,
+              future: mHabit.getHabit(),
               builder: (BuildContext context,
                   AsyncSnapshot<List<Habit>> snapshot) {
                 if (!snapshot.hasData) {
@@ -601,7 +595,6 @@ class _HabitsCardsState extends State<HabitsCards> {
                         _selectedDay);
                     bool dayInList = selectedFormatDate.contains(
                         selectedFormatDay);
-
                     updateCompletedDate(
                         selectedFormatDate, snapshot.data![index].title);
 
@@ -788,6 +781,8 @@ class _HabitsCardsState extends State<HabitsCards> {
         DateTime dayBeforeYesterday = await DateTime.now().subtract(Duration(days: 2));
 
         if (lastDate.isBefore(dayBeforeYesterday)){
+          print(dayBeforeYesterday);
+          print(lastDateStr);
           await mHabit.updateCompleted(title, selectedFormatDate, 0);
         }
       }

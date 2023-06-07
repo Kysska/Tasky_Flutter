@@ -119,38 +119,6 @@ class _AddArticleState extends State<AddArticle> {
             child: Column(
               children: [
                 if (!_isEdit)
-                  Column(
-                    children: [
-                      /*Text("Если вы не знаете о чём писать, вы можете задать себе вопрос"),
-                    Row(
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            Random random = Random();
-                            int index = random.nextInt(_randomQuestion.length);
-                            String randomQuestion = _randomQuestion[index];
-                            print(randomQuestion);
-                            setState(() {
-                              _controller.text = randomQuestion;
-                            });
-                          },
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(Colors.indigoAccent),
-                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                            ),
-                          ),
-                          child: const Text(
-                            'Вопрос дня',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    ), */
-                    ],
-                  ),
                 Padding(
                   padding: const EdgeInsets.only(left: 15.0, bottom: 8, top: 8),
                   child: Align(
@@ -163,7 +131,6 @@ class _AddArticleState extends State<AddArticle> {
                                 Random random = Random();
                                 int index = random.nextInt(_randomQuestion.length);
                                 String randomQuestion = _randomQuestion[index];
-                                print(randomQuestion);
                                 setState(() {
                                   _controller.text = randomQuestion;
                                 });
@@ -200,7 +167,7 @@ class _AddArticleState extends State<AddArticle> {
                               child: Row(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 8.0, top: 20, bottom: 20),
+                                    padding: const EdgeInsets.only(top: 20, bottom: 20),
                                     child: Text(
                                       "Анонимно?",
                                       style: GoogleFonts.comfortaa(

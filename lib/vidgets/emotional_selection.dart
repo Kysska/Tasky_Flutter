@@ -3,7 +3,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:tasky_flutter/data/emotionaldatabase.dart';
 
+import '../data/notedatabase.dart';
+import '../presentation/addnote.dart';
+
 class EmotionSelection extends StatefulWidget {
+  final String? login;
+
+  EmotionSelection({required this.login});
   @override
   _EmotionSelectionState createState() => _EmotionSelectionState();
 }
@@ -37,10 +43,8 @@ class _EmotionSelectionState extends State<EmotionSelection> {
 
 
   Future<void> insertMood() async{
-    print("Мы тут");
     DateFormat formatter = DateFormat('dd/MM/yyyy');
     String? lastId = await mMood.getLastMoodId();
-    print(lastId);
     DateTime today = DateTime.now();
     DateTime sevenDaysAgo = today.subtract(Duration(days: 7));
     if(lastId == null){
@@ -52,27 +56,23 @@ class _EmotionSelectionState extends State<EmotionSelection> {
     }
     else{
       DateTime dateTime = formatter.parse(lastId);
-      print(dateTime);
       if(dateTime.isBefore(sevenDaysAgo)){
         for (int i = 7; i >= 0; i--) {
           DateTime previousDay = today.subtract(Duration(days: i));
           String formattedPreviousDay = formatter.format(previousDay);
-          print(formattedPreviousDay);
           await mMood.add(formattedPreviousDay, 3);
         }
       }
       else if(dateTime.isAfter(sevenDaysAgo)){
         Duration difference = today.difference(dateTime);
         int numberOfDays = difference.inDays;
-        print(numberOfDays);
         if(numberOfDays == 0){
           return;
         }
         for (int i = numberOfDays; i >= 0; i--) {
-          print("v?");
           DateTime previousDay = today.subtract(Duration(days: i));
           String formattedPreviousDay = formatter.format(previousDay);
-          await mMood.add(formattedPreviousDay, 4);
+          await mMood.add(formattedPreviousDay, 3);
         }
       }
     }
@@ -113,7 +113,8 @@ class _EmotionSelectionState extends State<EmotionSelection> {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  // ToDo: переход на создание новой записи блокнота
+                  Note note = Note(id: "", title: "", desc: "", date: DateTime.now().toString(), isImportant: false);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => AddNote(note: note, isEdit: false, login: widget.login!,)));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0x88FFFFFF),
@@ -188,44 +189,47 @@ class _EmotionSelectionState extends State<EmotionSelection> {
           ],
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 1),
-          child: Row(
-            children: [
-              Text(
-                "${_currentDateTime.day} ${_getMonthName(_currentDateTime)}",
-                style: GoogleFonts.comfortaa(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22,
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  // ToDo Обработчик нажатия на кнопку календаря
-                },
-                icon: const Icon(
-                  Icons.calendar_today_outlined,
-                  size: 20,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        Padding(
-          padding: const EdgeInsets.only(top: 1),
-          child: Text(
-            "${_currentDateTime.year}",
-            style: GoogleFonts.comfortaa(
-              color: Color(0xFF747686),
-              fontSize: 18,
-            ),
-          ),
-        ),
-        Padding(
           padding: const EdgeInsets.only(top: 1.0),
           child: Stack(
             children: [
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 1),
+                    child: Row(
+                      children: [
+                        Text(
+                          "${_currentDateTime.day} ${_getMonthName(_currentDateTime)}",
+                          style: GoogleFonts.comfortaa(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            // ToDo Обработчик нажатия на кнопку календаря
+                          },
+                          icon: const Icon(
+                            Icons.calendar_today_outlined,
+                            size: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 1),
+                    child: Text(
+                      "${_currentDateTime.year}",
+                      style: GoogleFonts.comfortaa(
+                        color: Color(0xFF747686),
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               Visibility(
                 visible: isEmotionVisible,
                 child: SizedBox(
