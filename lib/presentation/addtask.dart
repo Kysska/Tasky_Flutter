@@ -5,6 +5,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tags/flutter_tags.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:tasky_flutter/data/habitdatabase.dart';
 import 'package:tasky_flutter/data/taskdatabase.dart';
@@ -68,65 +69,161 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
 
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          iconTheme: IconThemeData(
+            color: Colors.black,
+          ),
         ),
         body: Column(
             children: [
           const SizedBox(
-            height: 10,
+            height: 20,
           ),
-          Text("Выберите из уже готовых и выигрывайте подарки"),
+          Text(
+            "Выберите готовую привычку\nи выйграйте призы",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.comfortaa(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 10,),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                SizedBox(width: 10,),
                 InkWell(
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: Habit(title: 'Отказ от сахара', id: id, isCompleted: [], tag: '', time: '15:00', listWeek: [true,true,true,true,true,true,true], sumCompleted: 0, assets: ["images/hat.png"],  ), isPattern: true,)));
                     },
-                    child: CategoryGrid(
-                      category: 'Отказ от сахара',
-                      icon: Icons.cake,
-                    )),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.cake),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10.0),
+                            child: Text(
+                              'Отказ от\nсахара',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.comfortaa(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10,),
                 InkWell(
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: Habit(title: 'Отказ от сахара', id: id, isCompleted: [], tag: '', time: '15:00', listWeek: [true,true,true,true,true,true,true], sumCompleted: 0, assets: ["images/hat.png"],  ), isPattern: true,)));
                   },
-                  child: CategoryGrid(
-                    category: 'Правильное \n питание',
-                    icon: Icons.spa,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.spa),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10.0),
+                            child: Text(
+                              'Правильное\nпитание',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.comfortaa(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
+                SizedBox(width: 10,),
                 InkWell(
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: Habit(title: 'Отказ от сахара', id: id, isCompleted: [], tag: '', time: '15:00', listWeek: [true,true,true,true,true,true,true], sumCompleted: 0, assets: ["images/hat.png"],  ), isPattern: true,)));
                   },
-                  child: CategoryGrid(
-                    category: 'Время на \n свежем воздухе',
-                    icon: Icons.brightness_7_rounded,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.brightness_7_rounded),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10.0),
+                            child: Text(
+                              'Время на\nсвежем воздухе',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.comfortaa(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
+                SizedBox(width: 10,),
                 InkWell(
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: Habit(title: 'Отказ от сахара', id: id, isCompleted: [], tag: '', time: '15:00', listWeek: [true,true,true,true,true,true,true], sumCompleted: 0, assets: ["images/hat.png"],  ), isPattern: true,)));
                   },
-                  child: CategoryGrid(
-                    category: 'Чтение книг',
-                    icon: Icons.menu_book_sharp,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.menu_book_sharp),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10.0),
+                            child: Text(
+                              'Чтение\nкниг',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.comfortaa(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
+                SizedBox(width: 10,),
               ],
             ),
           ),
           const SizedBox(
-            height: 10,
+            height: 30,
           ),
-          const Text("Или создайте свою:"),
+          Text("Или создайте свою:",
+          style: GoogleFonts.comfortaa(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            ),
+          ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: Column(
                   children: [
-                    SizedBox(height: 30,),
+                    SizedBox(height: 10,),
                     Container(
                       width:  MediaQuery.of(context).size.height,
                       child: Column(
@@ -135,13 +232,16 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                             padding: const EdgeInsets.all(5),
                             child: TabBar(
                               controller: _tabController,
-                              unselectedLabelColor: Colors.blue,
+                              unselectedLabelColor: Colors.black,
                               indicatorSize: TabBarIndicatorSize.tab,
+                              labelStyle : GoogleFonts.comfortaa(fontWeight: FontWeight.bold, fontSize: 16,),
+                              dividerColor: Colors.black,
                               indicator: BoxDecoration(
                                   borderRadius: BorderRadius.circular(50),
-                                  color: Colors.blue),
+                                  color: Colors.black),
                               tabs: const [
                                 Tab(
+
                                   text: "Задачи",
                                 ),
                                 Tab(
@@ -159,15 +259,18 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
               Expanded(
                 child: Container(
                     width: double.maxFinite,
-                    // height: 500,
-                    padding: const EdgeInsets.only(left: 10, right: 10),
+                    padding: const EdgeInsets.only(left: 15, right: 15),
                     child: TabBarView(
                         controller: _tabController,
                         children: [
                           SingleChildScrollView(
                             child: Column(
                               children: [
-                                MyInputField(title: "Название", hint: "Введите название задачи", controller: _titleController,),
+                                MyInputField(
+                                  title: "Название",
+                                  hint: "Введите название задачи",
+                                  controller: _titleController,
+                                ),
                                 SizedBox(height: 18,),
                                 MyInputField(title: "Дата", hint: _selectedDate,
                                   widget: IconButton(
@@ -205,13 +308,17 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                                                     borderRadius: BorderRadius.circular(10))),
                                             child: Ink(
                                                 decoration: BoxDecoration(
+                                                    color: Colors.black,
                                                     borderRadius: BorderRadius.circular(10)),
                                                 child: Container(
                                                     width: 120,
                                                     height: 40,
                                                     alignment: Alignment.center,
-                                                    child: const Text(
+                                                    child: Text(
                                                       'Добавить',
+                                                      style: GoogleFonts.comfortaa(
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
                                                     ))))
                                       ]
                                   ),
@@ -386,7 +493,9 @@ class _AddHabitState extends State<AddHabit>{
               isSelectedWeekday[v % 7] = !isSelectedWeekday[v % 7];
             });
           },
+          selectedFillColor: Colors.black,
           values: isSelectedWeekday,
+          selectedElevation: 0,
         ),
         const SizedBox(height: 18,),
         MyInputField(title: "Время для уведомлений", hint:  _selectedTime,
@@ -416,7 +525,10 @@ class _AddHabitState extends State<AddHabit>{
                             borderRadius: BorderRadius.circular(10))),
                     child: Ink(
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10)),
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.black,
+                        ),
+
                         child: Container(
                             width: 120,
                             height: 40,

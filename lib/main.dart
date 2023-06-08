@@ -138,28 +138,27 @@ class _BottomBarState extends State<Bar> {
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 15),
-            child: Container(
-              width: 40,
-              height: 40,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      _onProfileIconPressed;
-                    },
-                    child: CachedNetworkImage(
-                      imageUrl: _userAvatar,
-                      placeholder: (context, url) => const CircularProgressIndicator(color: Colors.black, strokeWidth: 2.0,),
-                      errorWidget: (context, url, error) => const Icon(Icons.error),
+            child: CircleAvatar(
+              radius: 20,
+              child: InkWell(
+                onTap: _onProfileIconPressed,
+                child: ClipOval(
+                  child: CachedNetworkImage(
+                    imageUrl: _userAvatar,
+                    placeholder: (context, url) => CircularProgressIndicator(
+                      color: Colors.black,
+                      strokeWidth: 2.0,
                     ),
-                  )
-                ],
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                  ),
+                ),
               ),
             ),
           ),
         ],
-        
+
+
+
         title: Row(
           mainAxisAlignment: MainAxisAlignment.end,
 

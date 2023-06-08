@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MyInputField extends StatelessWidget{
   final String title;
@@ -12,12 +13,12 @@ class MyInputField extends StatelessWidget{
   Widget build(BuildContext context) {
     // TODO: implement build
     return Container(
-        margin: EdgeInsets.only(top: 16),
+        margin: EdgeInsets.only(top: 16,),
         child: Column(
             children: [
               Text(
                 title,
-                style: TextStyle(fontSize: 14, color: Colors.black),
+                style: GoogleFonts.comfortaa(fontSize: 16, fontWeight:FontWeight.bold, color:Colors.black),
               ),
               Container(
                   height: 42,
@@ -32,26 +33,29 @@ class MyInputField extends StatelessWidget{
                   child: Row(
                     children: [
                       Expanded(
-                          child: TextFormField(
-                            readOnly: widget==null?false:true,
-                            autofocus: false,
-                            cursorColor: Colors.grey[700],
-                            controller: controller,
-                            style: TextStyle(fontSize: 10, color: Colors.grey[700]),
-                            decoration:  InputDecoration(
-                                hintText: hint,
-                                focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.white10,
-                                        width: 0
-                                    )
-                                ),
-                                enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.white10,
-                                        width: 0
-                                    )
-                                )
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: TextFormField(
+                              readOnly: widget==null?false:true,
+                              autofocus: false,
+                              cursorColor: Colors.grey[700],
+                              controller: controller,
+                              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                              decoration:  InputDecoration(
+                                  hintText: hint,
+                                  focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.white10,
+                                          width: 0
+                                      )
+                                  ),
+                                  enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.white10,
+                                          width: 0
+                                      )
+                                  )
+                              ),
                             ),
                           )
                       ),

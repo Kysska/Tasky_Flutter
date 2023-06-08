@@ -106,94 +106,97 @@ class _EmotionSelectionState extends State<EmotionSelection> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          children: [
-            SizedBox(
-              width: 160,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  Note note = Note(id: "", title: "", desc: "", date: DateTime.now().toString(), isImportant: false);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => AddNote(note: note, isEdit: false, login: widget.login!,)));
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0x88FFFFFF),
-                  elevation: 0,
-                ),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Запиши свои\nмысли          >',
-                    textAlign: TextAlign.left,
-                    style: GoogleFonts.comfortaa(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+        Padding(
+          padding: const EdgeInsets.only(left: 15.0),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 160,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Note note = Note(id: "", title: "", desc: "", date: DateTime.now().toString(), isImportant: false);
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AddNote(note: note, isEdit: false, login: widget.login!,)));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0x88FFFFFF),
+                    elevation: 0,
+                  ),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Запиши свои\nмысли          >',
+                      textAlign: TextAlign.left,
+                      style: GoogleFonts.comfortaa(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            FutureBuilder(
-              future: Future.delayed(Duration(milliseconds: 10)),
-              builder: (context, snapshot){
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return SizedBox(
-                    width: 90,
-                    height: 50,
-                    child: GestureDetector(
-                      onTap: changeEmotionVisible,
-                      child: emotionalKapibara != null ? Container(
-                        width: 75,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(emotionalList[emotionalKapibara]),
-                            fit: BoxFit.cover,
+              SizedBox(width: 5,),
+              FutureBuilder(
+                future: Future.delayed(Duration(milliseconds: 10)),
+                builder: (context, snapshot){
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return SizedBox(
+                      width: 90,
+                      height: 50,
+                      child: GestureDetector(
+                        onTap: changeEmotionVisible,
+                        child: emotionalKapibara != null ? Container(
+                          width: 75,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(emotionalList[emotionalKapibara]),
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
-                      ) : Container(),
-                    ),
-                  );
-                } else {
-                  return const SizedBox(
-                    width: 90,
-                    height: 50,
-                  );
-                }
-              },
-            ),
-            SizedBox(
-              width: 120,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: changeEmotionVisible,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0x88FFFFFF),
-                  elevation: 0,
-                ),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Какой ты сегодня?',
-                    textAlign: TextAlign.left,
-                    style: GoogleFonts.comfortaa(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
+                        ) : Container(),
+                      ),
+                    );
+                  } else {
+                    return const SizedBox(
+                      width: 90,
+                      height: 50,
+                    );
+                  }
+                },
+              ),
+              SizedBox(width: 5,),
+              SizedBox(
+                width: 120,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: changeEmotionVisible,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0x88FFFFFF),
+                    elevation: 0,
+                  ),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Какой ты сегодня?',
+                      textAlign: TextAlign.left,
+                      style: GoogleFonts.comfortaa(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 1.0),
+          padding: const EdgeInsets.only(top: 1.0, left: 15),
           child: Stack(
             children: [
-              Column(
-                children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 1),
                     child: Row(
@@ -219,7 +222,7 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 1),
+                    padding: const EdgeInsets.only(top: 40),
                     child: Text(
                       "${_currentDateTime.year}",
                       style: GoogleFonts.comfortaa(
@@ -228,8 +231,6 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                       ),
                     ),
                   ),
-                ],
-              ),
               Visibility(
                 visible: isEmotionVisible,
                 child: SizedBox(

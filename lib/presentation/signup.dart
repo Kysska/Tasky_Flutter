@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tasky_flutter/data/userdatabase.dart';
 import 'package:tasky_flutter/presentation/helloworld.dart';
 import 'package:tasky_flutter/presentation/signin.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SignUpPage extends StatefulWidget {
   SignUpPage({Key? key}) : super(key: key);
@@ -64,26 +65,68 @@ class _SignUpPageState extends State<SignUpPage> {
       maxLength: 15,
       onChanged: _changeLogin,
       obscureText: false,
+      style: GoogleFonts.comfortaa(
+
+      ),
       decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
           hintText: "Логин",
-          border:
-          OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(32.0),
+          borderSide: BorderSide(color: Colors.black), // Черный цвет рамки
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(32.0),
+          borderSide:
+              BorderSide(color: Colors.black), // Черный цвет рамки при фокусе
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(32.0),
+          borderSide: BorderSide(
+              color: Colors.black), // Черный цвет рамки в обычном состоянии
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(32.0),
+          borderSide:
+              BorderSide(color: Colors.black), // Черный цвет рамки при ошибке
+        ),
+      ),
     );
     final passwordField = TextField(
       maxLength: 15,
       onChanged: _changePassword,
       obscureText: true,
+      style: GoogleFonts.comfortaa(
+
+      ),
       decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
           hintText: "Пароль",
-          border:
-          OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(32.0),
+          borderSide: BorderSide(color: Colors.black), // Черный цвет рамки
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(32.0),
+          borderSide:
+              BorderSide(color: Colors.black), // Черный цвет рамки при фокусе
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(32.0),
+          borderSide: BorderSide(
+              color: Colors.black), // Черный цвет рамки в обычном состоянии
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(32.0),
+          borderSide:
+              BorderSide(color: Colors.black), // Черный цвет рамки при ошибке
+        ),
+      ),
     );
     final loginButton = Material(
-      elevation: 5.0,
+      elevation: 0.0,
       borderRadius: BorderRadius.circular(30.0),
-      color: Color(0xff01A0C7),
+      color: Colors.black87,
       child: MaterialButton(
         minWidth: MediaQuery.of(context).size.width,
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
@@ -95,8 +138,12 @@ class _SignUpPageState extends State<SignUpPage> {
                 context, MaterialPageRoute(builder: (context) => Welcome(login: _login,)));
           }
         },
-        child: const Text("Зарегистрироваться",
-            textAlign: TextAlign.center,),
+        child: Text(
+          "Зарегистрироваться",
+          style: GoogleFonts.comfortaa(
+              fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+          textAlign: TextAlign.center,
+        ),
       ),
     );
 
@@ -111,26 +158,36 @@ class _SignUpPageState extends State<SignUpPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 SizedBox(
-                  height: 155.0,
+                  height: 50.0,
                   child: Text(
                     "Добро пожаловать",
+                    style: GoogleFonts.comfortaa(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24
+                    ),
                   ),
                 ),
-                SizedBox(height: 45.0),
+                SizedBox(height: 20.0),
                 emailField,
-                SizedBox(height: 25.0),
+                SizedBox(height: 20.0),
                 passwordField,
                 SizedBox(
-                  height: 35.0,
+                  height: 20.0,
                 ),
                 loginButton,
                 SizedBox(
-                  height: 15.0,
+                  height: 20.0,
                 ),
                 TextButton( onPressed: () {
                   Navigator.pushReplacement(
                     context,MaterialPageRoute(builder: (context) => SignInPage(key: null,)),);
-                }, child: Text("У вас уже есть аккаунт? Войдите"),)
+                }, child: Text("У вас уже есть аккаунт? Войдите",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.comfortaa(
+                        fontSize: 16,
+                        color: Colors.black,
+                      )),
+                )
               ],
             ),
           ),

@@ -76,16 +76,16 @@ class _UpdateTaskState extends State<UpdateTask>{
         ),
         body: Column(
             children: [
-              const SizedBox(height: 10,),
+              const SizedBox(height: 20,),
               Expanded(
                 child: Container(
                     width: double.maxFinite,
                     // height: 500,
-                    padding: const EdgeInsets.only(left: 10, right: 10),
+                    padding: const EdgeInsets.only(left: 15, right: 15),
                             child: Column(
                               children: [
                                 MyInputField(title: "Название", hint: _selectedTitle, controller: _titleController,),
-                                SizedBox(height: 18,),
+                                SizedBox(height: 20,),
                                 MyInputField(title: "Дата", hint: _selectedDate,
                                   widget: IconButton(
                                     icon: Icon(Icons.calendar_month),
@@ -94,7 +94,7 @@ class _UpdateTaskState extends State<UpdateTask>{
                                     },
                                   ),
                                 ),
-                                SizedBox(height: 18,),
+                                SizedBox(height: 20,),
                                 MyInputField(title: "Время", hint: _selectedTime,
                                   widget: IconButton(
                                     icon: Icon(Icons.access_time),
@@ -103,9 +103,9 @@ class _UpdateTaskState extends State<UpdateTask>{
                                     },
                                   ),
                                 ),
-                                SizedBox(height: 18,),
+                                SizedBox(height: 20,),
                                 _getTagsFromUser(),
-                                SizedBox(height: 18,),
+                                SizedBox(height: 20,),
                                 Align(
                                   alignment: Alignment.center,
                                   child: Row(
@@ -122,13 +122,15 @@ class _UpdateTaskState extends State<UpdateTask>{
                                                     borderRadius: BorderRadius.circular(10))),
                                             child: Ink(
                                                 decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(10)),
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    color: Colors.black,
+                                                ),
                                                 child: Container(
                                                     width: 120,
                                                     height: 40,
                                                     alignment: Alignment.center,
                                                     child: const Text(
-                                                      'Редактировать',
+                                                      'Добавить',
                                                     ))))
                                       ]
                                   ),

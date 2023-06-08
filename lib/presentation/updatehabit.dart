@@ -70,8 +70,11 @@ class _UpdateHabitState extends State<UpdateHabit>{
       ),
       body: Column(
         children: [
-          MyInputField(title: "Название", hint: "Введите название задачи", controller: _titleController,),
-          const SizedBox(height: 18,),
+          Padding(
+            padding: const EdgeInsets.only(left: 15.0, right: 15),
+            child: MyInputField(title: "Название", hint: "Введите название задачи", controller: _titleController,),
+          ),
+          const SizedBox(height: 20,),
           WeekdaySelector(
             onChanged: (v) {
               setState(() {
@@ -79,44 +82,56 @@ class _UpdateHabitState extends State<UpdateHabit>{
                 _isSelectedWeekday[v % 7] = !_isSelectedWeekday[v % 7];
               });
             },
+            selectedFillColor: Colors.black,
+            selectedElevation: 0,
             values: _isSelectedWeekday,
           ),
-          const SizedBox(height: 18,),
-          MyInputField(title: "Время для уведомлений", hint: _selectedTime,
-            widget: IconButton(
-              icon: Icon(Icons.access_time),
-              onPressed: (){
-                _getTimeFromUser();
-              },
+          const SizedBox(height: 20,),
+          Padding(
+            padding: const EdgeInsets.only(left: 15.0, right: 15),
+            child: MyInputField(title: "Время для уведомлений", hint: _selectedTime,
+              widget: IconButton(
+                icon: Icon(Icons.access_time),
+                onPressed: (){
+                  _getTimeFromUser();
+                },
+              ),
             ),
           ),
-          SizedBox(height: 18,),
+          SizedBox(height: 20,),
           _getTagsFromUser(),
-          SizedBox(height: 18,),
+          SizedBox(height: 20,),
           Align(
             alignment: Alignment.center,
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        _validateData();
-                      },
-                      style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.all(0),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10))),
-                      child: Ink(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Container(
-                              width: 120,
-                              height: 40,
-                              alignment: Alignment.center,
-                              child: const Text(
-                                'Редактировать',
-                              ))))
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15.0),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          _validateData();
+                        },
+                        style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(0),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10))),
+
+                        child: Ink(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.black,
+                            ),
+
+                            child: Container(
+                                width: 120,
+                                height: 40,
+                                alignment: Alignment.center,
+                                child: const Text(
+                                  'Добавить',
+                                )))),
+                  )
                 ]
             ),
           )
