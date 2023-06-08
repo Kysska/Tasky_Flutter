@@ -104,27 +104,6 @@ class _PersonState extends State<Person> {
         builder: (BuildContext context, BoxConstraints constraints) {
          return Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: Expanded(
-                    flex: 15,
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 40),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            'Профиль',
-                            style: GoogleFonts.comfortaa(
-                                color: Colors.black87,
-                                fontWeight: FontWeight.w300,
-                                fontSize: 16),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
                 GestureDetector(
                   onTap: (){
                      _imgFromGallery();
@@ -153,19 +132,17 @@ class _PersonState extends State<Person> {
                     ),
                   ),
                 ),
-                Expanded(
-                  flex: 15,
-                  child: Text(
-                    widget.login,
-                    style: GoogleFonts.comfortaa(
-                        color: Colors.black,
-                        fontSize: 36,
-                        fontWeight: FontWeight.w400),
+                Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      widget.login,
+                      style: GoogleFonts.comfortaa(
+                          color: Colors.black,
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-                Expanded(
-                  flex: 25,
-                  child: Column(
+                Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       Row(
@@ -174,46 +151,49 @@ class _PersonState extends State<Person> {
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: <Widget>[
+                              Text('Активных привычек:', style: GoogleFonts.comfortaa(fontSize: 12),),
                               Text(countHabit.toString(),
                                   style: GoogleFonts.poppins(
                                       color: Colors.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.w400)),
-                              const Text('Активных привычек')
                             ],
                           ),
                           Column(
                             children: <Widget>[
+                              Text('Выполненных задач:', style: GoogleFonts.comfortaa(fontSize: 12),),
                               Text(activeTasks.toString(),
                                   style: GoogleFonts.poppins(
                                       color: Colors.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.w400)),
-                              const Text('Выполненных задач')
                             ],
                           ),
                           Column(
                             children: <Widget>[
+                              Text('Активных задач:', style: GoogleFonts.comfortaa(fontSize: 12),),
                               Text(countHabit.toString(),
                                   style: GoogleFonts.poppins(
                                       color: Colors.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.w400)),
-                              const Text('Активных задач')
+
                             ],
                           )
                         ],
                       ),
                     ],
                   ),
-                ),
-                Center(
-                  child: Text(
-                    'Диаграмма настроения',
-                    style: GoogleFonts.comfortaa(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.w300,
-                        fontSize: 16),
+                Padding(
+                  padding: const EdgeInsets.only(top:20.0),
+                  child: Center(
+                    child: Text(
+                      'Диаграмма настроения',
+                      style: GoogleFonts.comfortaa(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
+                    ),
                   ),
                 ),
                 FutureBuilder(
@@ -225,7 +205,7 @@ class _PersonState extends State<Person> {
                       return Center(child: Text('Загрузка..'));
                     }
                     return Container(
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.only(left: 15, right: 15, top: 15),
                       width: double.infinity,
                       height: 290,
                       child: LineChart(
@@ -287,7 +267,7 @@ class _PersonState extends State<Person> {
                             rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                           ),
 
-                    ),
+                        ),
                       ),
                     );
                   },
@@ -316,5 +296,4 @@ class _PersonState extends State<Person> {
       },
     );
   }
-
 }

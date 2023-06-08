@@ -194,7 +194,7 @@ class _EmotionSelectionState extends State<EmotionSelection> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 1.0, left: 15),
+          padding: const EdgeInsets.only(top: 1.0),
           child: Stack(
             children: [
                   Padding(
@@ -245,7 +245,7 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 6, left: 10.0),
                   child: ButtonBar(
-                    alignment: MainAxisAlignment.start,
+                    alignment: MainAxisAlignment.spaceEvenly,
                     buttonPadding: EdgeInsets.only(right: 2),
                     children: [
                       GestureDetector(
