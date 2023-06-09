@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:tasky_flutter/data/gamedatabase.dart';
 import 'package:tasky_flutter/data/userdatabase.dart';
 
@@ -21,11 +22,21 @@ class _SignInPageState extends State<SignInPage> {
   UserFirebase userFirebase = UserFirebase();
   GameDatabase gameDatabase = GameDatabase();
   late final User userData;
+  late ProgressDialog _progressDialog;
 
   _changeLogin(String text){
     setState(() {
       _login = text;
     });
+  }
+
+  @override
+  initState(){
+    super.initState();
+    _progressDialog = ProgressDialog(context);
+    _progressDialog.style(
+      message: 'Загрузка...',
+    );
   }
 
   _changePassword(String text){
@@ -42,6 +53,11 @@ class _SignInPageState extends State<SignInPage> {
           return true;
         }
         else{
+          Future.delayed(Duration(seconds: 1)).then((value) {
+            _progressDialog.hide().whenComplete(() {
+              print(_progressDialog.isShowing());
+            });
+          });
           const snackBar = SnackBar(
               content: Text('Неверный пароль')
           );
@@ -50,6 +66,11 @@ class _SignInPageState extends State<SignInPage> {
         }
       }
       else{
+        Future.delayed(Duration(seconds: 1)).then((value) {
+          _progressDialog.hide().whenComplete(() {
+            print(_progressDialog.isShowing());
+          });
+        });
         const snackBar = SnackBar(
             content: Text('Неверный логин')
         );
@@ -141,6 +162,7 @@ class _SignInPageState extends State<SignInPage> {
         minWidth: MediaQuery.of(context).size.width,
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
         onPressed: () async {
+          _progressDialog.show();
          if(await _validateData()){
            //TODO взять имя питомца
            var now = DateTime.now().millisecondsSinceEpoch;
@@ -148,6 +170,7 @@ class _SignInPageState extends State<SignInPage> {
            gameDatabase.setHpScale(3);
            gameDatabase.setHungerScale(100);
            gameDatabase.setAssetSkin('стандартный');
+           _progressDialog.hide();
            Navigator.pushReplacement(
                context, MaterialPageRoute(builder: (context) => Bar(login: _login,)));
          }

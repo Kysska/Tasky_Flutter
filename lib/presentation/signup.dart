@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:tasky_flutter/data/userdatabase.dart';
 import 'package:tasky_flutter/presentation/helloworld.dart';
 import 'package:tasky_flutter/presentation/signin.dart';
@@ -17,6 +17,16 @@ class _SignUpPageState extends State<SignUpPage> {
   String _login = "";
   String _password = "";
   UserFirebase userFirebase = UserFirebase();
+  late ProgressDialog _progressDialog;
+
+  @override
+  initState(){
+    super.initState();
+    _progressDialog = ProgressDialog(context);
+    _progressDialog.style(
+      message: 'Загрузка...',
+    );
+  }
 
   _changeLogin(String text){
      setState(() {
@@ -38,8 +48,13 @@ class _SignUpPageState extends State<SignUpPage> {
   Future<bool> _validateData() async{
     if(_login.isNotEmpty && _password.isNotEmpty){
       if(await userFirebase.checkUserLogin(_login)){
-        final snackBar = SnackBar(
-            content: const Text('Логин уже занят. Попробуй другой.')
+        Future.delayed(Duration(seconds: 1)).then((value) {
+          _progressDialog.hide().whenComplete(() {
+            print(_progressDialog.isShowing());
+          });
+        });
+        const snackBar = SnackBar(
+            content: Text('Логин уже занят. Попробуй другой.')
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         return false;
@@ -50,8 +65,8 @@ class _SignUpPageState extends State<SignUpPage> {
       }
     }
     else{
-      final snackBar = SnackBar(
-          content: const Text('Логин или пароль имеет неправильный формат')
+      const snackBar = SnackBar(
+          content: Text('Логин или пароль имеет неправильный формат')
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return false;
@@ -131,9 +146,14 @@ class _SignUpPageState extends State<SignUpPage> {
         minWidth: MediaQuery.of(context).size.width,
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
         onPressed: () async {
+          _progressDialog.show();
           if(await _validateData()){
-            _addUser();
-
+            await _addUser();
+            Future.delayed(Duration(seconds: 3)).then((value) {
+              _progressDialog.hide().whenComplete(() {
+                print(_progressDialog.isShowing());
+              });
+            });
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => Welcome(login: _login,)));
           }

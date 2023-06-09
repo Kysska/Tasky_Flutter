@@ -47,56 +47,54 @@ class ListNoteState extends State<ListNote> {
   }
 
   _refreshPage() {
-    Future.delayed(Duration(milliseconds: 100));
-    setState(() {});
+    Future.delayed(const Duration(milliseconds: 10));
+    _getStatictics();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF),
+      backgroundColor: const Color(0x000000ff),
       body: CustomScrollView(slivers: [
-        Container(
-          child: SliverAppBar(
-            floating: true,
-            pinned: true,
-            snap: false,
-            centerTitle: false,
+        SliverAppBar(
+          floating: true,
+          pinned: true,
+          snap: false,
+          centerTitle: false,
+          elevation: 0,
+          backgroundColor: Colors.white,
+          title: AppBar(
             elevation: 0,
             backgroundColor: Colors.white,
-            title: AppBar(
-              elevation: 0,
-              backgroundColor: Colors.white,
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Блокнот",
-                    style: GoogleFonts.comfortaa(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                      color: Colors.black,
-                    ),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Блокнот",
+                  style: GoogleFonts.comfortaa(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Colors.black,
                   ),
-                  Text(
-                    "Заметок:${countNote}", //ToDo Число заметок
-                    style: GoogleFonts.comfortaa(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      color: Color(0xff6A7791),
-                    ),
+                ),
+                Text(
+                  "Заметок:$countNote",
+                  style: GoogleFonts.comfortaa(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: const Color(0xff6A7791),
                   ),
-                ],
-                /*
-                    */
-              ),
+                ),
+              ],
+              /*
+                  */
             ),
           ),
         ),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.only(left: 15.0, right: 15, top: 10),
-            child: Container(
+            child: SizedBox(
               width: 10,
               height: 40,
               child: Center(
@@ -129,113 +127,111 @@ class ListNoteState extends State<ListNote> {
             ),
           ),
         ),
-        Container(
-          child: SliverList(
-              delegate: SliverChildListDelegate([
-            FutureBuilder<List<Note>>(
-              future: mNote.getNotes(),
-              builder: (context, snapshot) {
-                if (searchText.isEmpty) {
-                  notes = snapshot.data;
-                  fullNotes = snapshot.data;
-                } else {
-                  notes = searchNotes;
-                }
-                if (notes == null) {
-                  return const Center(
-                      child: CircularProgressIndicator(color: Colors.grey),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text(snapshot.error.toString()),
-                  );
-                } else if (notes!.isNotEmpty) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: SingleChildScrollView(
-                      child: Center(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                children: [
-                                  for (int i = 0; i < notes!.length; i += 2)
-                                    GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) => AddNote(
-                                                        note: notes![i],
-                                                        isEdit: true,
-                                                        login: widget.login,
-                                                      ))).then((value) => {
-                                                if (value != null &&
-                                                    value == true)
-                                                  {_refreshPage()}
-                                              });
-                                        },
-                                        // => Get.to(() => DetailsScreen(id: note.id)),
-                                        child: BaseContainer(note: notes![i])),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              child: Column(
-                                children: [
-                                  for (int i = 1; i < notes!.length; i += 2)
-                                    GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) => AddNote(
-                                                        note: notes![i],
-                                                        isEdit: true,
-                                                        login: widget.login,
-                                                      ))).then((value) => {
-                                                if (value != null &&
-                                                    value == true)
-                                                  {_refreshPage()}
-                                              });
-                                        },
-                                        // => Get.to(() => DetailsScreen(id: note.id)),
-                                        child: BaseContainer(note: notes![i])),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                } else if (notes!.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 250),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+        SliverList(
+            delegate: SliverChildListDelegate([
+          FutureBuilder<List<Note>>(
+            future: mNote.getNotes(),
+            builder: (context, snapshot) {
+              if (searchText.isEmpty) {
+                notes = snapshot.data;
+                fullNotes = snapshot.data;
+              } else {
+                notes = searchNotes;
+              }
+              if (notes == null) {
+                return const Center(
+                    child: CircularProgressIndicator(color: Colors.grey),
+                );
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text(snapshot.error.toString()),
+                );
+              } else if (notes!.isNotEmpty) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: SingleChildScrollView(
+                    child: Center(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(
-                            "Ещё нет заметок, добавим?",
-                            style: GoogleFonts.comfortaa(
-                              color: Color(0xff6A7791),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                          Expanded(
+                            child: Column(
+                              children: [
+                                for (int i = 0; i < notes!.length; i += 2)
+                                  GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => AddNote(
+                                                      note: notes![i],
+                                                      isEdit: true,
+                                                      login: widget.login,
+                                                    ))).then((value) => {
+                                              if (value != null &&
+                                                  value == true)
+                                                {_refreshPage()}
+                                            });
+                                      },
+                                      // => Get.to(() => DetailsScreen(id: note.id)),
+                                      child: BaseContainer(note: notes![i])),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                for (int i = 1; i < notes!.length; i += 2)
+                                  GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => AddNote(
+                                                      note: notes![i],
+                                                      isEdit: true,
+                                                      login: widget.login,
+                                                    ))).then((value) => {
+                                              if (value != null &&
+                                                  value == true)
+                                                {_refreshPage()}
+                                            });
+                                      },
+                                      // => Get.to(() => DetailsScreen(id: note.id)),
+                                      child: BaseContainer(note: notes![i])),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
-                  );
-                }
-                return const Text('No Data Found');
-              },
-            ),
-          ])),
-        )
+                  ),
+                );
+              } else if (notes!.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 250),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Ещё нет заметок, добавим?",
+                          style: GoogleFonts.comfortaa(
+                            color: const Color(0xff6A7791),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              return const Text('No Data Found');
+            },
+          ),
+        ]))
       ]),
     );
   }
@@ -248,8 +244,8 @@ class BaseContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    late QuillController _controller;
-    _controller = QuillController(
+    late QuillController controller;
+    controller = QuillController(
       document: Document.fromJson(jsonDecode(note.desc)),
       selection: const TextSelection.collapsed(offset: 0),
     );
@@ -264,7 +260,7 @@ class BaseContainer extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                   color: Colors.black26.withOpacity(0.05),
-                  offset: Offset(0.0, 6.0),
+                  offset: const Offset(0.0, 6.0),
                   blurRadius: 10.0,
                   spreadRadius: 0.10)
             ]),
@@ -281,8 +277,8 @@ class BaseContainer extends StatelessWidget {
               const SizedBox(height: 6),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text(
-                  note.title,
-                  style: TextStyle(fontSize: 22),
+                  note.title.length >= 8 ? '${note.title.substring(0, 8)}..' : note.title,
+                  style: const TextStyle(fontSize: 22),
                 ),
                 if (note.isImportant)
                   const Icon(
@@ -300,11 +296,11 @@ class BaseContainer extends StatelessWidget {
               const SizedBox(height: 5),
               Text(
                 note.date,
-                style: TextStyle(color: Colors.grey, fontSize: 16),
+                style: const TextStyle(color: Colors.grey, fontSize: 16),
               ),
               const SizedBox(height: 15),
               QuillEditor(
-                controller: _controller,
+                controller: controller,
                 readOnly: true,
                 enableInteractiveSelection: false,
                 focusNode: FocusNode(),

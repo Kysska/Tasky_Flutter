@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'dart:ffi';
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -28,7 +27,7 @@ class _AddArticleState extends State<AddArticle> {
   String _desc = "";
   bool _isEdit = false;
   ArticleFirebase mArticleFire = ArticleFirebase();
-  TextEditingController _controller = new TextEditingController();
+  final TextEditingController _controller = TextEditingController();
   bool anonymityEnabled = false;
   bool isChecked = false;
 
@@ -152,7 +151,7 @@ class _AddArticleState extends State<AddArticle> {
                                 ),
                               ),
                             ),
-                            SizedBox(width: 70),
+                            const SizedBox(width: 10),
                             RawMaterialButton(
                               onPressed: () {
                                 setState(() {
@@ -219,7 +218,7 @@ class _AddArticleState extends State<AddArticle> {
                           fontSize: 24,
                           color: Colors.black,
                         ),
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: "Заголовок",
                           border: InputBorder.none,
                         ),
@@ -236,7 +235,7 @@ class _AddArticleState extends State<AddArticle> {
                         boxShadow: [
                           BoxShadow(
                               color: Colors.black26.withOpacity(0.05),
-                              offset: Offset(0.0, 6.0),
+                              offset: const Offset(0.0, 6.0),
                               blurRadius: 10.0,
                               spreadRadius: 0.10)
                         ]),
@@ -273,10 +272,11 @@ class _AddArticleState extends State<AddArticle> {
                 children: [
                   FloatingActionButton(
                     onPressed: () {
-                      if (_isEdit)
+                      if (_isEdit) {
                         _updateArticle();
-                      else
+                      } else {
                         _addArticle();
+                      }
                       Navigator.pop(context, true);
                     },
                     backgroundColor: const Color(0xFF93D7FF),
@@ -287,7 +287,7 @@ class _AddArticleState extends State<AddArticle> {
                       color: Colors.white,
                     ),
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   FloatingActionButton(
                     onPressed: () {
                       Navigator.pop(context);

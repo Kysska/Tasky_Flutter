@@ -1,13 +1,8 @@
 
-import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:tasky_flutter/data/emotionalDatabase.dart';
 import 'package:tasky_flutter/data/habitdatabase.dart';
@@ -26,9 +21,6 @@ class Person extends StatefulWidget{
 }
 class _PersonState extends State<Person> {
 
-  late File _image = File('');
-  late String _imagePath;
-  var _imageUrl;
   UserFirebase mUser = UserFirebase();
   DatabaseHelperTask mTask = DatabaseHelperTask.instance;
   DatabaseHelperHabit mHabit = DatabaseHelperHabit.instance;
@@ -39,11 +31,6 @@ class _PersonState extends State<Person> {
   late int countHabit = 0;
 
 
-
-  Future<void> _initImage() async {
-    _imageUrl = widget.avatar;
-  }
-
   Future _getMood() async{
     emotionValues = await mMood.getMood();
   }
@@ -51,7 +38,6 @@ class _PersonState extends State<Person> {
   @override
   void initState() {
     super.initState();
-    _initImage();
     _getMood();
     _getStatictics();
   }
@@ -61,34 +47,6 @@ class _PersonState extends State<Person> {
     activeTasks = await mTask.countCompletedTasks();
     countHabit = await mHabit.countTasks();
     setState(() {});
-  }
-
-  Future<void> _imgFromGallery() async {
-    final picker = ImagePicker();
-    final image = await picker.getImage(
-      source: ImageSource.gallery,
-      imageQuality: 50,
-    );
-
-    if (image != null) {
-      setState(() {
-        _image = File(image.path);
-        _imagePath = image.path;
-      });
-      uploadProfileImage();
-    }
-  }
-
-  uploadProfileImage() async {
-    String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
-    Reference reference = FirebaseStorage.instance
-        .ref()
-        .child('images').child(uniqueFileName);
-    UploadTask uploadTask = reference.putFile(_image);
-    TaskSnapshot snapshot = await uploadTask;
-    _imageUrl = await snapshot.ref.getDownloadURL();
-    mUser.setUserAvatar(widget.login, _imageUrl);
-    print(_imageUrl);
   }
 
   @override
@@ -104,34 +62,13 @@ class _PersonState extends State<Person> {
         builder: (BuildContext context, BoxConstraints constraints) {
          return Column(
               children: [
-                GestureDetector(
-                  onTap: (){
-                     _imgFromGallery();
-                  },
-                  child: CircleAvatar(
+                  CircleAvatar(
                     radius: 50,
-                    child: _imageUrl != null
-                        ? ClipRRect(
+                    child: ClipRRect(
                       borderRadius: BorderRadius.circular(50),
-                      child: CachedNetworkImage(
-                        imageUrl: _imageUrl,
-                        placeholder: (context, url) => const CircularProgressIndicator(color: Colors.black, strokeWidth: 2.0,),
-                        errorWidget: (context, url, error) => const Icon(Icons.error),
-                      ),
+                      child: Image.asset(widget.avatar),
                     )
-                        : Container(
-                      decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(50)),
-                      width: 100,
-                      height: 100,
-                      child: Icon(
-                        Icons.camera_alt,
-                        color: Colors.grey[800],
-                      ),
-                    ),
                   ),
-                ),
                 Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
@@ -202,7 +139,7 @@ class _PersonState extends State<Person> {
                     List<int> mood = (snapshot.data ?? []).map((item) => item as int).toList();
                     print(mood);
                     if (!snapshot.hasData) {
-                      return Center(child: Text('Загрузка..'));
+                      return const Center(child: Text('Загрузка..'));
                     }
                     return Container(
                       padding: const EdgeInsets.only(left: 15, right: 15, top: 15),
@@ -292,7 +229,7 @@ class _PersonState extends State<Person> {
           DateTime day = currentDate.subtract(Duration(days: 6- intValue));
           return Text(formatter.format(day));
         }
-        return Text('');
+        return const Text('');
       },
     );
   }

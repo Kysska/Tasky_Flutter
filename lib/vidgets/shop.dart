@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tasky_flutter/data/inventorydatabase.dart';
@@ -9,7 +9,8 @@ import '../data/gamedatabase.dart';
 class Shop extends StatefulWidget{
   final String login;
   final VoidCallback onBuyButtonPressed;
-  const Shop({super.key, required this.login, required this.onBuyButtonPressed,});
+  final Function(String) onButtonPressed;
+  const Shop({super.key, required this.login, required this.onBuyButtonPressed, required this.onButtonPressed,});
 
 
   @override
@@ -144,7 +145,7 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                               ),
                             ),
                             Tab(
-                              icon: Icon(Icons.backpack_rounded,size: screenWidth * 0.06,),
+                              icon: Icon(Icons.backpack_rounded,size: screenWidth * 0.07,),
                               child: Text(
                                 "Инвентарь",
                                 style: GoogleFonts.comfortaa(
@@ -162,11 +163,11 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                           children: <Widget>[
                             Column(
                                 children: [Container(
-                                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                                  margin: const EdgeInsets.symmetric(vertical: 8.0),
                                   height: 320.0,
                                   child:
                                   Padding(
-                                      padding: EdgeInsets.all(15.0),
+                                      padding: const EdgeInsets.all(15.0),
                                       child: _getCard()
                                   ),
                                 ),
@@ -174,11 +175,11 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                             ),
                             Column(
                                 children: [Container(
-                                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                                  margin: const EdgeInsets.symmetric(vertical: 8.0),
                                   height: 320.0,
                                   child:
                                   Padding(
-                                    padding: EdgeInsets.all(15.0),
+                                    padding: const EdgeInsets.all(15.0),
                                     child: _getMedicCard()
                                   ),
                                 ),
@@ -186,11 +187,11 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                             ),
                             Column(
                                 children: [Container(
-                                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                                  margin: const EdgeInsets.symmetric(vertical: 8.0),
                                   height: 320.0,
                                   child:
                                   Padding(
-                                      padding: EdgeInsets.all(15.0),
+                                      padding: const EdgeInsets.all(15.0),
                                       child: _getClothesCard()
                                   ),
                                 ),
@@ -198,12 +199,12 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                             ),
                             Column(
                                 children: [Container(
-                                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                                  margin: const EdgeInsets.symmetric(vertical: 8.0),
                                   height: 320.0,
                                   child:
                                   Padding(
-                                      padding: EdgeInsets.all(15.0),
-                                      child: _getClothesCard()
+                                      padding: const EdgeInsets.all(15.0),
+                                      child: _getInventoryCard()
                                   ),
                                 ),
                                 ]
@@ -236,60 +237,62 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                         " либо выйдите из магазина и зайдите ещё раз"),
                   );
                 }
-                return Container(
-                  height: 170,
-                  width: 160,
-                  child: Card(
-                      child: Column(
-                        children: [
-                          Container(
-                            child: Image.asset(mListEat![index].asset,
+                return SingleChildScrollView(
+                  child: SizedBox(
+                    height: 180,
+                    width: 160,
+                    child: Card(
+                        child: Column(
+                          children: [
+                            Image.asset(mListEat![index].asset,
                                 width: 50, height: 50),
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(5.0),
-                            alignment: Alignment.centerLeft,
-                            child: Text(mListEat![index].title),
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(5.0),
-                            alignment: Alignment.bottomLeft,
-                            child: Text(mListEat![index].money.toString()),
-                          ),
-                          ButtonBar(
-                            children: [
-                              TextButton(
-                                child: const Text('Купить'),
-                                onPressed: () async {
-                                  int newCount = _kapikoinCount - mListEat![index].money;
-                                  if(newCount > _kapikoinCount){
-                                    const snackBar = SnackBar(
-                                        content: Text('Не хватает монет')
-                                    );
-                                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                  }
-                                  else{
-                                    _updateKapicoin(_kapikoinCount - mListEat![index].money);
-                                    bool foodIn = await mInventory.checkIfExists(mListEat![index].title);
-                                    if(foodIn){
-                                      int count = await mInventory.getCount(mListEat![index].title);
-                                      count +=1;
-                                      await mInventory.updateCount(count, mListEat![index].title);
-                                      widget.onBuyButtonPressed();
-                                      mInventoryFire.updateCountEat(widget.login, count, mListEat![index].title);
+                            Container(
+                              padding: const EdgeInsets.all(5.0),
+                              alignment: Alignment.centerLeft,
+                              child: Text(mListEat![index].title),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(5.0),
+                              alignment: Alignment.bottomLeft,
+                              child: Text(mListEat![index].money.toString()),
+                            ),
+                            ButtonBar(
+                              children: [
+                                TextButton(
+                                  child: Text('Купить',
+                                      style: GoogleFonts.comfortaa(
+                                    fontWeight: FontWeight.bold,
+                                  )),
+                                  onPressed: () async {
+                                    if(mListEat![index].money > _kapikoinCount){
+                                      const snackBar = SnackBar(
+                                          content: Text('Не хватает монет')
+                                      );
+                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                     }
                                     else{
-                                      await mInventory.add(EatInInventory(title: mListEat![index].title, asset: mListEat![index].asset, money: mListEat![index].money, count: 1));
-                                      widget.onBuyButtonPressed();
-                                      mInventoryFire.setDataEatList(widget.login, EatInInventory(title: mListEat![index].title, asset: mListEat![index].asset, money: mListEat![index].money, count: 1));
+                                      _updateKapicoin(_kapikoinCount - mListEat![index].money);
+                                      bool foodIn = await mInventory.checkIfExists(mListEat![index].title);
+                                      if(foodIn){
+                                        int count = await mInventory.getCount(mListEat![index].title);
+                                        count +=1;
+                                        await mInventory.updateCount(count, mListEat![index].title);
+                                        widget.onBuyButtonPressed();
+                                        mInventoryFire.updateCountEat(widget.login, count, mListEat![index].title);
+                                      }
+                                      else{
+                                        await mInventory.add(EatInInventory(title: mListEat![index].title, asset: mListEat![index].asset, money: mListEat![index].money, count: 1));
+                                        widget.onBuyButtonPressed();
+                                        mInventoryFire.setDataEatList(widget.login, EatInInventory(title: mListEat![index].title, asset: mListEat![index].asset, money: mListEat![index].money, count: 1));
+                                      }
                                     }
-                                  }
-                                },
-                              ),
-                            ],
-                          )
-                        ],
-                      )),
+                                  },
+                                ),
+                              ],
+                            )
+                          ],
+                        )),
+                  ),
                 );
               }
           );
@@ -309,7 +312,7 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
       future: retrievedListClothes,
       builder: (BuildContext context, AsyncSnapshot<List<ClothesInShop>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
@@ -329,23 +332,21 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                   } else {
                     bool foodIn = snapshot.data ?? false;
 
-                    return Container(
-                      height: 170,
+                    return SizedBox(
+                      height: 180,
                       width: 160,
                       child: Card(
                         color: isBuy ? Colors.white : Colors.grey,
                         child: Column(
                           children: [
+                            Image.asset(clothes.asset, width: 50, height: 50),
                             Container(
-                              child: Image.asset(clothes.asset, width: 50, height: 50),
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(5.0),
+                              padding: const EdgeInsets.all(5.0),
                               alignment: Alignment.centerLeft,
                               child: Text(clothes.title),
                             ),
                             Container(
-                              padding: EdgeInsets.all(5.0),
+                              padding: const EdgeInsets.all(5.0),
                               alignment: Alignment.bottomLeft,
                               child: Text(clothes.money.toString()),
                             ),
@@ -353,9 +354,12 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                               children: [
                                 isBuy
                                     ? foodIn
-                                    ? Icon(Icons.check)
+                                    ? const Icon(Icons.check)
                                     : TextButton(
-                                  child: const Text('Купить'),
+                                  child: Text('Купить',
+                                      style: GoogleFonts.comfortaa(
+                                        fontWeight: FontWeight.bold,
+                                      )),
                                   onPressed: () async {
                                     if (clothes.money > _kapikoinCount) {
                                       const snackBar = SnackBar(content: Text('Не хватает монет'));
@@ -375,7 +379,7 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                                     }
                                   },
                                 )
-                                    : Icon(Icons.lock),
+                                    : const Icon(Icons.lock),
                               ],
                             ),
                           ],
@@ -411,29 +415,30 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                     );
                   }
                   return Container(
-                    height: 170,
+                    height: 180,
                     width: 160,
                     child: Card(
                         child: Column(
                           children: [
+                            Image.asset(mListMedic![index].asset,
+                                width: 50, height: 50),
                             Container(
-                              child: Image.asset(mListMedic![index].asset,
-                                  width: 50, height: 50),
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(5.0),
+                              padding: const EdgeInsets.all(5.0),
                               alignment: Alignment.centerLeft,
                               child: Text(mListMedic![index].title),
                             ),
                             Container(
-                              padding: EdgeInsets.all(5.0),
+                              padding: const EdgeInsets.all(5.0),
                               alignment: Alignment.bottomLeft,
                               child: Text(mListMedic![index].money.toString()),
                             ),
                             ButtonBar(
                               children: [
                                 TextButton(
-                                  child: const Text('Купить'),
+                                  child: Text('Купить',
+                                      style: GoogleFonts.comfortaa(
+                                        fontWeight: FontWeight.bold,
+                                      )),
                                   onPressed: () async {
                                     if(mListMedic![index].money > _kapikoinCount){
                                       const snackBar = SnackBar(
@@ -448,13 +453,66 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                                         int count = await mInventory.getCount(mListMedic![index].title);
                                         count +=1;
                                         await mInventory.updateCount(count, mListMedic![index].title);
+                                        widget.onBuyButtonPressed();
                                         await mInventoryFire.updateCountEat(widget.login, count, mListMedic![index].title);
                                       }
                                       else{
                                         await mInventory.add(EatInInventory(title: mListMedic![index].title, asset: mListMedic![index].asset, money: mListMedic![index].money, count: 1));
+                                        widget.onBuyButtonPressed();
                                         await mInventoryFire.setDataEatList(widget.login, EatInInventory(title: mListMedic![index].title, asset: mListMedic![index].asset, money: mListMedic![index].money, count: 1));
                                       }
                                     }
+                                  },
+                                ),
+                              ],
+                            )
+                          ],
+                        )),
+                  );
+                }
+            );
+          }
+          else if (snapshot.connectionState == ConnectionState.done &&
+              mListEat!.isEmpty) {
+            return const Text('No data available');
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        }
+    );
+  }
+
+  _getInventoryCard(){
+    return FutureBuilder<List<ClothesInInventory>>(
+        future: InventoryClothesDatabase.instance.getEatList(),
+        builder: (BuildContext context, AsyncSnapshot<List<ClothesInInventory>> snapshot) {
+          if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+            return ListView.builder(
+                itemCount: snapshot.data!.length,
+                scrollDirection: Axis.vertical,
+                itemBuilder: (context, index) {
+                  return SizedBox(
+                    height: 180,
+                    width: 160,
+                    child: Card(
+                        child: Column(
+                          children: [
+                            Image.asset(snapshot.data![index].asset,
+                                width: 50, height: 50),
+                            Container(
+                              padding: const EdgeInsets.all(5.0),
+                              alignment: Alignment.centerLeft,
+                              child: Text(snapshot.data![index].title),
+                            ),
+                            ButtonBar(
+                              children: [
+                                TextButton(
+                                  child: Text('Примерить',
+                                      style: GoogleFonts.comfortaa(
+                                        fontWeight: FontWeight.bold,
+                                      )),
+                                  onPressed: () async {
+                                    widget.onButtonPressed(snapshot.data![index].title);
                                   },
                                 ),
                               ],

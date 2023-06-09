@@ -27,7 +27,7 @@ class _CalendarPageState extends State<CalendarPage> {
     return  Padding(
       padding: const EdgeInsets.all(46.0),
       child: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
@@ -70,7 +70,6 @@ class _CalendarPageState extends State<CalendarPage> {
                   },
                 ),
               ),
-              SizedBox(height: 20),
             ],
           ),
         ),

@@ -192,9 +192,21 @@ class InventoryClothesDatabase{
   }
 
 
+
   Future<bool> checkIfExists(String title) async {
     Database db = await instance.database;
     var result = await db.rawQuery('SELECT COUNT(*) FROM clothesInInventory WHERE title = ?', [title]);
+    int count = Sqflite.firstIntValue(result)!;
+    if (count == 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> checkIfExistsAsset(String asset) async {
+    Database db = await instance.database;
+    var result = await db.rawQuery('SELECT COUNT(*) FROM clothesInInventory WHERE asset = ?', [asset]);
     int count = Sqflite.firstIntValue(result)!;
     if (count == 1) {
       return true;

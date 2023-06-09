@@ -1,9 +1,10 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tasky_flutter/presentation/updatehabit.dart';
 
 import '../data/habitdatabase.dart';
+import '../data/inventorydatabase.dart';
 import '../vidgets/table_calendar.dart';
 
 class HabitInfo extends StatefulWidget {
@@ -25,6 +26,7 @@ class _HabitInfoState extends State<HabitInfo> {
   late DateTime firstDate;
   late DateTime now = DateTime.now();
   late var differ;
+  late int receivedGifts;
   late List<DateTime> toHighlight = [];
 
   @override
@@ -35,8 +37,10 @@ class _HabitInfoState extends State<HabitInfo> {
     percentage2Completed = sumCompleted / 50;
     firstDate = DateTime.parse(widget.habit.id);
     differ = now.difference(firstDate).inDays;
+    receivedGifts = widget.habit.receivedGifts;
     _getDateString();
   }
+
 
   _getDateString(){
     List<String> dateString = widget.habit.isCompleted;
@@ -107,7 +111,7 @@ class _HabitInfoState extends State<HabitInfo> {
                             color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 2,
                             blurRadius: 5,
-                            offset: Offset(0, 3), // changes position of shadow
+                            offset: const Offset(0, 3), // changes position of shadow
                           ),
                         ],
                       ),
@@ -123,11 +127,11 @@ class _HabitInfoState extends State<HabitInfo> {
                                 color: Colors.white,
                               ),
                             ),
-                            Icon(
+                            const Icon(
                               Icons.stacked_line_chart_rounded,
                               color: Colors.white,
                             ),
-                            SizedBox(height: 12,),
+                            const SizedBox(height: 12,),
                             Text(
                               '${widget.habit.sumCompleted}',
                               textAlign: TextAlign.center,
@@ -152,7 +156,7 @@ class _HabitInfoState extends State<HabitInfo> {
                             color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 2,
                             blurRadius: 5,
-                            offset: Offset(0, 3), // changes position of shadow
+                            offset: const Offset(0, 3), // changes position of shadow
                           ),
                         ],
                       ),
@@ -168,11 +172,11 @@ class _HabitInfoState extends State<HabitInfo> {
                                 color: Colors.black,
                               ),
                             ),
-                            Icon(
+                            const Icon(
                               Icons.check,
                               color: Colors.black,
                             ),
-                            SizedBox(height: 12,),
+                            const SizedBox(height: 12,),
                             Text(
                               '${widget.habit.sumCompleted}',
                               textAlign: TextAlign.center,
@@ -197,7 +201,7 @@ class _HabitInfoState extends State<HabitInfo> {
                             color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 2,
                             blurRadius: 5,
-                            offset: Offset(0, 3), // changes position of shadow
+                            offset: const Offset(0, 3), // changes position of shadow
                           ),
                         ],
                       ),
@@ -213,13 +217,13 @@ class _HabitInfoState extends State<HabitInfo> {
                                 color: Colors.white,
                               ),
                             ),
-                            Icon(
+                            const Icon(
                               Icons.calendar_today_outlined,
                               color: Colors.white,
                             ),
                             SizedBox(height: 12,),
                             Text(
-                              '${differ}',
+                              '$differ',
                               textAlign: TextAlign.center,
                               style: GoogleFonts.comfortaa(
                                 color: Colors.white,
@@ -269,7 +273,7 @@ class _HabitInfoState extends State<HabitInfo> {
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 2,
                         blurRadius: 5,
-                        offset: Offset(0, 3), // changes position of shadow
+                        offset: const Offset(0, 3), // changes position of shadow
                       ),
                     ],
                   ),
@@ -304,9 +308,67 @@ class _HabitInfoState extends State<HabitInfo> {
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(Colors.deepPurple.shade400,),
                         ),
-                        child: Text("Забрать",
-                          style: GoogleFonts.comfortaa(
-                              fontWeight: FontWeight.bold
+                        child: TextButton(
+                          onPressed: () async {
+                            if(widget.habit.sumCompleted >= 21 && receivedGifts == 0){
+                              DatabaseHelperHabit.instance.updateReceivedGifts(widget.habit.id, 1);
+                              setState(() {receivedGifts = 1;});
+                              switch(widget.habit.assets.first){
+                                case 'images/medic_1.png':
+                                  bool foodIn = await InventoryDatabase.instance.checkIfExists('Мята(1 здоровье)');
+                                  if(foodIn){
+                                    int count = await InventoryDatabase.instance.getCount('Мята(1 здоровье)');
+                                    count +=1;
+                                     InventoryDatabase.instance.updateCount(count, 'Мята(1 здоровье)');
+                                    // await mInventoryFire.updateCountEat(widget.login, count, mListMedic![index].title);
+                                  }
+                                  else{
+                                    InventoryDatabase.instance.add(EatInInventory(title: 'Мята(1 здоровье)', asset: 'images/medic_1.png', money: 0, count: 1));
+                                    // await mInventoryFire.setDataEatList(widget.login, EatInInventory(title: mListMedic![index].title, asset: mListMedic![index].asset, money: mListMedic![index].money, count: 1));
+                                  }
+                                  break;
+                                case 'images/medic_2.png':
+                                  bool foodIn = await InventoryDatabase.instance.checkIfExists('Чай(3 здоровья)');
+                                  if(foodIn){
+                                    int count = await InventoryDatabase.instance.getCount('Чай(3 здоровья)');
+                                    count +=1;
+                                    InventoryDatabase.instance.updateCount(count, 'Чай(3 здоровья)');
+                                    // await mInventoryFire.updateCountEat(widget.login, count, mListMedic![index].title);
+                                  }
+                                  else{
+                                    InventoryDatabase.instance.add(EatInInventory(title: 'Чай(3 здоровья)', asset: 'images/medic_2.png', money: 0, count: 1));
+                                    // await mInventoryFire.setDataEatList(widget.login, EatInInventory(title: mListMedic![index].title, asset: mListMedic![index].asset, money: mListMedic![index].money, count: 1));
+                                  }
+                                  break;
+                                case 'images/Butterfly.png':
+                                  bool clothesIn = await InventoryClothesDatabase.instance.checkIfExists('бабочка');
+                                  if(!clothesIn){
+                                    InventoryClothesDatabase.instance.add(ClothesInInventory(title: 'бабочка', asset: 'images/Butterfly.png', money: 0));
+                                  }
+                                  break;
+                                case 'images/Hat.png':
+                                  bool clothesIn = await InventoryClothesDatabase.instance.checkIfExists('Шляпа');
+                                  if(!clothesIn){
+                                    InventoryClothesDatabase.instance.add(ClothesInInventory(title: 'Шляпа', asset: 'images/Hat.png', money: 0));
+                                  }
+                                  break;
+                                case 'images/Cook.png':
+                                  bool clothesIn = await InventoryClothesDatabase.instance.checkIfExists('Cook');
+                                  if(!clothesIn){
+                                    InventoryClothesDatabase.instance.add(ClothesInInventory(title: 'Поварской колпак', asset: 'images/Cook.png', money: 0));
+                                  }
+                                  break;
+                              }
+                            }
+                          },
+                          child: (receivedGifts == 0) ? Text(
+                            "Забрать",
+                            style: GoogleFonts.comfortaa(
+                              fontWeight: FontWeight.bold,
+                            ))
+                              :
+                            const Icon(
+                                Icons.check,
                           ),
                         ),
                         onPressed:() {
@@ -320,14 +382,14 @@ class _HabitInfoState extends State<HabitInfo> {
                   height: 240,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10), // Use BorderRadius.circular() for circular border radius
+                    borderRadius: BorderRadius.circular(10),
                     color: Colors.deepOrangeAccent[100],
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 2,
                         blurRadius: 5,
-                        offset: Offset(0, 3), // changes position of shadow
+                        offset: const Offset(0, 3),
                       ),
                     ],
                   ),
@@ -363,9 +425,29 @@ class _HabitInfoState extends State<HabitInfo> {
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(Colors.deepOrangeAccent.shade400,),
                         ),
-                        child: Text("Забрать",
-                          style: GoogleFonts.comfortaa(
-                              fontWeight: FontWeight.bold
+                        child: TextButton(
+                          onPressed: () {
+                            if(widget.habit.sumCompleted >= 50 && receivedGifts == 1){
+                              DatabaseHelperHabit.instance.updateReceivedGifts(widget.habit.id, 2);
+                              setState(() {receivedGifts = 2;});
+                            }
+                            else if(widget.habit.sumCompleted >= 50 && receivedGifts == 0){
+                              const snackBar = SnackBar(
+                                  content: Text('Заберите предыдущий подарок')
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                            }
+                          },
+                          child: (receivedGifts== 0 ||  receivedGifts ==1) ?
+                          Text(
+                            "Забрать",
+                            style: GoogleFonts.comfortaa(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                              :
+                          const Icon(
+                            Icons.check,
                           ),
                         ),
                         onPressed:() {

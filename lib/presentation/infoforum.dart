@@ -25,12 +25,12 @@ class _PostScreenState extends State<PostScreen> {
   CommentFirebase mCommentFire = CommentFirebase();
   Future<List<Comment>>? _questions;
   List<Comment>? _retrievedQuestions;
+  final String _avatar = "images/avatar.jpg";
 
   @override
   initState() {
     super.initState();
     var idUser = widget.article.id;
-    print(idUser);
     List<String> likes = widget.likes;
     isFavorite = likes.contains(idUser);
     _countLike = widget.article.likes;
@@ -39,7 +39,6 @@ class _PostScreenState extends State<PostScreen> {
   }
 
   Future getListArticle() async {
-    print(widget.article.id);
     _retrievedQuestions =
         (await mCommentFire.getCommentList(widget.article.id));
   }
@@ -120,10 +119,12 @@ class _PostScreenState extends State<PostScreen> {
                             children: <Widget>[
                               Row(
                                 children: <Widget>[
-                                  const CircleAvatar(
-                                    backgroundImage:
-                                        AssetImage('images/default_avatar.png'),
-                                    radius: 16,
+                                  CircleAvatar(
+                                      radius: 16,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(50),
+                                        child: Image.asset(_avatar),
+                                      )
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(left: 15.0),

@@ -18,8 +18,8 @@ class UpdateHabit extends StatefulWidget{
 }
 
 class _UpdateHabitState extends State<UpdateHabit>{
-  late List<bool> _isSelectedWeekday = widget.habit.listWeek;
-  late var _titleController = TextEditingController(text: widget.habit.title);
+  late final List<bool> _isSelectedWeekday = widget.habit.listWeek;
+  late final _titleController = TextEditingController(text: widget.habit.title);
   HabitFirebase mHabitFire = HabitFirebase();
   DatabaseHelperHabit mHabit = DatabaseHelperHabit.instance;
   late var _selectedTime = widget.habit.time;
@@ -38,13 +38,13 @@ class _UpdateHabitState extends State<UpdateHabit>{
   ];
 
   _dbHabitAdd() async{
-    await mHabit.add(Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], time: _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: widget.habit.assets,));
-    mHabitFire.setDataHabitList(widget.login!, Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], time:  _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: widget.habit.assets,));
+    await mHabit.add(Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], time: _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: widget.habit.assets, receivedGifts: widget.habit.receivedGifts,));
+    mHabitFire.setDataHabitList(widget.login!, Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], time:  _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: widget.habit.assets, receivedGifts: widget.habit.receivedGifts));
   }
 
   _dbHabitUpdate() async{
-    await mHabit.update(Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], time: _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: ['images/medic_1.png', 'images/medic_2.png'],));
-    mHabitFire.updateCountHabit(widget.login!, Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [],  time:  _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: ['images/medic_1.png', 'images/medic_2.png'],));
+    await mHabit.update(Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [], time: _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: ['images/medic_1.png', 'images/medic_2.png'], receivedGifts: widget.habit.receivedGifts));
+    mHabitFire.updateCountHabit(widget.login!, Habit(title: _titleController.text, id: widget.habit.id, isCompleted: [],  time:  _selectedTime, tag: _selectedTag, listWeek: _isSelectedWeekday, sumCompleted: widget.habit.sumCompleted, assets: ['images/medic_1.png', 'images/medic_2.png'], receivedGifts: widget.habit.receivedGifts));
   }
 
   @override
@@ -78,7 +78,6 @@ class _UpdateHabitState extends State<UpdateHabit>{
           WeekdaySelector(
             onChanged: (v) {
               setState(() {
-                print(v % 7);
                 _isSelectedWeekday[v % 7] = !_isSelectedWeekday[v % 7];
               });
             },
@@ -91,16 +90,16 @@ class _UpdateHabitState extends State<UpdateHabit>{
             padding: const EdgeInsets.only(left: 15.0, right: 15),
             child: MyInputField(title: "Время для уведомлений", hint: _selectedTime,
               widget: IconButton(
-                icon: Icon(Icons.access_time),
+                icon: const Icon(Icons.access_time),
                 onPressed: (){
                   _getTimeFromUser();
                 },
               ),
             ),
           ),
-          SizedBox(height: 20,),
+          const SizedBox(height: 20,),
           _getTagsFromUser(),
-          SizedBox(height: 20,),
+          const SizedBox(height: 20,),
           Align(
             alignment: Alignment.center,
             child: Row(
@@ -135,7 +134,6 @@ class _UpdateHabitState extends State<UpdateHabit>{
                 ]
             ),
           )
-          //значок, цвет, дата
         ],
       ),
     );
@@ -171,7 +169,7 @@ class _UpdateHabitState extends State<UpdateHabit>{
           // active: item.active,
           // customData: item.customData,
           singleItem: true,
-          textStyle: TextStyle( fontSize: 14, ),
+          textStyle: const TextStyle( fontSize: 14, ),
           combine: ItemTagsCombine.withTextBefore,
           icon: ItemTagsIcon(
             icon: Icons.add,
@@ -188,21 +186,30 @@ class _UpdateHabitState extends State<UpdateHabit>{
   }
 
   _validateData() async {
-    if(_titleController.text.isNotEmpty){
-      if(widget.isPattern == false){
-        await _dbHabitUpdate();
-      }
-      else {
-        await _dbHabitAdd();
-      }
-      Navigator.pop(context, true);
-      Navigator.pop(context, true);
-    }
-    else if(_titleController.text.isEmpty){
-      final snackBar = SnackBar(
-          content: const Text('Введите название')
+    bool areAllFalse = _isSelectedWeekday.every((value) => value == false);
+    if(areAllFalse){
+      const snackBar = SnackBar(
+          content: Text('Убедитесь, что хотябы один день недели проставлен')
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+    else{
+      if(_titleController.text.isNotEmpty){
+        if(widget.isPattern == false){
+          await _dbHabitUpdate();
+        }
+        else {
+          await _dbHabitAdd();
+        }
+        Navigator.pop(context, true);
+        Navigator.pop(context, true);
+      }
+      else{
+        const snackBar = SnackBar(
+            content: Text('Введите название')
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
     }
   }
 

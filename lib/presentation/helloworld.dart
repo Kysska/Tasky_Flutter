@@ -59,7 +59,7 @@ class _WelcomeHome extends State<Welcome>{
                           hintText: "Придумайте ему имя",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(32.0),
-                            borderSide: BorderSide(color: Colors.black), // Черный цвет рамки
+                            borderSide: const BorderSide(color: Colors.black), // Черный цвет рамки
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(32.0),
@@ -127,8 +127,8 @@ class _WelcomeHome extends State<Welcome>{
           context, MaterialPageRoute(builder: (context) => Bar(login: widget.login, namePet: namePet)));
     }
     else{
-      final snackBar = SnackBar(
-          content: const Text('Введите имя питомца')
+      final snackBar = const SnackBar(
+          content: Text('Введите имя питомца')
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }

@@ -85,27 +85,27 @@ class _UpdateTaskState extends State<UpdateTask>{
                             child: Column(
                               children: [
                                 MyInputField(title: "Название", hint: _selectedTitle, controller: _titleController,),
-                                SizedBox(height: 20,),
+                                const SizedBox(height: 20,),
                                 MyInputField(title: "Дата", hint: _selectedDate,
                                   widget: IconButton(
-                                    icon: Icon(Icons.calendar_month),
+                                    icon: const Icon(Icons.calendar_month),
                                     onPressed: (){
                                       _getDateFromUser();
                                     },
                                   ),
                                 ),
-                                SizedBox(height: 20,),
+                                const SizedBox(height: 20,),
                                 MyInputField(title: "Время", hint: _selectedTime,
                                   widget: IconButton(
-                                    icon: Icon(Icons.access_time),
+                                    icon: const Icon(Icons.access_time),
                                     onPressed: (){
                                       _getTimeFromUser();
                                     },
                                   ),
                                 ),
-                                SizedBox(height: 20,),
+                                const SizedBox(height: 20,),
                                 _getTagsFromUser(),
-                                SizedBox(height: 20,),
+                                const SizedBox(height: 20,),
                                 Align(
                                   alignment: Alignment.center,
                                   child: Row(
@@ -151,8 +151,6 @@ class _UpdateTaskState extends State<UpdateTask>{
       itemCount: TagsList.length,
       itemBuilder: (int index){
         final item = TagsList[index];
-        print(_selectedTag);
-        print(item);
         if(_selectedTag == item) {
           return ItemTags(
           index: index,
@@ -160,7 +158,7 @@ class _UpdateTaskState extends State<UpdateTask>{
           active: true,
           pressEnabled: true,
           singleItem: true,
-          textStyle: TextStyle( fontSize: 14, ),
+          textStyle: const TextStyle( fontSize: 14, ),
           combine: ItemTagsCombine.withTextBefore,
           icon: ItemTagsIcon(
             icon: Icons.add,
@@ -195,17 +193,17 @@ class _UpdateTaskState extends State<UpdateTask>{
     );
   }
   _getDateFromUser() async{
-    DateTime? _checkDate = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime.now(), lastDate: DateTime(2050));
-    String _pickerDate = DateFormat.yMd().format(_checkDate!);
-    if(_pickerDate != null){
+    DateTime? checkDate = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime.now(), lastDate: DateTime(2050));
+    String pickerDate = DateFormat.yMd().format(checkDate!);
+    if(pickerDate != null){
       setState(() {
-        _selectedDate = _pickerDate;
+        _selectedDate = pickerDate;
       });
     }
   }
 
   _getTimeFromUser() async{
-    TimeOfDay? _checkTime = await showTimePicker(
+    TimeOfDay? checkTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.now(),
         builder: (context, childWidget) {
@@ -214,9 +212,9 @@ class _UpdateTaskState extends State<UpdateTask>{
                   alwaysUse24HourFormat: true),
               child: childWidget!);
         });
-    if(_checkTime != null){
+    if(checkTime != null){
       setState(() {
-        _selectedTime = _checkTime.format(context);
+        _selectedTime = checkTime.format(context);
       });
     }
   }

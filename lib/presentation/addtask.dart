@@ -12,7 +12,6 @@ import 'package:tasky_flutter/data/taskdatabase.dart';
 import 'package:tasky_flutter/presentation/updatehabit.dart';
 import 'package:weekday_selector/weekday_selector.dart';
 
-import '../vidgets/category_grid.dart';
 import '../vidgets/input_field.dart';
 
 class AddTask extends StatefulWidget{
@@ -71,7 +70,7 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          iconTheme: IconThemeData(
+          iconTheme: const IconThemeData(
             color: Colors.black,
           ),
         ),
@@ -88,16 +87,16 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 10,),
+          const SizedBox(height: 10,),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(width: 10,),
+                const SizedBox(width: 10,),
                 InkWell(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: Habit(title: 'Отказ от сахара', id: id, isCompleted: [], tag: '', time: '15:00', listWeek: [true,true,true,true,true,true,true], sumCompleted: 0, assets: ["images/hat.png"],  ), isPattern: true,)));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: Habit(title: 'Отказ от сахара', id: id, isCompleted: [], tag: '', time: '15:00', listWeek: [true,true,true,true,true,true,true], sumCompleted: 0, assets: ["images/Butterfly.png", "images/medic_2.png"], receivedGifts: 0), isPattern: true,)));
                     },
                   child: Container(
                     decoration: BoxDecoration(
@@ -108,7 +107,7 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                       padding: const EdgeInsets.all(15.0),
                       child: Row(
                         children: [
-                          Icon(Icons.cake),
+                          const Icon(Icons.cake),
                           Padding(
                             padding: const EdgeInsets.only(left: 10.0),
                             child: Text(
@@ -122,10 +121,10 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                     ),
                   ),
                 ),
-                SizedBox(width: 10,),
+                const SizedBox(width: 10,),
                 InkWell(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: Habit(title: 'Отказ от сахара', id: id, isCompleted: [], tag: '', time: '15:00', listWeek: [true,true,true,true,true,true,true], sumCompleted: 0, assets: ["images/hat.png"],  ), isPattern: true,)));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: Habit(title: 'Время на свежем воздухе', id: id, isCompleted: [], tag: '', time: '15:00', listWeek: [true,true,true,true,true,true,true], sumCompleted: 0, assets:  ["images/Cook.png", "images/medic_2.png"], receivedGifts: 0  ), isPattern: true,)));
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -136,35 +135,7 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                       padding: const EdgeInsets.all(15.0),
                       child: Row(
                         children: [
-                          Icon(Icons.spa),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10.0),
-                            child: Text(
-                              'Правильное\nпитание',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.comfortaa(),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 10,),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: Habit(title: 'Отказ от сахара', id: id, isCompleted: [], tag: '', time: '15:00', listWeek: [true,true,true,true,true,true,true], sumCompleted: 0, assets: ["images/hat.png"],  ), isPattern: true,)));
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Row(
-                        children: [
-                          Icon(Icons.brightness_7_rounded),
+                          const Icon(Icons.brightness_7_rounded),
                           Padding(
                             padding: const EdgeInsets.only(left: 10.0),
                             child: Text(
@@ -178,10 +149,10 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                     ),
                   ),
                 ),
-                SizedBox(width: 10,),
+                const SizedBox(width: 10,),
                 InkWell(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: Habit(title: 'Отказ от сахара', id: id, isCompleted: [], tag: '', time: '15:00', listWeek: [true,true,true,true,true,true,true], sumCompleted: 0, assets: ["images/hat.png"],  ), isPattern: true,)));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: Habit(title: 'Чтение книг', id: id, isCompleted: [], tag: '', time: '15:00', listWeek: [true,true,true,true,true,true,true], sumCompleted: 0, assets: ["images/Hat.png", "images/medic_2.png"], receivedGifts: 0 ), isPattern: true,)));
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -192,7 +163,7 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                       padding: const EdgeInsets.all(15.0),
                       child: Row(
                         children: [
-                          Icon(Icons.menu_book_sharp),
+                          const Icon(Icons.menu_book_sharp),
                           Padding(
                             padding: const EdgeInsets.only(left: 10.0),
                             child: Text(
@@ -206,7 +177,6 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                     ),
                   ),
                 ),
-                SizedBox(width: 10,),
               ],
             ),
           ),
@@ -223,8 +193,8 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: Column(
                   children: [
-                    SizedBox(height: 10,),
-                    Container(
+                    const SizedBox(height: 10,),
+                    SizedBox(
                       width:  MediaQuery.of(context).size.height,
                       child: Column(
                         children: [
@@ -271,27 +241,27 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                                   hint: "Введите название задачи",
                                   controller: _titleController,
                                 ),
-                                SizedBox(height: 18,),
+                                const SizedBox(height: 18,),
                                 MyInputField(title: "Дата", hint: _selectedDate,
                                   widget: IconButton(
-                                    icon: Icon(Icons.calendar_month),
+                                    icon: const Icon(Icons.calendar_month),
                                     onPressed: (){
                                       _getDateFromUser();
                                     },
                                   ),
                                 ),
-                                SizedBox(height: 18,),
+                                const SizedBox(height: 18,),
                                 MyInputField(title: "Время", hint: _selectedTime,
                                   widget: IconButton(
-                                    icon: Icon(Icons.access_time),
+                                    icon: const Icon(Icons.access_time),
                                     onPressed: (){
                                       _getTimeFromUser();
                                     },
                                   ),
                                 ),
-                                SizedBox(height: 18,),
+                                const SizedBox(height: 18,),
                                 _getTagsFromUser(),
-                                SizedBox(height: 18,),
+                                const SizedBox(height: 18,),
                                 Align(
                                   alignment: Alignment.center,
                                   child: Row(
@@ -355,14 +325,11 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
       itemCount: TagsList.length,
       itemBuilder: (int index){
         final itemTag = TagsList[index];
-        print(itemTag);
         return ItemTags(
           index: index, // required
           title: itemTag,
-          // active: item.active,
-          // customData: item.customData,
           singleItem: true,
-          textStyle: TextStyle( fontSize: 14, ),
+          textStyle: const TextStyle( fontSize: 14, ),
           combine: ItemTagsCombine.withTextBefore,
           icon: ItemTagsIcon(
             icon: Icons.add,
@@ -378,15 +345,15 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
     );
   }
   _getDateFromUser() async{
-    DateTime? _checkDate = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime.now(), lastDate: DateTime(2050));
-    String _pickerDate = DateFormat.yMd().format(_checkDate!);
+    DateTime? checkDate = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime.now(), lastDate: DateTime(2050));
+    String pickerDate = DateFormat.yMd().format(checkDate!);
     setState(() {
-      _selectedDate = _pickerDate;
+      _selectedDate = pickerDate;
     });
   }
 
   _getTimeFromUser() async{
-    TimeOfDay? _checkTime = await showTimePicker(
+    TimeOfDay? checkTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.now(),
         builder: (context, childWidget) {
@@ -395,9 +362,9 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                   alwaysUse24HourFormat: true),
               child: childWidget!);
         });
-    if(_checkTime != null){
+    if(checkTime != null){
       setState(() {
-        _selectedTime = _checkTime.format(context);
+        _selectedTime = checkTime.format(context);
       });
     }
   }
@@ -410,8 +377,8 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
       Navigator.of(context).pop(true);
     }
     else if(_titleController.text.isEmpty){
-      final snackBar = SnackBar(
-          content: const Text('Введите название')
+      const snackBar = SnackBar(
+          content: Text('Введите название')
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
@@ -465,8 +432,8 @@ class _AddHabitState extends State<AddHabit>{
 
   _dbHabitAdd() async{
     var id = DateTime.now().toString();
-    await mHabit.add(Habit(title: _titleController.text, id: id, isCompleted: [],  time: _selectedTime, tag: _selectedTag, listWeek: isSelectedWeekday, sumCompleted: 0, assets: ['images/medic_1.png', 'images/medic_2.png'],));
-    mHabitFire.setDataHabitList(widget.login!, Habit(title: _titleController.text, id: id, isCompleted: [],  time:  _selectedTime, tag: _selectedTag, listWeek: [], sumCompleted: 0, assets: ['images/medic_1.png', 'images/medic_2.png'],));
+    await mHabit.add(Habit(title: _titleController.text, id: id, isCompleted: [],  time: _selectedTime, tag: _selectedTag, listWeek: isSelectedWeekday, sumCompleted: 0, assets: ['images/medic_1.png', 'images/medic_2.png'], receivedGifts: 0,));
+    mHabitFire.setDataHabitList(widget.login!, Habit(title: _titleController.text, id: id, isCompleted: [],  time:  _selectedTime, tag: _selectedTag, listWeek: [], sumCompleted: 0, assets: ['images/medic_1.png', 'images/medic_2.png'], receivedGifts: 0));
   }
 
   @override
@@ -489,8 +456,7 @@ class _AddHabitState extends State<AddHabit>{
         WeekdaySelector(
           onChanged: (v) {
             setState(() {
-              print(v % 7);
-              isSelectedWeekday[v % 7] = !isSelectedWeekday[v % 7];
+              isSelectedWeekday[v % 7] = !isSelectedWeekday[v  % 7];
             });
           },
           selectedFillColor: Colors.black,
@@ -500,15 +466,15 @@ class _AddHabitState extends State<AddHabit>{
         const SizedBox(height: 18,),
         MyInputField(title: "Время для уведомлений", hint:  _selectedTime,
           widget: IconButton(
-            icon: Icon(Icons.access_time),
+            icon: const Icon(Icons.access_time),
             onPressed: (){
               _getTimeFromUser();
             },
           ),
         ),
-        SizedBox(height: 18,),
+        const SizedBox(height: 18,),
         _getTagsFromUser(),
-        SizedBox(height: 18,),
+        const SizedBox(height: 18,),
         Align(
           alignment: Alignment.center,
           child: Row(
@@ -583,7 +549,7 @@ class _AddHabitState extends State<AddHabit>{
           // active: item.active,
           // customData: item.customData,
           singleItem: true,
-          textStyle: TextStyle( fontSize: 14, ),
+          textStyle: const TextStyle( fontSize: 14, ),
           combine: ItemTagsCombine.withTextBefore,
           icon: ItemTagsIcon(
             icon: Icons.add,
@@ -600,21 +566,30 @@ class _AddHabitState extends State<AddHabit>{
   }
 
   _validateData() async{
-    if(_titleController.text.isNotEmpty){
-      _selectedTime ??= "15:00";
-      for (int i = 0; i < isSelectedWeekday.length; i++) {
-        if (isSelectedWeekday[i]) {
-          await Notify('habit', i + 1);
-        }
-      }
-      _dbHabitAdd();
-      Navigator.of(context).pop(true);
-    }
-    else if(_titleController.text.isEmpty){
-      final snackBar = SnackBar(
-          content: const Text('Введите название')
+    bool areAllFalse = isSelectedWeekday.every((value) => value == false);
+    if(areAllFalse){
+      const snackBar = SnackBar(
+          content: Text('Убедитесь, что хотябы один день недели проставлен')
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+    else{
+      if(_titleController.text.isNotEmpty){
+        _selectedTime ??= "15:00";
+        for (int i = 0; i < isSelectedWeekday.length; i++) {
+          if (isSelectedWeekday[i]) {
+            await Notify('habit', i + 1);
+          }
+        }
+        _dbHabitAdd();
+        Navigator.of(context).pop(true);
+      }
+      else{
+        const snackBar = SnackBar(
+            content: Text('Введите название')
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
     }
   }
 

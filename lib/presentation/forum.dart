@@ -24,6 +24,7 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
   List<Article>? _retrievedQuestions;
   Future<List<Article>>? _myQuestions;
   List<Article>? _retrievedMyQuestions;
+  final String _avatar = "images/avatar.jpg";
 
   _initLike() async {
     idUser = await mForum.getNotes();
@@ -127,7 +128,7 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
               ],
               icon: Transform.rotate(
                 angle: 90 * 3.1415926535 / 180,
-                child: Icon(
+                child: const Icon(
                   Icons.compare_arrows_rounded,
                   color: Colors.black,
                   size: 30,
@@ -193,12 +194,12 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
           });
         },
         elevation: 0,
+        backgroundColor: const Color(0xFF93D7FF),
         child: const Icon(
           Icons.add,
           size: 30,
           color: Colors.white,
         ),
-        backgroundColor: const Color(0xFF93D7FF),
       ),
       body: TabBarView(controller: _tabController, children: [
         RefreshIndicator(
@@ -207,10 +208,10 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
             future: _questions,
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting || _retrievedQuestions == null) {
-                return Container(
+                return SizedBox(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
-                  child: Center(
+                  child: const Center(
                     child: CircularProgressIndicator(),
                   ),
                 );
@@ -240,7 +241,7 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                         },
                         child: Container(
                           height: 230,
-                          margin: EdgeInsets.all(15.0),
+                          margin: const EdgeInsets.all(15.0),
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10.0),
@@ -248,17 +249,17 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                 BoxShadow(
                                     color:
                                     Colors.black26.withOpacity(0.05),
-                                    offset: Offset(0.0, 6.0),
+                                    offset: const Offset(0.0, 6.0),
                                     blurRadius: 10.0,
                                     spreadRadius: 0.10)
                               ]),
                           child: Padding(
-                            padding: EdgeInsets.all(15.0),
+                            padding: const EdgeInsets.all(15.0),
                             child: Column(
                               mainAxisAlignment:
                               MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Container(
+                                SizedBox(
                                   height: 50,
                                   child: Row(
                                     mainAxisAlignment:
@@ -266,10 +267,12 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                     children: <Widget>[
                                       Row(
                                         children: <Widget>[
-                                          const CircleAvatar(
-                                            backgroundImage: AssetImage(
-                                                'images/default_avatar.png'),
-                                            radius: 16,
+                                          CircleAvatar(
+                                              radius: 16,
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(50),
+                                                child: Image.asset(_avatar),
+                                              )
                                           ),
                                           Padding(
                                             padding: const EdgeInsets.only(left: 15.0),
@@ -300,9 +303,9 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                                 SizedBox(
                                                   width: MediaQuery.of(context).size.width * 0.65,
                                                   child: Text(
-                                                    "${question.title.length >= 20 ? question.title.substring(0, 20) + '..' : question.title}",
+                                                    question.title.length >= 20 ? '${question.title.substring(0, 20)}..' : question.title,
                                                     style: GoogleFonts.comfortaa(
-                                                      color: Color(0xff111111),
+                                                      color: const Color(0xff111111),
                                                       fontSize: 15,
                                                       fontWeight: FontWeight.bold,
                                                     ),
@@ -316,7 +319,7 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                     ],
                                   ),
                                 ),
-                                Container(
+                                SizedBox(
                                   height: 120,
                                   child: DecoratedBox(
                                     decoration: BoxDecoration(
@@ -330,8 +333,8 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                     child: Align(
                                       alignment: Alignment.topLeft,
                                       child: Text(
-                                        "${question.desc.length >= 281 ? question.desc.substring(0, 281) + '..' : question.desc}",
-                                        style: TextStyle(
+                                        question.desc.length >= 281 ? '${question.desc.substring(0, 281)}..' : question.desc,
+                                        style: const TextStyle(
                                           color: Color(0xff111111),
                                           fontSize: 15,
                                         ),
@@ -339,7 +342,7 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 2),
+                                const SizedBox(height: 2),
                                 Align(
                                   alignment: Alignment.centerLeft,
                                   child: Padding(
@@ -351,14 +354,14 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                           color: isFavorite ? Colors.red.withOpacity(0.6) : Colors.grey.withOpacity(0.6),
                                           size: 22,
                                         ),
-                                        SizedBox(width: 4.0),
+                                        const SizedBox(width: 4.0),
                                         Padding(
                                           padding: const EdgeInsets.only(top: 5),
                                           child: Text(
                                             "${question.likes} like",
                                             style: GoogleFonts.comfortaa(
                                               fontSize: 14,
-                                              color: Color(0xff7e7c7c),
+                                              color: const Color(0xff7e7c7c),
                                             ),
                                           ),
                                         ),
@@ -368,7 +371,7 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                           child: Text(
                                             formatDate(question.date),
                                             style: GoogleFonts.comfortaa(
-                                              color: Color(0xff7e7c7c),
+                                              color: const Color(0xff7e7c7c),
                                               fontSize: 14,
                                             ),
                                           ),
@@ -400,7 +403,7 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                 return Container(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
-                  child: Center(
+                  child: const Center(
                     child: CircularProgressIndicator(),
                   ),
                 );
@@ -429,7 +432,7 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                         },
                         child: Container(
                           height: 230,
-                          margin: EdgeInsets.all(15.0),
+                          margin: const EdgeInsets.all(15.0),
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10.0),
@@ -437,7 +440,7 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                 BoxShadow(
                                     color:
                                     Colors.black26.withOpacity(0.05),
-                                    offset: Offset(0.0, 6.0),
+                                    offset: const Offset(0.0, 6.0),
                                     blurRadius: 10.0,
                                     spreadRadius: 0.10)
                               ]),
@@ -457,8 +460,11 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                       Row(
                                         children: <Widget>[
                                           CircleAvatar(
-                                            backgroundImage: AssetImage('images/default_avatar.png'),
-                                            radius: 16,
+                                              radius: 16,
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(50),
+                                                child: Image.asset(_avatar),
+                                              )
                                           ),
                                           Padding(
                                             padding:
@@ -471,7 +477,7 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                                   child: Text(
                                                     question.login,
                                                     style: GoogleFonts.comfortaa(
-                                                      color: Color(0xff7e7c7c),
+                                                      color: const Color(0xff7e7c7c),
                                                       fontSize: 18,
                                                     ),
                                                   ),
@@ -480,9 +486,9 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                                 SizedBox(
                                                   width: MediaQuery.of(context).size.width * 0.65,
                                                   child: Text(
-                                                    "${question.title.length >= 20 ? question.title.substring(0, 20) + '..' : question.title}",
+                                                    question.title.length >= 20 ? '${question.title.substring(0, 20)}..' : question.title,
                                                     style: GoogleFonts.comfortaa(
-                                                      color: Color(0xff111111),
+                                                      color: const Color(0xff111111),
                                                       fontSize: 15,
                                                       fontWeight:
                                                       FontWeight.bold,
@@ -568,7 +574,7 @@ class _PostsState extends State<Forum> with TickerProviderStateMixin {
                                     child: Align(
                                       alignment: Alignment.topLeft,
                                       child: Text(
-                                        "${question.desc.length >= 281 ? question.desc.substring(0, 281) + '..' : question.desc}",
+                                        question.desc.length >= 281 ? '${question.desc.substring(0, 281)}..' : question.desc,
                                         style: TextStyle(
                                           color: Color(0xff111111),
                                           fontSize: 15,

@@ -38,8 +38,6 @@ dependencies:
   percent_indicator: ^4.0.1
   sqflite:
   intl:
-  path_provider:
-  image_picker:
   cloud_firestore:
   firebase_core:
   weekday_selector:
@@ -49,8 +47,8 @@ dependencies:
   flutter_tags:
   fl_chart:
   table_calendar:
-  cached_network_image:
   shared_preferences:
+  progress_dialog:
   firebase_storage: ^11.1.1
   google_nav_bar: ^5.0.6
   awesome_notifications:

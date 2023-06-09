@@ -20,7 +20,6 @@ class _EmotionSelectionState extends State<EmotionSelection> {
   DatabaseHelperMood mMood = DatabaseHelperMood.instance;
   late DateTime _currentDateTime;
   String formattedDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
-  bool isFunctionCalled = false;
 
   List<String> emotionalList = [
     'images/sad_emotions.png',
@@ -35,18 +34,22 @@ class _EmotionSelectionState extends State<EmotionSelection> {
     super.initState();
     _getEmotional();
     _currentDateTime = DateTime.now();
-    if (!isFunctionCalled) {
-      insertMood();
-      isFunctionCalled = true;
+    insertMood();
+  }
+
+  void _precacheGifs(BuildContext context) async {
+    for (var gifPath in emotionalList) {
+      await precacheImage(AssetImage(gifPath), context);
     }
   }
+
 
 
   Future<void> insertMood() async{
     DateFormat formatter = DateFormat('dd/MM/yyyy');
     String? lastId = await mMood.getLastMoodId();
     DateTime today = DateTime.now();
-    DateTime sevenDaysAgo = today.subtract(Duration(days: 7));
+    DateTime sevenDaysAgo = today.subtract(const Duration(days: 7));
     if(lastId == null){
       for (int i = 7; i >= 0; i--) {
         DateTime previousDay = today.subtract(Duration(days: i));
@@ -84,6 +87,7 @@ class _EmotionSelectionState extends State<EmotionSelection> {
     if(emotional != null){
       emotionalKapibara = emotional - 1;
     }
+    setState(() {});
   }
 
   void changeEmotionVisible() {
@@ -104,9 +108,11 @@ class _EmotionSelectionState extends State<EmotionSelection> {
 
   @override
   Widget build(BuildContext context) {
+    _precacheGifs(context);
     return Column(
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
               width: 160,
@@ -117,7 +123,7 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => AddNote(note: note, isEdit: false, login: widget.login!,)));
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0x88FFFFFF),
+                  backgroundColor: const Color(0x88FFFFFF),
                   elevation: 0,
                 ),
                 child: Align(
@@ -134,42 +140,30 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                 ),
               ),
             ),
-            FutureBuilder(
-              future: Future.delayed(Duration(milliseconds: 10)),
-              builder: (context, snapshot){
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return SizedBox(
-                    width: 90,
+           SizedBox(
+                    width: 80,
                     height: 50,
                     child: GestureDetector(
                       onTap: changeEmotionVisible,
-                      child: emotionalKapibara != null ? Container(
+                      child: Container(
                         width: 75,
-                        height: 60,
+                        height: 75,
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: AssetImage(emotionalList[emotionalKapibara]),
                             fit: BoxFit.cover,
                           ),
                         ),
-                      ) : Container(),
+                      ),
                     ),
-                  );
-                } else {
-                  return const SizedBox(
-                    width: 90,
-                    height: 50,
-                  );
-                }
-              },
-            ),
+                  ),
             SizedBox(
               width: 120,
               height: 50,
               child: ElevatedButton(
                 onPressed: changeEmotionVisible,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0x88FFFFFF),
+                  backgroundColor: const Color(0x88FFFFFF),
                   elevation: 0,
                 ),
                 child: Align(
@@ -206,7 +200,6 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                         ),
                         IconButton(
                           onPressed: () {
-                            // ToDo Обработчик нажатия на кнопку календаря
                           },
                           icon: const Icon(
                             Icons.calendar_today_outlined,
@@ -221,7 +214,7 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                     child: Text(
                       "${_currentDateTime.year}",
                       style: GoogleFonts.comfortaa(
-                        color: Color(0xFF747686),
+                        color: const Color(0xFF747686),
                         fontSize: 18,
                       ),
                     ),
@@ -231,7 +224,7 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                 child: SizedBox(
                   height: 80,
                   child: Container(
-                    color: Colors.black.withOpacity(0.7), // Фоновый цвет подложки
+                    color: Colors.black.withOpacity(0.7),
                   ),
                 ),
               ),
@@ -241,7 +234,7 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                   padding: const EdgeInsets.only(top: 6, left: 10.0),
                   child: ButtonBar(
                     alignment: MainAxisAlignment.spaceEvenly,
-                    buttonPadding: EdgeInsets.only(right: 2),
+                    buttonPadding: const EdgeInsets.only(right: 2),
                     children: [
                       GestureDetector(
                         onTap: () async{
@@ -255,7 +248,7 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                           height: 60,
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage('images/sad_emotions.png'),
+                              image: AssetImage(emotionalList[0]),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -273,7 +266,7 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                           height: 60,
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage('images/less_sad_emotions.png'),
+                              image: AssetImage(emotionalList[1]),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -291,7 +284,7 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                           height: 60,
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage('images/normal_emotions.png'),
+                              image: AssetImage(emotionalList[2]),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -309,7 +302,7 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                           height: 60,
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage('images/less_happy_emotions.png'),
+                              image: AssetImage(emotionalList[3]),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -327,7 +320,7 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                           height: 60,
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage('images/happy_emotions.png'),
+                              image: AssetImage(emotionalList[4]),
                               fit: BoxFit.cover,
                             ),
                           ),

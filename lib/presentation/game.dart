@@ -26,7 +26,6 @@ class _GameState extends State<Game> {
   late Map<String, int> listFood = {};
   late ImageProvider myImageProvider;
   String assetGame = "стандартный";
-  bool countInventory = false; //TODO сделать дефолт true
   late int _kapikoinCount;
   late List<String> gifList = [
     "images/Sit-1.gif",
@@ -82,7 +81,7 @@ class _GameState extends State<Game> {
   }
 
   _gifTimerLoad() {
-    _gifTimer = Timer.periodic(Duration(seconds: 48), (timer) {
+    _gifTimer = Timer.periodic(const Duration(seconds: 48), (timer) {
       setState(() {
         _currentGifIndex = (_currentGifIndex + 1) % gifList.length;
         gifAnimation = gifList[_currentGifIndex];
@@ -110,7 +109,7 @@ class _GameState extends State<Game> {
   _startAnimation() {
     _currentGifTapIndex = (_currentGifTapIndex + 1) % gifTapList.length;
     gifAnimation = gifTapList[_currentGifTapIndex];
-    Future.delayed(Duration(seconds: 4), () {
+    Future.delayed(const Duration(seconds: 4), () {
       setState(() {
         gifAnimation = gifList[_currentGifIndex];
       });
@@ -136,7 +135,7 @@ class _GameState extends State<Game> {
   }
 
   void _startTimers() {
-    _hungerTimer = Timer.periodic(Duration(minutes: 15), (timer) {
+    _hungerTimer = Timer.periodic(const Duration(minutes: 15), (timer) {
       setState(() {
         if (_hungerScale <= 0 && _hp > 0) {
           _hungerScale = 100;
@@ -224,7 +223,7 @@ class _GameState extends State<Game> {
           height: 24,
         ));
       } else {
-        hearts.add(Icon(Icons.favorite, color: Colors.grey));
+        hearts.add(const Icon(Icons.favorite, color: Colors.grey));
       }
     }
   }
@@ -237,7 +236,6 @@ class _GameState extends State<Game> {
   }
 
   void _feedPet() {
-    if (countInventory) {
       if (_hungerScale + 10 <= 100) {
         setState(() {
           _hungerScale += 10; //10 - кол-во поднятия шкалы голода
@@ -251,10 +249,6 @@ class _GameState extends State<Game> {
         _saveData();
       }
     }
-    else{
-
-    }
-  }
 
   Future<void> _medic1Pet() async {
     if (_hp < 3) {
@@ -278,8 +272,8 @@ class _GameState extends State<Game> {
 
   _changeClothes(String data) async{
     gifList = gifMapClothes[data]!;
-    gifTapList = gifMapTap[data]!;
     gifAnimation = gifList.first;
+    gifTapList = gifMapTap[data]!;
     _startTimers();
     mGame.setAssetSkin(data);
   }
@@ -288,334 +282,309 @@ class _GameState extends State<Game> {
   Widget build(BuildContext context) {
     final _scrollController = ScrollController();
     return Scaffold(
-        body: Container(
-          decoration: BoxDecoration(
-            // image: DecorationImage(
-            //   image: AssetImage("images/room.jpg"),
-            //   fit: BoxFit.cover,
-            // ),
-          ),
-          child:
-          Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 15.0, top: 15),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        widget.namePet,
-                        textAlign: TextAlign.left,
-                        style: GoogleFonts.comfortaa(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                        ),
+        body: Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 15.0, top: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      widget.namePet,
+                      textAlign: TextAlign.left,
+                      style: GoogleFonts.comfortaa(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+              ),
 
-                      Padding(
-                        padding: const EdgeInsets.only(left: 15.0, right: 15),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [hearts[0], hearts[1], hearts[2]],
-                                ),
-                                LinearPercentIndicator(
-                                  center: new Text("Голод: $_hungerScale%",
-                                      style: GoogleFonts.comfortaa(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                      )),
-                                  lineHeight: 20,
-                                  width: MediaQuery.of(context).size.width * 0.5,
-                                  barRadius: Radius.circular(35),
-                                  percent: _hungerScale / 100,
-                                  progressColor: Colors.black,
-                                  backgroundColor: Colors.grey[500],
-                                ),
-                              ],
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15.0, right: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [hearts[0], hearts[1], hearts[2]],
+                              ),
+                              LinearPercentIndicator(
+                                center: new Text("Голод: $_hungerScale%",
+                                    style: GoogleFonts.comfortaa(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    )),
+                                lineHeight: 20,
+                                width: MediaQuery.of(context).size.width * 0.5,
+                                barRadius: Radius.circular(35),
+                                percent: _hungerScale / 100,
+                                progressColor: Colors.black,
+                                backgroundColor: Colors.grey[500],
+                              ),
+                            ],
+                          ),
+                          RawMaterialButton(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
                             ),
-                            Container(
-                              child: RawMaterialButton(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                fillColor: Colors.black,
-                                onPressed: () {
-                                  showModalBottomSheet(
-                                    backgroundColor: Colors.transparent,
-                                    context: context,
-                                    isScrollControlled: true,
-                                    builder: (context) {
-                                      return Shop(login: widget.login, onBuyButtonPressed: () { setState(() {}); },);
-                                    },
-                                  );
+                            fillColor: Colors.black,
+                            onPressed: () {
+                              showModalBottomSheet(
+                                backgroundColor: Colors.transparent,
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (context) {
+                                  return Shop(login: widget.login, onBuyButtonPressed: () { setState(() {}); }, onButtonPressed: (String image) { setState(() {_changeClothes(image);}); },);
                                 },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(2.0),
-                                  child: Row(
-                                    children:[
-                                      Icon(
-                                        Icons.shopping_bag_outlined,
-                                        color: Colors.white,
-                                      ),
-                                      Text(
-                                        "магазин",
-                                        style: GoogleFonts.comfortaa(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                        ),
-                                      )
-                                    ],
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: Row(
+                                children:[
+                                  const Icon(
+                                    Icons.shopping_bag_outlined,
+                                    color: Colors.white,
                                   ),
+                                  Text(
+                                    "магазин",
+                                    style: GoogleFonts.comfortaa(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+            ],
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _startAnimation();
+                });
+              },
+              child: Stack(children: [
+                DragTarget<String>(
+                    builder: (context, candidateData, rejectedData) {
+                      if (_hungerScale <= 0 && _hp == 0) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Он ушёл, но обещал вернуться",
+                              style: GoogleFonts.comfortaa(
+                                fontSize: 18,
+                              ),
+                            ),
+                            Text("Восстановить здоровье?",
+                              style: GoogleFonts.comfortaa(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: _showBlock,
+                              child: Text("1000 kapikoin",
+                                style: GoogleFonts.comfortaa(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    decoration: TextDecoration.underline,
+                                    color: Colors.black
                                 ),
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                _showBlock();
+                              },
+                              child: Image.asset('images/medic_2.png',
+                                width: 50,
+                                height: 50,
                               ),
                             ),
                           ],
-                        ),
-                      ),
-              ],
-            ),
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _startAnimation();
-                  });
-                },
-                child: Stack(children: [
-                  DragTarget<String>(
-                      builder: (context, candidateData, rejectedData) {
-                        if (_hungerScale <= 0 && _hp == 0) {
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Он ушёл, но обещал вернуться",
-                                style: GoogleFonts.comfortaa(
-                                  fontSize: 18,
-                                ),
-                              ),
-                              Text("Восстановить здоровье?",
-                                style: GoogleFonts.comfortaa(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: _showBlock,
-                                child: Text("1000 kapikoin",
-                                  style: GoogleFonts.comfortaa(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      decoration: TextDecoration.underline,
-                                      color: Colors.black
-                                  ),
-                                ),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  _showBlock();
-                                },
-                                child: Image.asset('images/medic_2.png',
-                                  width: 50,
-                                  height: 50,
-                                ),
-                              ),
-                            ],
-                          );
-                        } else {
-                          return Image.asset(
-                            gifAnimation,
-                          );
-                        }
-                      }, onWillAccept: (data) {
-                    return data == data;
-                  }, onAccept: (data) async {
-                    if (countInventory) {
-                      if (_hungerScale > 0) {
-                        if (data == "Мята(1 здоровье)") {
-                          _medic1Pet();
-                        } else if (data == "Чай(3 здоровья)") {
-                          _medic2Pet();
-                        } else {
-                          _feedPet();
-                        }
-                        await InventoryDatabase.instance.updateCount(listFood[data]! - 1, data);
-                        _refreshPage();
-                        mInventoryFire.updateCountEat(
-                            widget.login, listFood[data]! - 1, data);
+                        );
+                      } else {
+                        return Image.asset(
+                          gifAnimation,
+                        );
                       }
-                    }
-                    else{
-                      _changeClothes(data);
+                    }, onWillAccept: (data) {
+                  return data == data;
+                }, onAccept: (data) async {
+                    if (_hungerScale > 0) {
+                      if (data == "Мята(1 здоровье)") {
+                        _medic1Pet();
+                      } else if (data == "Чай(3 здоровья)") {
+                        _medic2Pet();
+                      } else {
+                        _feedPet();
+                      }
+                      await InventoryDatabase.instance.updateCount(listFood[data]! - 1, data);
                       _refreshPage();
+                      mInventoryFire.updateCountEat(
+                          widget.login, listFood[data]! - 1, data);
                     }
                   }),
-                ]),
-              ),
+              ]),
             ),
-            Center(
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_left),
-                    onPressed: () {
-                      _scrollController.animateTo(
-                          _scrollController.offset -
-                              MediaQuery.of(context).size.width * 0.5,
-                          duration: Duration(milliseconds: 500),
-                          curve: Curves.easeInOut);
-                    },
-                  ),
+          ),
+          Center(
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_left),
+                  onPressed: () {
+                    _scrollController.animateTo(
+                        _scrollController.offset -
+                            MediaQuery.of(context).size.width * 0.5,
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.easeInOut);
+                  },
+                ),
 
-                  Expanded(
-                    child: Container(
-                      height: 200,
-                      child: SingleChildScrollView(
-                        controller: _scrollController,
-                        scrollDirection: Axis.horizontal,
-                        child: StreamBuilder<List<EatInInventory>>(
-                            stream: InventoryDatabase.instance.getEatListStream(),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<List<EatInInventory>> snapshot) {
-                              if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                                return Row(
-                                  children:
-                                      List.generate(snapshot.data!.length, (index) {
-                                    final int count = snapshot.data![index].count;
-                                    listFood[snapshot.data![index].title] = count;
-                                    if (count <= 0) {
-                                      return SizedBox.shrink();
-                                    }
-                                    return Draggable(
-                                      data: snapshot.data![index].title,
-                                      feedback: Padding(
-                                          padding: const EdgeInsets.all(2.0),
-                                          child: Container(
-                                            // height: 70,
-                                            // width: 70,
-                                            // decoration: BoxDecoration(
-                                            //   shape: BoxShape.circle,
-                                            //   color: Colors.white,
-                                            // ),
-                                            child: Image.asset(
-                                              snapshot.data![index].asset,
-                                              width: 100,
-                                              height: 100,
-                                            ),
-                                          )),
-                                      child: Padding(
-                                          padding: const EdgeInsets.all(2.0),
-                                          child: Container(
-                                            // height: 70,
-                                            // width: 70,
-                                            // decoration: BoxDecoration(
-                                            //   shape: BoxShape.circle,
-                                            //   color: Colors.white,
-                                            // ),
-                                            child: Image.asset(
-                                              snapshot.data![index].asset,
-                                              width: 100,
-                                              height: 100,
-                                            ),
-                                          )),
-                                    );
-                                  }), //data!!!!
-                                );
-                              } else if (snapshot.connectionState ==
-                                      ConnectionState.done &&
-                                  snapshot.data!.isEmpty) {
-                                return SizedBox.shrink();
-                              } else {
-                                return CircularProgressIndicator();
-                              }
-                            }),
-                      ),
+                Expanded(
+                  child: SizedBox(
+                    height: 200,
+                    child: SingleChildScrollView(
+                      controller: _scrollController,
+                      scrollDirection: Axis.horizontal,
+                      child: StreamBuilder<List<EatInInventory>>(
+                          stream: InventoryDatabase.instance.getEatListStream(),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<List<EatInInventory>> snapshot) {
+                            if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                              return Row(
+                                children:
+                                    List.generate(snapshot.data!.length, (index) {
+                                  final int count = snapshot.data![index].count;
+                                  listFood[snapshot.data![index].title] = count;
+                                  if (count <= 0) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  return Draggable(
+                                    data: snapshot.data![index].title,
+                                    feedback: Padding(
+                                        padding: const EdgeInsets.all(2.0),
+                                        child: Container(
+                                          // height: 70,
+                                          // width: 70,
+                                          // decoration: BoxDecoration(
+                                          //   shape: BoxShape.circle,
+                                          //   color: Colors.white,
+                                          // ),
+                                          child: Image.asset(
+                                            snapshot.data![index].asset,
+                                            width: 100,
+                                            height: 100,
+                                          ),
+                                        )),
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(2.0),
+                                        child: Image.asset(
+                                          snapshot.data![index].asset,
+                                          width: 100,
+                                          height: 100,
+                                        )),
+                                  );
+                                }), //data!!!!
+                              );
+                            } else if (snapshot.connectionState ==
+                                    ConnectionState.done &&
+                                snapshot.data!.isEmpty) {
+                              return const SizedBox.shrink();
+                            } else {
+                              return const CircularProgressIndicator();
+                            }
+                          }),
                     ),
                   ),
-                  /*Expanded(
-                    child: Container(
-                      height: 200,
-                      child: SingleChildScrollView(
-                        controller: _scrollController,
-                        scrollDirection: Axis.horizontal,
-                        child: StreamBuilder<List<ClothesInInventory>>(
-                            stream: InventoryClothesDatabase.instance.getEatListStream(),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<List<ClothesInInventory>> snapshot) {
-                              if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                                return Row(
-                                  children:
-                                  List.generate(snapshot.data!.length, (index) {
-                                    return Draggable(
-                                      data: snapshot.data![index].title,
-                                      feedback: Padding(
-                                          padding: const EdgeInsets.all(2.0),
-                                          child: Container(
-                                            // height: 70,
-                                            // width: 70,
-                                            // decoration: BoxDecoration(
-                                            //   shape: BoxShape.circle,
-                                            //   color: Colors.white,
-                                            // ),
-                                            child: Image.asset(
-                                              snapshot.data![index].asset,
-                                              width: 100,
-                                              height: 100,
-                                            ),
-                                          )),
-                                      child: Padding(
-                                          padding: const EdgeInsets.all(2.0),
-                                          child: Container(
-                                            // height: 70,
-                                            // width: 70,
-                                            // decoration: BoxDecoration(
-                                            //   shape: BoxShape.circle,
-                                            //   color: Colors.white,
-                                            // ),
-                                            child: Image.asset(
-                                              snapshot.data![index].asset,
-                                              width: 100,
-                                              height: 100,
-                                            ),
-                                          )),
-                                    );
-                                  }), //data!!!!
-                                );
-                              } else if (snapshot.connectionState ==
-                                  ConnectionState.done &&
-                                  snapshot.data!.isEmpty) {
-                                return SizedBox.shrink();
-                              } else {
-                                return CircularProgressIndicator();
-                              }
-                            }),
-                      ),
+                ),
+                /*Expanded(
+                  child: Container(
+                    height: 200,
+                    child: SingleChildScrollView(
+                      controller: _scrollController,
+                      scrollDirection: Axis.horizontal,
+                      child: StreamBuilder<List<ClothesInInventory>>(
+                          stream: InventoryClothesDatabase.instance.getEatListStream(),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<List<ClothesInInventory>> snapshot) {
+                            if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                              return Row(
+                                children:
+                                List.generate(snapshot.data!.length, (index) {
+                                  return Draggable(
+                                    data: snapshot.data![index].title,
+                                    feedback: Padding(
+                                        padding: const EdgeInsets.all(2.0),
+                                        child: Container(
+                                          // height: 70,
+                                          // width: 70,
+                                          // decoration: BoxDecoration(
+                                          //   shape: BoxShape.circle,
+                                          //   color: Colors.white,
+                                          // ),
+                                          child: Image.asset(
+                                            snapshot.data![index].asset,
+                                            width: 100,
+                                            height: 100,
+                                          ),
+                                        )),
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(2.0),
+                                        child: Container(
+                                          // height: 70,
+                                          // width: 70,
+                                          // decoration: BoxDecoration(
+                                          //   shape: BoxShape.circle,
+                                          //   color: Colors.white,
+                                          // ),
+                                          child: Image.asset(
+                                            snapshot.data![index].asset,
+                                            width: 100,
+                                            height: 100,
+                                          ),
+                                        )),
+                                  );
+                                }), //data!!!!
+                              );
+                            } else if (snapshot.connectionState ==
+                                ConnectionState.done &&
+                                snapshot.data!.isEmpty) {
+                              return SizedBox.shrink();
+                            } else {
+                              return CircularProgressIndicator();
+                            }
+                          }),
                     ),
-                  ),*/
-                  IconButton(
-                    icon: Icon(Icons.arrow_right),
-                    onPressed: () {
-                      _scrollController.animateTo(
-                          _scrollController.offset +
-                              MediaQuery.of(context).size.width * 0.5,
-                          duration: Duration(milliseconds: 500),
-                          curve: Curves.easeInOut);
-                    },
                   ),
-                ],
-              ),
-            )
-          ]),
-        ));
+                ),*/
+                IconButton(
+                  icon: const Icon(Icons.arrow_right),
+                  onPressed: () {
+                    _scrollController.animateTo(
+                        _scrollController.offset +
+                            MediaQuery.of(context).size.width * 0.5,
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.easeInOut);
+                  },
+                ),
+              ],
+            ),
+          )
+        ]));
   }
 
   _refreshPage() {

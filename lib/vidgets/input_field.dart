@@ -13,7 +13,7 @@ class MyInputField extends StatelessWidget{
   Widget build(BuildContext context) {
     // TODO: implement build
     return Container(
-        margin: EdgeInsets.only(top: 16,),
+        margin: const EdgeInsets.only(top: 16,),
         child: Column(
             children: [
               Text(
@@ -22,7 +22,7 @@ class MyInputField extends StatelessWidget{
               ),
               Container(
                   height: 42,
-                  margin: EdgeInsets.only(top: 8),
+                  margin: const EdgeInsets.only(top: 8),
                   decoration:  BoxDecoration(
                       border: Border.all(
                           color: Colors.grey,
@@ -43,13 +43,13 @@ class MyInputField extends StatelessWidget{
                               style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                               decoration:  InputDecoration(
                                   hintText: hint,
-                                  focusedBorder: UnderlineInputBorder(
+                                  focusedBorder: const UnderlineInputBorder(
                                       borderSide: BorderSide(
                                           color: Colors.white10,
                                           width: 0
                                       )
                                   ),
-                                  enabledBorder: UnderlineInputBorder(
+                                  enabledBorder: const UnderlineInputBorder(
                                       borderSide: BorderSide(
                                           color: Colors.white10,
                                           width: 0

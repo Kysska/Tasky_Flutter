@@ -14,10 +14,11 @@ class Habit{
   late final List<String> isCompleted;
   late final int sumCompleted;
   late final List<String> assets;
+  late final int receivedGifts;
 
   Habit({required this.id, required this.title,
     required this.isCompleted, required this.tag, required this.time, required this.listWeek, required this.sumCompleted,
-    required this.assets
+    required this.assets, required this.receivedGifts
   });
 
   factory Habit.fromMap(Map<String, dynamic> json) => Habit(
@@ -29,6 +30,7 @@ class Habit{
       listWeek: (json['listWeek'].split(',') as List).map((str) => str.toLowerCase() == 'true').toList(),
       sumCompleted: json['sumCompleted'],
       assets: json['assets'].split(','),
+      receivedGifts: json['receivedGifts'],
   );
 
   Map<String, dynamic> toMap(){
@@ -41,6 +43,7 @@ class Habit{
       'listWeek': listWeek.join(','),
       'sumCompleted': sumCompleted,
       'assets': assets.join(','),
+      'receivedGifts': receivedGifts
     };
   }
 }
@@ -108,7 +111,8 @@ class DatabaseHelperHabit{
     listWeek TEXT,
     sumCompleted INT,
     isCompleted TEXT,
-    assets TEXT
+    assets TEXT,
+    receivedGifts INT
     )
     ''');
   }
@@ -150,5 +154,15 @@ class DatabaseHelperHabit{
     var result = await db.rawQuery('SELECT COUNT(*) FROM habit');
     int count = Sqflite.firstIntValue(result) ?? 0;
     return count;
+  }
+
+  Future<void> updateReceivedGifts(String habitId, int newReceivedGifts) async {
+    Database db = await instance.database;
+    await db.update(
+      'habit',
+      {'receivedGifts': newReceivedGifts},
+      where: 'id = ?',
+      whereArgs: [habitId],
+    );
   }
 }

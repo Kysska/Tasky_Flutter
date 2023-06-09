@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +65,7 @@ class _BottomBarState extends State<Bar> {
   List pages = [];
   int _kapikoinCount = 0;
   String assetGame = "стандартный";
-  late String _userAvatar = "https://firebasestorage.googleapis.com/v0/b/tasky-3f0ce.appspot.com/o/images%2F1684981544841?alt=media&token=ab9e8659-70a7-420e-bb94-178563a9d5e4";
+  late final String _userAvatar = "images/avatar.jpg";
   GameDatabase mGame = GameDatabase();
   UserFirebase mUser = UserFirebase();
 
@@ -74,21 +73,19 @@ class _BottomBarState extends State<Bar> {
   @override initState(){
     super.initState();
     updateCoin();
-    getAvatar();
     pages = [
       Home(login: widget.login),
       NoteScreen(login: widget.login,),
       Game(login: widget.login, namePet: widget.namePet),
       Forum(login: widget.login,),
       Person(login: widget.login, avatar: _userAvatar),
-      Settings()
     ];
 
   }
 
   Future<void> updateCoin() async{
     SharedPreferences.getInstance().then((prefs) {
-      Stream<int> valueStream = Stream.periodic(Duration(seconds: 1), (_) {
+      Stream<int> valueStream = Stream.periodic(const Duration(seconds: 1), (_) {
         return prefs.getInt('money') ?? 0;
       });
       valueStream.listen((value) {
@@ -97,12 +94,8 @@ class _BottomBarState extends State<Bar> {
         });
       });
     });
-    // _kapikoinCount = await mGame.getMoney();
   }
 
-  Future<void> getAvatar() async{
-    _userAvatar = await mUser.getUserAvatar(widget.login);
-  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -110,11 +103,6 @@ class _BottomBarState extends State<Bar> {
     });
   }
 
-  void _onProfileIconPressed() {
-    setState(() {
-      _selectedIndex = 4;
-    });
-  }
 
 
   @override
@@ -140,21 +128,11 @@ class _BottomBarState extends State<Bar> {
         ),
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 15),
+            padding: const EdgeInsets.only(right: 15),
             child: CircleAvatar(
               radius: 20,
-              child: InkWell(
-                onTap: _onProfileIconPressed,
                 child: ClipOval(
-                  child: CachedNetworkImage(
-                    imageUrl: _userAvatar,
-                    placeholder: (context, url) => CircularProgressIndicator(
-                      color: Colors.black,
-                      strokeWidth: 2.0,
-                    ),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
-                  ),
-                ),
+                  child: Image.asset(_userAvatar),
               ),
             ),
           ),
@@ -173,10 +151,10 @@ class _BottomBarState extends State<Bar> {
                   color: Colors.black,
                   size: 20,
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 Text(
                   _kapikoinCount.toString(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
@@ -214,8 +192,8 @@ class _BottomBarState extends State<Bar> {
             backgroundColor: Colors.white,
             color: Colors.black,
             activeColor: Colors.white,
-            tabBackgroundColor: Color(0xFF111010),
-            padding: EdgeInsets.all(16),
+            tabBackgroundColor: const Color(0xFF111010),
+            padding: const EdgeInsets.all(16),
             onTabChange: _onItemTapped,
             tabs: const[
               GButton(icon: Icons.home_filled),

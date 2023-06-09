@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tasky_flutter/presentation/addnote.dart';
 
@@ -16,7 +15,7 @@ class NoteScreen extends StatefulWidget {
 class _NoteScreenState extends State<NoteScreen> {
 
   _refreshPage(){
-    Future.delayed(Duration(milliseconds: 50));
+    Future.delayed(const Duration(milliseconds: 50));
     setState(() {});
   }
 
@@ -33,14 +32,14 @@ class _NoteScreenState extends State<NoteScreen> {
             }
           });
         },
+        elevation: 0,
+        backgroundColor: const Color(0xFF93D7FF),
 
-        child: Icon(
+        child: const Icon(
           Icons.add,
           size: 30,
           color: Colors.white,
         ),
-        elevation: 0,
-        backgroundColor: const Color(0xFF93D7FF),
       ),
       body: ListNote(login: widget.login,),
 
