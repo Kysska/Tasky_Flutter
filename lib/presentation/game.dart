@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:tasky_flutter/vidgets/shop.dart';
 
@@ -44,7 +45,11 @@ class _GameState extends State<Game> {
   int _hp = 3;
   List<Widget> hearts = List.generate(
     3,
-    (index) => Icon(Icons.favorite, color: Colors.red),
+        (index) => Image.asset(
+      'images/heart.png',
+      width: 24, // Здесь задайте желаемую ширину изображения
+      height: 24, // Здесь задайте желаемую высоту изображения
+    ),
   );
 
   @override
@@ -113,7 +118,7 @@ class _GameState extends State<Game> {
   }
 
   void _startTimers() {
-    _hungerTimer = Timer.periodic(Duration(minutes: 15), (timer) {
+    _hungerTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         if (_hungerScale <= 0 && _hp > 0) {
           _hungerScale = 100;
@@ -202,7 +207,10 @@ class _GameState extends State<Game> {
     hearts.clear();
     for (int i = 1; i <= 3; i++) {
       if (i <= _hp) {
-        hearts.add(Icon(Icons.favorite, color: Colors.red));
+        hearts.add(Image.asset('images/heart.png',
+          width: 24, // Здесь задайте желаемую ширину изображения
+          height: 24,
+        ));
       } else {
         hearts.add(Icon(Icons.favorite, color: Colors.grey));
       }
@@ -261,11 +269,27 @@ class _GameState extends State<Game> {
         Column(
           children: [
             Padding(
+              padding: const EdgeInsets.only(left: 15.0, top: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "имя капибары", // ToDo имя капибары
+                    textAlign: TextAlign.left,
+                    style: GoogleFonts.comfortaa(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
+                  /*Container(
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.red,
@@ -286,31 +310,75 @@ class _GameState extends State<Game> {
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
-                  ),
-                  Column(
-                    children: [
-                      LinearPercentIndicator(
-                        center: new Text("Голод: $_hungerScale%",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                            )),
-                        lineHeight: 20,
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        barRadius: Radius.circular(35),
-                        percent: _hungerScale / 100,
-                        progressColor: Colors.red,
-                        backgroundColor: Colors.grey[400],
-                      ),
-                      Row(
-                        children: [hearts[0], hearts[1], hearts[2]],
-                      ),
-                    ],
-                  ),
+                  ),*/
                 ],
               ),
             ),
           ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 15.0, right: 15),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Row(
+                    children: [hearts[0], hearts[1], hearts[2]],
+                  ),
+                  LinearPercentIndicator(
+                    center: new Text("Голод: $_hungerScale%",
+                        style: GoogleFonts.comfortaa(
+                          color: Colors.white,
+                          fontSize: 12,
+                        )),
+                    lineHeight: 20,
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    barRadius: Radius.circular(35),
+                    percent: _hungerScale / 100,
+                    progressColor: Colors.black,
+                    backgroundColor: Colors.grey[500],
+                  ),
+                ],
+              ),
+              Container(
+                child: RawMaterialButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  fillColor: Colors.black,
+                  onPressed: () {
+                    showModalBottomSheet(
+                      backgroundColor: Colors.transparent,
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (context) {
+                        return Shop(login: widget.login);
+                      },
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Row(
+                      children:[
+                        Icon(
+                          Icons.shopping_bag_outlined,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          "магазин",
+                          style: GoogleFonts.comfortaa(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         Expanded(
           child: GestureDetector(
@@ -324,12 +392,40 @@ class _GameState extends State<Game> {
                   builder: (context, candidateData, rejectedData) {
                 if (_hungerScale <= 0 && _hp == 0) {
                   return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Он ушёл, но обещал вернуться"),
-                      const Text("Восстановить здоровье"),
+                      Text(
+                        "Он ушёл, но обещал вернуться",
+                        style: GoogleFonts.comfortaa(
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text("Восстановить здоровье?",
+                        style: GoogleFonts.comfortaa(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       TextButton(
                           onPressed: _showBlock,
-                          child: const Text("1000 kapikount"))
+                          child: Text("1000 kapikoin",
+                            style: GoogleFonts.comfortaa(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
+                              color: Colors.black
+                            ),
+                          ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          _showBlock();
+                        },
+                        child: Image.asset('images/medic_2.png',
+                          width: 50,
+                          height: 50,
+                        ),
+                      ),
                     ],
                   );
                 } else {

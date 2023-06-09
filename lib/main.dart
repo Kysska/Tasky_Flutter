@@ -63,6 +63,7 @@ class _BottomBarState extends State<Bar> {
   int _selectedIndex = 0;
   List pages = [];
   int _kapikoinCount = 0;
+  int selectedIndex = 0;
   late String _userAvatar = "https://firebasestorage.googleapis.com/v0/b/tasky-3f0ce.appspot.com/o/images%2F1684981544841?alt=media&token=ab9e8659-70a7-420e-bb94-178563a9d5e4";
   GameDatabase mGame = GameDatabase();
   UserFirebase mUser = UserFirebase();
@@ -141,7 +142,6 @@ class _BottomBarState extends State<Bar> {
             child: CircleAvatar(
               radius: 20,
               child: InkWell(
-                onTap: _onProfileIconPressed,
                 child: ClipOval(
                   child: CachedNetworkImage(
                     imageUrl: _userAvatar,
@@ -215,7 +215,7 @@ class _BottomBarState extends State<Bar> {
             padding: EdgeInsets.all(16),
             onTabChange: _onItemTapped,
             tabs: const[
-              GButton(icon: Icons.home_filled),
+              GButton(icon: Icons.home_filled,),
               GButton(icon: Icons.book_rounded),
               GButton(icon: Icons.videogame_asset_rounded),
               GButton(icon: Icons.people),
