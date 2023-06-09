@@ -47,6 +47,7 @@ class _HomeState extends State<Home> {
   }
 
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -648,23 +649,30 @@ class _HabitsCardsState extends State<HabitsCards> {
                             },
                           );
                         },
-                            child: Card(
-                              color: Colors.white,
-                              // snapshot.data![index].isCompleted
-                              //     ? Colors.grey[300]
-                              //     : Colors.white,
-                              child: ListTile(
-                                title: Text(snapshot
-                                            .data![index].title.length >= 25
-                                    ? '${snapshot.data![index].title.substring(0, 25)}...'
-                                    : snapshot.data![index].title,),
-                                subtitle: Text(snapshot.data![index].time),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    snapshot.data![index].tag == ""
-                                        ? SizedBox.shrink()
-                                        : Container(
+                        child: Card(
+                          color: dayInList ? Color(0xFFD9DCE2) : Colors.white,
+                          child: ListTile(
+                            title: Text(snapshot.data![index].title.length >= 25 ? '${snapshot.data![index].title.substring(0, 25)}...' : snapshot.data![index].title,
+                              style: GoogleFonts.comfortaa(
+                                color: dayInList ? Color(0xFF111010) : Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                            subtitle: Text(snapshot.data![index].time,
+                              style: GoogleFonts.comfortaa(
+                                color:  dayInList ? Color(0xFF80919B) : Color(0xFF6A7791),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                            trailing:
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                snapshot.data![index].tag == ""
+                                    ? SizedBox.shrink()
+                                    : Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(14.0),
                                     border: Border.all(
@@ -675,7 +683,11 @@ class _HabitsCardsState extends State<HabitsCards> {
                                   padding: const EdgeInsets.all(4.0),
                                   child: Text(
                                     snapshot.data![index].tag,
-                                    style: const TextStyle(fontSize: 14.0),
+                                    style: GoogleFonts.comfortaa(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
                                   ),
                                 ),
                                 dayInList

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:tasky_flutter/vidgets/shop.dart';
 
@@ -9,8 +10,9 @@ import '../data/inventorydatabase.dart';
 
 class Game extends StatefulWidget {
   final String login;
+  final String namePet;
 
-  const Game({super.key, required this.login});
+  const Game({super.key, required this.login, required this.namePet});
 
   @override
   _GameState createState() => _GameState();
@@ -23,14 +25,16 @@ class _GameState extends State<Game> {
   Timer _gifTimer = Timer.periodic(const Duration(minutes: 48), (timer) {});
   late Map<String, int> listFood = {};
   late ImageProvider myImageProvider;
+  String assetGame = "стандартный";
+  bool countInventory = false; //TODO сделать дефолт true
   late int _kapikoinCount;
-  late final List<String> gifList = [
+  late List<String> gifList = [
     "images/Sit-1.gif",
     "images/Sit-2.gif",
     "images/Sleep-1.gif",
     "images/Sleep-2.gif",
   ];
-  late final List<String> gifTapList = [
+  late List<String> gifTapList = [
     "images/Tap-1.gif",
     "images/Tap-2.gif",
   ];
@@ -43,16 +47,32 @@ class _GameState extends State<Game> {
   int _hp = 3;
   List<Widget> hearts = List.generate(
     3,
-    (index) => Icon(Icons.favorite, color: Colors.red),
+        (index) => Image.asset(
+      'images/heart.png',
+      width: 24,
+      height: 24,
+    ),
   );
 
   @override
   void initState() {
     super.initState();
-    myImageProvider = AssetImage(gifAnimation);
+    initialize();
     _loadHungerScale();
     _getKapikoinCount();
     _gifTimerLoad();
+  }
+
+  Future<void> initialize() async {
+    await getAsset();
+    gifList = gifMapClothes[assetGame]!;
+    gifTapList = gifMapTap[assetGame]!;
+    gifAnimation = gifList.first;
+    myImageProvider = AssetImage(gifAnimation);
+  }
+
+  Future<void> getAsset() async {
+    assetGame = await GameDatabase().getAssetSkin() ?? "стандартный";
   }
 
   @override
@@ -179,8 +199,8 @@ class _GameState extends State<Game> {
   }
 
   _showBlock() async {
-    if (_kapikoinCount >= 10) {
-      _kapikoinCount -= 10;
+    if (_kapikoinCount >= 1000) {
+      _kapikoinCount -= 1000;
       await mGame.setMoney(_kapikoinCount);
       _startTimers();
       _gifTimerLoad();
@@ -199,7 +219,10 @@ class _GameState extends State<Game> {
     hearts.clear();
     for (int i = 1; i <= 3; i++) {
       if (i <= _hp) {
-        hearts.add(Icon(Icons.favorite, color: Colors.red));
+        hearts.add(Image.asset('images/heart.png',
+          width: 24,
+          height: 24,
+        ));
       } else {
         hearts.add(Icon(Icons.favorite, color: Colors.grey));
       }
@@ -214,17 +237,22 @@ class _GameState extends State<Game> {
   }
 
   void _feedPet() {
-    if (_hungerScale + 10 <= 100) {
-      setState(() {
-        _hungerScale += 10; //10 - кол-во поднятия шкалы голода
-      });
-      _saveData();
+    if (countInventory) {
+      if (_hungerScale + 10 <= 100) {
+        setState(() {
+          _hungerScale += 10; //10 - кол-во поднятия шкалы голода
+        });
+        _saveData();
+      }
+      else{
+        setState(() {
+          _hungerScale = 100;
+        });
+        _saveData();
+      }
     }
     else{
-      setState(() {
-        _hungerScale = 100;
-      });
-      _saveData();
+
     }
   }
 
@@ -248,6 +276,14 @@ class _GameState extends State<Game> {
     }
   }
 
+  _changeClothes(String data) async{
+    gifList = gifMapClothes[data]!;
+    gifTapList = gifMapTap[data]!;
+    gifAnimation = gifList.first;
+    _startTimers();
+    mGame.setAssetSkin(data);
+  }
+
   @override
   Widget build(BuildContext context) {
     final _scrollController = ScrollController();
@@ -264,51 +300,89 @@ class _GameState extends State<Game> {
         Column(
           children: [
             Padding(
+              padding: const EdgeInsets.only(left: 15.0, top: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    widget.namePet,
+                    textAlign: TextAlign.left,
+                    style: GoogleFonts.comfortaa(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.red,
-                        backgroundColor: Colors.red,
-                      ),
-                      onPressed: () {
-                        showModalBottomSheet(
-                          backgroundColor: Colors.transparent,
-                          context: context,
-                          isScrollControlled: true,
-                          builder: (context) {
-                            return Shop(login: widget.login, onBuyButtonPressed: () { setState(() {}); },);
-                          },
-                        );
-                      },
-                      child: Text(
-                        "Магазин",
-                        style: TextStyle(color: Colors.white),
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15.0, right: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Row(
+                              children: [hearts[0], hearts[1], hearts[2]],
+                            ),
+                            LinearPercentIndicator(
+                              center: new Text("Голод: $_hungerScale%",
+                                  style: GoogleFonts.comfortaa(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  )),
+                              lineHeight: 20,
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              barRadius: Radius.circular(35),
+                              percent: _hungerScale / 100,
+                              progressColor: Colors.black,
+                              backgroundColor: Colors.grey[500],
+                            ),
+                          ],
+                        ),
+                        Container(
+                          child: RawMaterialButton(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            fillColor: Colors.black,
+                            onPressed: () {
+                              showModalBottomSheet(
+                                backgroundColor: Colors.transparent,
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (context) {
+                                  return Shop(login: widget.login, onBuyButtonPressed: () { setState(() {}); },);
+                                },
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: Row(
+                                children:[
+                                  Icon(
+                                    Icons.shopping_bag_outlined,
+                                    color: Colors.white,
+                                  ),
+                                  Text(
+                                    "магазин",
+                                    style: GoogleFonts.comfortaa(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  Column(
-                    children: [
-                      LinearPercentIndicator(
-                        center: new Text("Голод: $_hungerScale%",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                            )),
-                        lineHeight: 20,
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        barRadius: Radius.circular(35),
-                        percent: _hungerScale / 100,
-                        progressColor: Colors.red,
-                        backgroundColor: Colors.grey[400],
-                      ),
-                      Row(
-                        children: [hearts[0], hearts[1], hearts[2]],
-                      ),
-                    ],
                   ),
                 ],
               ),
@@ -327,12 +401,40 @@ class _GameState extends State<Game> {
                   builder: (context, candidateData, rejectedData) {
                 if (_hungerScale <= 0 && _hp == 0) {
                   return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Он ушёл, но обещал вернуться"),
-                      const Text("Восстановить здоровье"),
+                      Text(
+                        "Он ушёл, но обещал вернуться",
+                        style: GoogleFonts.comfortaa(
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text("Восстановить здоровье?",
+                        style: GoogleFonts.comfortaa(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       TextButton(
-                          onPressed: _showBlock,
-                          child: const Text("1000 kapikount"))
+                        onPressed: _showBlock,
+                        child: Text("1000 kapikoin",
+                          style: GoogleFonts.comfortaa(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
+                              color: Colors.black
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          _showBlock();
+                        },
+                        child: Image.asset('images/medic_2.png',
+                          width: 50,
+                          height: 50,
+                        ),
+                      ),
                     ],
                   );
                 } else {
@@ -343,18 +445,24 @@ class _GameState extends State<Game> {
               }, onWillAccept: (data) {
                 return data == data;
               }, onAccept: (data) async {
-                if (_hungerScale > 0) {
-                  if (data == "Мята(1 здоровье)") {
-                    _medic1Pet();
-                  } else if (data == "Чай(3 здоровья)") {
-                    _medic2Pet();
-                  } else {
-                    _feedPet();
+                if (countInventory) {
+                  if (_hungerScale > 0) {
+                    if (data == "Мята(1 здоровье)") {
+                      _medic1Pet();
+                    } else if (data == "Чай(3 здоровья)") {
+                      _medic2Pet();
+                    } else {
+                      _feedPet();
+                    }
+                    await InventoryDatabase.instance.updateCount(listFood[data]! - 1, data);
+                    _refreshPage();
+                    mInventoryFire.updateCountEat(
+                        widget.login, listFood[data]! - 1, data);
                   }
-                  await InventoryDatabase.instance.updateCount(listFood[data]! - 1, data);
+                }
+                else{
+                  _changeClothes(data);
                   _refreshPage();
-                  await mInventoryFire.updateCountEat(
-                      widget.login, listFood[data]! - 1, data);
                 }
               }),
             ]),
@@ -519,4 +627,72 @@ class _GameState extends State<Game> {
   _refreshPage() {
     setState(() {});
   }
+
+  Map<String, List<String>> gifMapClothes = {
+    'стандартный':
+  [ "images/Sit-1.gif",
+    "images/Sit-2.gif",
+    "images/Sleep-1.gif",
+    "images/Sleep-2.gif",],
+    'Апельсинка':
+    [ "images/Orange_sit_1.gif",
+      "images/Orange_sit_2.gif",
+      "images/Orange_sleep_1.gif",
+      "images/Orange_sleep_2.gif",],
+    'Шиноби Конохи':
+        [
+          "images/Bandage_sit_1.gif",
+          "images/Bandage_sit_2.gif",
+          "images/Bandage_sleep_1.gif",
+          "images/Bandage_sleep_2.gif",
+        ],
+    'Шляпа':
+        [
+          "images/Hat_sit_1.gif",
+          "images/Hat_sit_2.gif",
+          "images/Hat_sleep_1.gif",
+          "images/Hat_sleep_2.gif",
+        ],
+    'Поварской колпак':
+        [
+          "images/Chefs_Hat_Sit_1.gif",
+          "images/Chefs_Hat_Sit_2.gif",
+          "images/Chefs_Hat_Sleep_1.gif",
+          "images/Chefs_Hat_Sleep_1.gif",
+        ],
+    'бабочка':
+        [
+          "images/Butterfly_sit_1.gif",
+          "images/Butterfly_sit_2.gif",
+          "images/Butterfly_sleep_1.gif",
+          "images/Butterfly_Hat_sleep_1.gif"
+        ]
+  };
+
+  Map<String, List<String>> gifMapTap = {
+    'стандартный': [
+      "images/Tap-1.gif",
+      "images/Tap-2.gif",
+    ],
+    'Апельсинка': [
+      "images/Orange_tap_1.gif",
+      "images/Orange_tap_2.gif",
+    ],
+    'Шиноби Конохи': [
+      "images/Bandage_tap_1.gif",
+      "images/Bandage_tap_2.gif",
+    ],
+    'Шляпа': [
+      "images/Hat_tap_1.gif",
+      "images/Hat_tap_2.gif",
+    ],
+    'Поварской колпак': [
+      "images/Chefs_Hat_Tap_1.gif",
+      "images/Chefs_Hat_Tap_2.gif",
+    ],
+    'бабочка' : [
+      "images/Butterfly_tap_1.gif",
+      "images/Butterfly_tap_2.gif",
+    ]
+  };
 }

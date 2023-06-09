@@ -274,7 +274,7 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                 future: InventoryClothesDatabase.instance.checkIfExists(clothes.title),
                 builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
+                    return const CircularProgressIndicator(color: Colors.white,);
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
@@ -308,8 +308,7 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                                     : TextButton(
                                   child: const Text('Купить'),
                                   onPressed: () async {
-                                    int newCount = _kapikoinCount - clothes.money;
-                                    if (newCount > _kapikoinCount) {
+                                    if (clothes.money > _kapikoinCount) {
                                       const snackBar = SnackBar(content: Text('Не хватает монет'));
                                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                     } else {
@@ -387,8 +386,7 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                                 TextButton(
                                   child: const Text('Купить'),
                                   onPressed: () async {
-                                    int newCount = _kapikoinCount - mListMedic![index].money;
-                                    if(newCount > _kapikoinCount){
+                                    if(mListMedic![index].money > _kapikoinCount){
                                       const snackBar = SnackBar(
                                           content: Text('Не хватает монет')
                                       );

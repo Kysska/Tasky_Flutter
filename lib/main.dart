@@ -30,6 +30,7 @@ Future<void> main() async{
   firestore.settings = const Settings(persistenceEnabled: true);
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   String? login = await SHUser().getUserLogin();
+  String namePet = await GameDatabase().getNamePet() ?? "aaa";
   AwesomeNotifications().initialize(
       null,
       [
@@ -45,14 +46,15 @@ Future<void> main() async{
           vibrationPattern: Int64List(0),
         )
       ]);
-  runApp(MaterialApp(home: login == null ? SignInPage(): Bar(login: login)));
+  runApp(MaterialApp(home: login == null ? SignInPage(): Bar(login: login, namePet: namePet,)));
 }
 
 
 
 class Bar extends StatefulWidget {
   final login;
-  const Bar({super.key, this.login,});
+  final namePet;
+  const Bar({super.key, this.login, this.namePet,});
 
   @override
   _BottomBarState createState() => _BottomBarState();
@@ -63,6 +65,7 @@ class _BottomBarState extends State<Bar> {
   int _selectedIndex = 0;
   List pages = [];
   int _kapikoinCount = 0;
+  String assetGame = "стандартный";
   late String _userAvatar = "https://firebasestorage.googleapis.com/v0/b/tasky-3f0ce.appspot.com/o/images%2F1684981544841?alt=media&token=ab9e8659-70a7-420e-bb94-178563a9d5e4";
   GameDatabase mGame = GameDatabase();
   UserFirebase mUser = UserFirebase();
@@ -75,7 +78,7 @@ class _BottomBarState extends State<Bar> {
     pages = [
       Home(login: widget.login),
       NoteScreen(login: widget.login,),
-      Game(login: widget.login),
+      Game(login: widget.login, namePet: widget.namePet),
       Forum(login: widget.login,),
       Person(login: widget.login, avatar: _userAvatar),
       Settings()
