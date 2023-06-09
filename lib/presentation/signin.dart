@@ -142,11 +142,12 @@ class _SignInPageState extends State<SignInPage> {
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
         onPressed: () async {
          if(await _validateData()){
-           //TODO PathProvider
+           //TODO взять имя питомца
            var now = DateTime.now().millisecondsSinceEpoch;
-           await gameDatabase.setLastHunger(now);
-           await gameDatabase.setHpScale(3);
-           await gameDatabase.setHungerScale(100);
+           gameDatabase.setLastHunger(now);
+           gameDatabase.setHpScale(3);
+           gameDatabase.setHungerScale(100);
+           gameDatabase.setAssetSkin('стандартный');
            Navigator.pushReplacement(
                context, MaterialPageRoute(builder: (context) => Bar(login: _login,)));
          }

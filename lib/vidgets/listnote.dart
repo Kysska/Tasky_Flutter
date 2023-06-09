@@ -21,14 +21,27 @@ class ListNoteState extends State<ListNote> {
   late List<Note>? notes;
   List<Note>? searchNotes = [];
   late List<Note>? fullNotes = [];
-  late int lengthNote = 0;
+  DatabaseHelperNote mNote = DatabaseHelperNote.instance;
+  late int countNote = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _getStatictics();
+  }
+
+  _getStatictics() async{
+    countNote = await mNote.countTasks();
+    setState(() {});
+  }
 
   _runFilter(String text) {
     searchNotes?.clear();
+    searchText = text;
     setState(() {
       searchNotes = fullNotes
           ?.where((element) =>
-              element.title.toLowerCase().contains(text.toLowerCase()))
+              element.title.toLowerCase().contains(searchText.toLowerCase()))
           .toList();
     });
   }
@@ -40,8 +53,6 @@ class ListNoteState extends State<ListNote> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
       backgroundColor: Color(0xFF),
       body: CustomScrollView(slivers: [
@@ -68,7 +79,7 @@ class ListNoteState extends State<ListNote> {
                     ),
                   ),
                   Text(
-                    "Заметок:${lengthNote}", //ToDo Число заметок
+                    "Заметок:${countNote}", //ToDo Число заметок
                     style: GoogleFonts.comfortaa(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
@@ -122,9 +133,9 @@ class ListNoteState extends State<ListNote> {
           child: SliverList(
               delegate: SliverChildListDelegate([
             FutureBuilder<List<Note>>(
-              future: DatabaseHelperNote.instance.getNotes(),
+              future: mNote.getNotes(),
               builder: (context, snapshot) {
-                if (searchNotes!.isEmpty) {
+                if (searchText.isEmpty) {
                   notes = snapshot.data;
                   fullNotes = snapshot.data;
                 } else {
@@ -132,10 +143,7 @@ class ListNoteState extends State<ListNote> {
                 }
                 if (notes == null) {
                   return const Center(
-                    child: SizedBox(
-                      height: 200,
                       child: CircularProgressIndicator(color: Colors.grey),
-                    ),
                   );
                 } else if (snapshot.hasError) {
                   return Center(

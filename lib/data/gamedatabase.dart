@@ -47,17 +47,17 @@ class GameDatabase{
 
   Future getAssetSkin() async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    preferences.getString('assetSkin');
+    return preferences.getString('assetSkin');
   }
 
   Future getAssetRoom() async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    preferences.getString('assetRoom');
+    return preferences.getString('assetRoom');
   }
 
   Future getNamePet() async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    preferences.getString('namePet');
+    return preferences.getString('namePet');
   }
 
   Future getMoney() async{

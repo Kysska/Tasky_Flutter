@@ -10,8 +10,9 @@ import '../data/inventorydatabase.dart';
 
 class Game extends StatefulWidget {
   final String login;
+  final String namePet;
 
-  const Game({super.key, required this.login});
+  const Game({super.key, required this.login, required this.namePet});
 
   @override
   _GameState createState() => _GameState();
@@ -19,20 +20,21 @@ class Game extends StatefulWidget {
 
 class _GameState extends State<Game> {
   InventoryFirebase mInventoryFire = InventoryFirebase();
-  InventoryDatabase mInventory = InventoryDatabase.instance;
   GameDatabase mGame = GameDatabase();
   Timer _hungerTimer = Timer.periodic(const Duration(minutes: 15), (timer) {});
   Timer _gifTimer = Timer.periodic(const Duration(minutes: 48), (timer) {});
   late Map<String, int> listFood = {};
   late ImageProvider myImageProvider;
+  String assetGame = "стандартный";
+  bool countInventory = false; //TODO сделать дефолт true
   late int _kapikoinCount;
-  late final List<String> gifList = [
+  late List<String> gifList = [
     "images/Sit-1.gif",
     "images/Sit-2.gif",
     "images/Sleep-1.gif",
     "images/Sleep-2.gif",
   ];
-  late final List<String> gifTapList = [
+  late List<String> gifTapList = [
     "images/Tap-1.gif",
     "images/Tap-2.gif",
   ];
@@ -47,18 +49,30 @@ class _GameState extends State<Game> {
     3,
         (index) => Image.asset(
       'images/heart.png',
-      width: 24, // Здесь задайте желаемую ширину изображения
-      height: 24, // Здесь задайте желаемую высоту изображения
+      width: 24,
+      height: 24,
     ),
   );
 
   @override
   void initState() {
     super.initState();
-    myImageProvider = AssetImage(gifAnimation);
+    initialize();
     _loadHungerScale();
     _getKapikoinCount();
     _gifTimerLoad();
+  }
+
+  Future<void> initialize() async {
+    await getAsset();
+    gifList = gifMapClothes[assetGame]!;
+    gifTapList = gifMapTap[assetGame]!;
+    gifAnimation = gifList.first;
+    myImageProvider = AssetImage(gifAnimation);
+  }
+
+  Future<void> getAsset() async {
+    assetGame = await GameDatabase().getAssetSkin() ?? "стандартный";
   }
 
   @override
@@ -110,6 +124,10 @@ class _GameState extends State<Game> {
   }
 
   ////////////////////////
+  void onBuyButtonPressed() {
+   setState(() {});
+  }
+  //////////////////////
   @override
   void dispose() {
     _hungerTimer.cancel();
@@ -118,7 +136,7 @@ class _GameState extends State<Game> {
   }
 
   void _startTimers() {
-    _hungerTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _hungerTimer = Timer.periodic(Duration(minutes: 15), (timer) {
       setState(() {
         if (_hungerScale <= 0 && _hp > 0) {
           _hungerScale = 100;
@@ -147,12 +165,6 @@ class _GameState extends State<Game> {
       final decrease =
           difference ~/ 1800; // decrease hunger by 1 for every minute
       final newHunger = (hungerValue) - decrease;
-      print(now);
-      print(lastHungerValue);
-      print(difference);
-      print(decrease);
-      print(newHunger);
-      print(hungerValue);
       if (newHunger > 0) {
         setState(() {
           _hungerScale = newHunger;
@@ -187,8 +199,8 @@ class _GameState extends State<Game> {
   }
 
   _showBlock() async {
-    if (_kapikoinCount >= 10) {
-      _kapikoinCount -= 10;
+    if (_kapikoinCount >= 1000) {
+      _kapikoinCount -= 1000;
       await mGame.setMoney(_kapikoinCount);
       _startTimers();
       _gifTimerLoad();
@@ -208,7 +220,7 @@ class _GameState extends State<Game> {
     for (int i = 1; i <= 3; i++) {
       if (i <= _hp) {
         hearts.add(Image.asset('images/heart.png',
-          width: 24, // Здесь задайте желаемую ширину изображения
+          width: 24,
           height: 24,
         ));
       } else {
@@ -225,11 +237,22 @@ class _GameState extends State<Game> {
   }
 
   void _feedPet() {
-    if (_hungerScale + 10 <= 100) {
-      setState(() {
-        _hungerScale += 10; //10 - кол-во поднятия шкалы голода
-      });
-      _saveData();
+    if (countInventory) {
+      if (_hungerScale + 10 <= 100) {
+        setState(() {
+          _hungerScale += 10; //10 - кол-во поднятия шкалы голода
+        });
+        _saveData();
+      }
+      else{
+        setState(() {
+          _hungerScale = 100;
+        });
+        _saveData();
+      }
+    }
+    else{
+
     }
   }
 
@@ -253,6 +276,14 @@ class _GameState extends State<Game> {
     }
   }
 
+  _changeClothes(String data) async{
+    gifList = gifMapClothes[data]!;
+    gifTapList = gifMapTap[data]!;
+    gifAnimation = gifList.first;
+    _startTimers();
+    mGame.setAssetSkin(data);
+  }
+
   @override
   Widget build(BuildContext context) {
     final _scrollController = ScrollController();
@@ -274,7 +305,7 @@ class _GameState extends State<Game> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "имя капибары", // ToDo имя капибары
+                    widget.namePet,
                     textAlign: TextAlign.left,
                     style: GoogleFonts.comfortaa(
                       fontWeight: FontWeight.bold,
@@ -289,96 +320,74 @@ class _GameState extends State<Game> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  /*Container(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.red,
-                        backgroundColor: Colors.red,
-                      ),
-                      onPressed: () {
-                        showModalBottomSheet(
-                          backgroundColor: Colors.transparent,
-                          context: context,
-                          isScrollControlled: true,
-                          builder: (context) {
-                            return Shop(login: widget.login);
-                          },
-                        );
-                      },
-                      child: Text(
-                        "Магазин",
-                        style: TextStyle(color: Colors.white),
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15.0, right: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Row(
+                              children: [hearts[0], hearts[1], hearts[2]],
+                            ),
+                            LinearPercentIndicator(
+                              center: new Text("Голод: $_hungerScale%",
+                                  style: GoogleFonts.comfortaa(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  )),
+                              lineHeight: 20,
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              barRadius: Radius.circular(35),
+                              percent: _hungerScale / 100,
+                              progressColor: Colors.black,
+                              backgroundColor: Colors.grey[500],
+                            ),
+                          ],
+                        ),
+                        Container(
+                          child: RawMaterialButton(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            fillColor: Colors.black,
+                            onPressed: () {
+                              showModalBottomSheet(
+                                backgroundColor: Colors.transparent,
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (context) {
+                                  return Shop(login: widget.login, onBuyButtonPressed: () { setState(() {}); },);
+                                },
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: Row(
+                                children:[
+                                  Icon(
+                                    Icons.shopping_bag_outlined,
+                                    color: Colors.white,
+                                  ),
+                                  Text(
+                                    "магазин",
+                                    style: GoogleFonts.comfortaa(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),*/
+                  ),
                 ],
               ),
             ),
           ],
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 15.0, right: 15),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Row(
-                    children: [hearts[0], hearts[1], hearts[2]],
-                  ),
-                  LinearPercentIndicator(
-                    center: new Text("Голод: $_hungerScale%",
-                        style: GoogleFonts.comfortaa(
-                          color: Colors.white,
-                          fontSize: 12,
-                        )),
-                    lineHeight: 20,
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    barRadius: Radius.circular(35),
-                    percent: _hungerScale / 100,
-                    progressColor: Colors.black,
-                    backgroundColor: Colors.grey[500],
-                  ),
-                ],
-              ),
-              Container(
-                child: RawMaterialButton(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  fillColor: Colors.black,
-                  onPressed: () {
-                    showModalBottomSheet(
-                      backgroundColor: Colors.transparent,
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (context) {
-                        return Shop(login: widget.login);
-                      },
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: Row(
-                      children:[
-                        Icon(
-                          Icons.shopping_bag_outlined,
-                          color: Colors.white,
-                        ),
-                        Text(
-                          "магазин",
-                          style: GoogleFonts.comfortaa(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
         ),
         Expanded(
           child: GestureDetector(
@@ -407,15 +416,15 @@ class _GameState extends State<Game> {
                         ),
                       ),
                       TextButton(
-                          onPressed: _showBlock,
-                          child: Text("1000 kapikoin",
-                            style: GoogleFonts.comfortaa(
+                        onPressed: _showBlock,
+                        child: Text("1000 kapikoin",
+                          style: GoogleFonts.comfortaa(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
                               decoration: TextDecoration.underline,
                               color: Colors.black
-                            ),
                           ),
+                        ),
                       ),
                       InkWell(
                         onTap: () {
@@ -436,18 +445,24 @@ class _GameState extends State<Game> {
               }, onWillAccept: (data) {
                 return data == data;
               }, onAccept: (data) async {
-                if (_hungerScale > 0) {
-                  if (data == "Таблетка(1 здоровье)") {
-                    _medic1Pet();
-                  } else if (data == "Аптечка(3 здоровья)") {
-                    _medic2Pet();
-                  } else {
-                    _feedPet();
+                if (countInventory) {
+                  if (_hungerScale > 0) {
+                    if (data == "Мята(1 здоровье)") {
+                      _medic1Pet();
+                    } else if (data == "Чай(3 здоровья)") {
+                      _medic2Pet();
+                    } else {
+                      _feedPet();
+                    }
+                    await InventoryDatabase.instance.updateCount(listFood[data]! - 1, data);
+                    _refreshPage();
+                    mInventoryFire.updateCountEat(
+                        widget.login, listFood[data]! - 1, data);
                   }
-                  await mInventory.updateCount(listFood[data]! - 1, data);
+                }
+                else{
+                  _changeClothes(data);
                   _refreshPage();
-                  await mInventoryFire.updateCountEat(
-                      widget.login, listFood[data]! - 1, data);
                 }
               }),
             ]),
@@ -466,25 +481,86 @@ class _GameState extends State<Game> {
                       curve: Curves.easeInOut);
                 },
               ),
+
+              // Expanded(
+              //   child: Container(
+              //     height: 200,
+              //     child: SingleChildScrollView(
+              //       controller: _scrollController,
+              //       scrollDirection: Axis.horizontal,
+              //       child: StreamBuilder<List<EatInInventory>>(
+              //           stream: InventoryDatabase.instance.getEatListStream(),
+              //           builder: (BuildContext context,
+              //               AsyncSnapshot<List<EatInInventory>> snapshot) {
+              //             if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+              //               return Row(
+              //                 children:
+              //                     List.generate(snapshot.data!.length, (index) {
+              //                   final int count = snapshot.data![index].count;
+              //                   listFood[snapshot.data![index].title] = count;
+              //                   if (count <= 0) {
+              //                     return SizedBox.shrink();
+              //                   }
+              //                   return Draggable(
+              //                     data: snapshot.data![index].title,
+              //                     feedback: Padding(
+              //                         padding: const EdgeInsets.all(2.0),
+              //                         child: Container(
+              //                           // height: 70,
+              //                           // width: 70,
+              //                           // decoration: BoxDecoration(
+              //                           //   shape: BoxShape.circle,
+              //                           //   color: Colors.white,
+              //                           // ),
+              //                           child: Image.asset(
+              //                             snapshot.data![index].asset,
+              //                             width: 100,
+              //                             height: 100,
+              //                           ),
+              //                         )),
+              //                     child: Padding(
+              //                         padding: const EdgeInsets.all(2.0),
+              //                         child: Container(
+              //                           // height: 70,
+              //                           // width: 70,
+              //                           // decoration: BoxDecoration(
+              //                           //   shape: BoxShape.circle,
+              //                           //   color: Colors.white,
+              //                           // ),
+              //                           child: Image.asset(
+              //                             snapshot.data![index].asset,
+              //                             width: 100,
+              //                             height: 100,
+              //                           ),
+              //                         )),
+              //                   );
+              //                 }), //data!!!!
+              //               );
+              //             } else if (snapshot.connectionState ==
+              //                     ConnectionState.done &&
+              //                 snapshot.data!.isEmpty) {
+              //               return SizedBox.shrink();
+              //             } else {
+              //               return CircularProgressIndicator();
+              //             }
+              //           }),
+              //     ),
+              //   ),
+              // ),
               Expanded(
                 child: Container(
                   height: 200,
                   child: SingleChildScrollView(
                     controller: _scrollController,
                     scrollDirection: Axis.horizontal,
-                    child: StreamBuilder(
-                        stream: mInventory.getEatListStream(),
+                    child: StreamBuilder<List<ClothesInInventory>>(
+                        stream: InventoryClothesDatabase.instance.getEatListStream(),
                         builder: (BuildContext context,
-                            AsyncSnapshot<List<EatInInventory>> snapshot) {
+                            AsyncSnapshot<List<ClothesInInventory>> snapshot) {
                           if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                             return Row(
                               children:
                                   List.generate(snapshot.data!.length, (index) {
-                                final int count = snapshot.data![index].count;
-                                listFood[snapshot.data![index].title] = count;
-                                if (count <= 0) {
-                                  return SizedBox.shrink();
-                                }
                                 return Draggable(
                                   data: snapshot.data![index].title,
                                   feedback: Padding(
@@ -551,4 +627,72 @@ class _GameState extends State<Game> {
   _refreshPage() {
     setState(() {});
   }
+
+  Map<String, List<String>> gifMapClothes = {
+    'стандартный':
+  [ "images/Sit-1.gif",
+    "images/Sit-2.gif",
+    "images/Sleep-1.gif",
+    "images/Sleep-2.gif",],
+    'Апельсинка':
+    [ "images/Orange_sit_1.gif",
+      "images/Orange_sit_2.gif",
+      "images/Orange_sleep_1.gif",
+      "images/Orange_sleep_2.gif",],
+    'Шиноби Конохи':
+        [
+          "images/Bandage_sit_1.gif",
+          "images/Bandage_sit_2.gif",
+          "images/Bandage_sleep_1.gif",
+          "images/Bandage_sleep_2.gif",
+        ],
+    'Шляпа':
+        [
+          "images/Hat_sit_1.gif",
+          "images/Hat_sit_2.gif",
+          "images/Hat_sleep_1.gif",
+          "images/Hat_sleep_2.gif",
+        ],
+    'Поварской колпак':
+        [
+          "images/Chefs_Hat_Sit_1.gif",
+          "images/Chefs_Hat_Sit_2.gif",
+          "images/Chefs_Hat_Sleep_1.gif",
+          "images/Chefs_Hat_Sleep_1.gif",
+        ],
+    'бабочка':
+        [
+          "images/Butterfly_sit_1.gif",
+          "images/Butterfly_sit_2.gif",
+          "images/Butterfly_sleep_1.gif",
+          "images/Butterfly_Hat_sleep_1.gif"
+        ]
+  };
+
+  Map<String, List<String>> gifMapTap = {
+    'стандартный': [
+      "images/Tap-1.gif",
+      "images/Tap-2.gif",
+    ],
+    'Апельсинка': [
+      "images/Orange_tap_1.gif",
+      "images/Orange_tap_2.gif",
+    ],
+    'Шиноби Конохи': [
+      "images/Bandage_tap_1.gif",
+      "images/Bandage_tap_2.gif",
+    ],
+    'Шляпа': [
+      "images/Hat_tap_1.gif",
+      "images/Hat_tap_2.gif",
+    ],
+    'Поварской колпак': [
+      "images/Chefs_Hat_Tap_1.gif",
+      "images/Chefs_Hat_Tap_2.gif",
+    ],
+    'бабочка' : [
+      "images/Butterfly_tap_1.gif",
+      "images/Butterfly_tap_2.gif",
+    ]
+  };
 }

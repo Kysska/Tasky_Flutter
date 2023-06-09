@@ -120,12 +120,11 @@ class _WelcomeHome extends State<Welcome>{
       game.setNamePet(namePet);
       game.setHpScale(3);
       game.setHungerScale(100);
-      game.setAssetSkin('images/default_capibara.png');
+      game.setAssetSkin('стандартный');
       game.setMoney(500);
-      //TODO
       fireGame.setGameState(widget.login, namePet);
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Bar(login: widget.login,)));
+          context, MaterialPageRoute(builder: (context) => Bar(login: widget.login, namePet: namePet)));
     }
     else{
       final snackBar = SnackBar(

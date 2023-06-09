@@ -90,14 +90,6 @@ class _AddNoteState extends State<AddNote> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: BackButton(
-          onPressed: () {
-            final jsonStr = jsonEncode(_controller.document.toDelta().toJson());
-            if(_isEdit) _updateNote(jsonStr);
-            else _addNote(jsonStr);
-            Navigator.pop(context, true);
-          }
-        ),
         iconTheme: const IconThemeData(color: Colors.black),
         actionsIconTheme: const IconThemeData(color: Colors.black),
         actions: [
@@ -147,69 +139,118 @@ class _AddNoteState extends State<AddNote> {
 
         ),
       ),
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0, right: 15),
-                child: TextFormField(
-                  initialValue: _title ?? "",
-                  style: GoogleFonts.comfortaa(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                  ),
-                  cursorColor: Colors.black,
-                  decoration: const InputDecoration(
-                    hintText: "Введите заголовок",
-                    focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Colors.black
-                        )
-                    ),
-                    enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Colors.black
-                        )
-                    ),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: SafeArea(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15.0, right: 15),
+                    child: TextFormField(
+                      initialValue: _title ?? "",
+                      style: GoogleFonts.comfortaa(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                      ),
+                      cursorColor: Colors.black,
+                      decoration: const InputDecoration(
+                        hintText: "Введите заголовок",
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.black
+                            )
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.black
+                            )
+                        ),
 
+                      ),
+                      onChanged: _changeTitle,
+                    ),
                   ),
-                  onChanged: _changeTitle,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(17),
-                  child: QuillEditor(
-                    controller: _controller,
-                    readOnly: false,
-                    locale: const Locale('ru'),
-                    scrollController: ScrollController(),
-                    scrollable: true,
-                    autoFocus: false,
-                    placeholder: 'Запишите всю важную для вас информацию...',
-                    expands: false,
-                    padding: EdgeInsets.zero,
-                    focusNode: _focusNode,
+                  Padding(
+                    padding: const EdgeInsets.all(17),
+                      child: QuillEditor(
+                        controller: _controller,
+                        readOnly: false,
+                        locale: const Locale('ru'),
+                        scrollController: ScrollController(),
+                        scrollable: true,
+                        autoFocus: false,
+                        placeholder: 'Запишите всю важную для вас информацию...',
+                        expands: false,
+                        padding: EdgeInsets.zero,
+                        focusNode: _focusNode,
 
+                      ),
                   ),
+                  // TextFormField(
+                  //   initialValue: _desc ?? "",
+                  //   style: const TextStyle(fontSize: 16, color: Colors.black),
+                  //   decoration: const InputDecoration(
+                  //     hintText: "Enter description",
+                  //     enabledBorder: OutlineInputBorder(
+                  //       borderSide: BorderSide.none,
+                  //     ),
+                  //     focusedBorder: OutlineInputBorder(
+                  //       borderSide: BorderSide.none,
+                  //     ),
+                  //   ),
+                  //   onChanged: _changeDesc,
+                  // ),
+                ],
               ),
-              // TextFormField(
-              //   initialValue: _desc ?? "",
-              //   style: const TextStyle(fontSize: 16, color: Colors.black),
-              //   decoration: const InputDecoration(
-              //     hintText: "Enter description",
-              //     enabledBorder: OutlineInputBorder(
-              //       borderSide: BorderSide.none,
-              //     ),
-              //     focusedBorder: OutlineInputBorder(
-              //       borderSide: BorderSide.none,
-              //     ),
-              //   ),
-              //   onChanged: _changeDesc,
-              // ),
-            ],
+            ),
           ),
-        ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  FloatingActionButton(
+                    onPressed: () {
+                      final jsonStr =
+                          jsonEncode(_controller.document.toDelta().toJson());
+                      if (_isEdit)
+                        _updateNote(jsonStr);
+                      else
+                        _addNote(jsonStr);
+                      Navigator.pop(context, true);
+                    },
+                    backgroundColor: const Color(0xFF93D7FF),
+                    elevation: 0,
+                    child: const Icon(
+                      Icons.add,
+                      size: 30,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  FloatingActionButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    backgroundColor: const Color(0xFF6A7791),
+                    elevation: 0,
+                    child: Transform.rotate(
+                      angle: 45 * 3.1415926535 / 180,
+                      child: const Icon(
+                        Icons.add,
+                        size: 30,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
