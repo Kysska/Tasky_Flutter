@@ -103,6 +103,13 @@ class DatabaseHelperNote{
     Database db = await instance.database;
     return await db.update('note', note.toMap(), where: 'id = ?', whereArgs: [note.id]);
   }
+
+  Future<int> countTasks() async {
+    Database db = await instance.database;
+    var result = await db.rawQuery('SELECT COUNT(*) FROM note');
+    int count = Sqflite.firstIntValue(result) ?? 0;
+    return count;
+  }
 }
 
 class NoteFirebase{

@@ -18,7 +18,6 @@ class Game extends StatefulWidget {
 
 class _GameState extends State<Game> {
   InventoryFirebase mInventoryFire = InventoryFirebase();
-  InventoryDatabase mInventory = InventoryDatabase.instance;
   GameDatabase mGame = GameDatabase();
   Timer _hungerTimer = Timer.periodic(const Duration(minutes: 15), (timer) {});
   Timer _gifTimer = Timer.periodic(const Duration(minutes: 48), (timer) {});
@@ -105,6 +104,10 @@ class _GameState extends State<Game> {
   }
 
   ////////////////////////
+  void onBuyButtonPressed() {
+   setState(() {});
+  }
+  //////////////////////
   @override
   void dispose() {
     _hungerTimer.cancel();
@@ -142,12 +145,6 @@ class _GameState extends State<Game> {
       final decrease =
           difference ~/ 1800; // decrease hunger by 1 for every minute
       final newHunger = (hungerValue) - decrease;
-      print(now);
-      print(lastHungerValue);
-      print(difference);
-      print(decrease);
-      print(newHunger);
-      print(hungerValue);
       if (newHunger > 0) {
         setState(() {
           _hungerScale = newHunger;
@@ -223,6 +220,12 @@ class _GameState extends State<Game> {
       });
       _saveData();
     }
+    else{
+      setState(() {
+        _hungerScale = 100;
+      });
+      _saveData();
+    }
   }
 
   Future<void> _medic1Pet() async {
@@ -277,7 +280,7 @@ class _GameState extends State<Game> {
                           context: context,
                           isScrollControlled: true,
                           builder: (context) {
-                            return Shop(login: widget.login);
+                            return Shop(login: widget.login, onBuyButtonPressed: () { setState(() {}); },);
                           },
                         );
                       },
@@ -341,14 +344,14 @@ class _GameState extends State<Game> {
                 return data == data;
               }, onAccept: (data) async {
                 if (_hungerScale > 0) {
-                  if (data == "Таблетка(1 здоровье)") {
+                  if (data == "Мята(1 здоровье)") {
                     _medic1Pet();
-                  } else if (data == "Аптечка(3 здоровья)") {
+                  } else if (data == "Чай(3 здоровья)") {
                     _medic2Pet();
                   } else {
                     _feedPet();
                   }
-                  await mInventory.updateCount(listFood[data]! - 1, data);
+                  await InventoryDatabase.instance.updateCount(listFood[data]! - 1, data);
                   _refreshPage();
                   await mInventoryFire.updateCountEat(
                       widget.login, listFood[data]! - 1, data);
@@ -370,25 +373,86 @@ class _GameState extends State<Game> {
                       curve: Curves.easeInOut);
                 },
               ),
+
+              // Expanded(
+              //   child: Container(
+              //     height: 200,
+              //     child: SingleChildScrollView(
+              //       controller: _scrollController,
+              //       scrollDirection: Axis.horizontal,
+              //       child: StreamBuilder<List<EatInInventory>>(
+              //           stream: InventoryDatabase.instance.getEatListStream(),
+              //           builder: (BuildContext context,
+              //               AsyncSnapshot<List<EatInInventory>> snapshot) {
+              //             if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+              //               return Row(
+              //                 children:
+              //                     List.generate(snapshot.data!.length, (index) {
+              //                   final int count = snapshot.data![index].count;
+              //                   listFood[snapshot.data![index].title] = count;
+              //                   if (count <= 0) {
+              //                     return SizedBox.shrink();
+              //                   }
+              //                   return Draggable(
+              //                     data: snapshot.data![index].title,
+              //                     feedback: Padding(
+              //                         padding: const EdgeInsets.all(2.0),
+              //                         child: Container(
+              //                           // height: 70,
+              //                           // width: 70,
+              //                           // decoration: BoxDecoration(
+              //                           //   shape: BoxShape.circle,
+              //                           //   color: Colors.white,
+              //                           // ),
+              //                           child: Image.asset(
+              //                             snapshot.data![index].asset,
+              //                             width: 100,
+              //                             height: 100,
+              //                           ),
+              //                         )),
+              //                     child: Padding(
+              //                         padding: const EdgeInsets.all(2.0),
+              //                         child: Container(
+              //                           // height: 70,
+              //                           // width: 70,
+              //                           // decoration: BoxDecoration(
+              //                           //   shape: BoxShape.circle,
+              //                           //   color: Colors.white,
+              //                           // ),
+              //                           child: Image.asset(
+              //                             snapshot.data![index].asset,
+              //                             width: 100,
+              //                             height: 100,
+              //                           ),
+              //                         )),
+              //                   );
+              //                 }), //data!!!!
+              //               );
+              //             } else if (snapshot.connectionState ==
+              //                     ConnectionState.done &&
+              //                 snapshot.data!.isEmpty) {
+              //               return SizedBox.shrink();
+              //             } else {
+              //               return CircularProgressIndicator();
+              //             }
+              //           }),
+              //     ),
+              //   ),
+              // ),
               Expanded(
                 child: Container(
                   height: 200,
                   child: SingleChildScrollView(
                     controller: _scrollController,
                     scrollDirection: Axis.horizontal,
-                    child: StreamBuilder(
-                        stream: mInventory.getEatListStream(),
+                    child: StreamBuilder<List<ClothesInInventory>>(
+                        stream: InventoryClothesDatabase.instance.getEatListStream(),
                         builder: (BuildContext context,
-                            AsyncSnapshot<List<EatInInventory>> snapshot) {
+                            AsyncSnapshot<List<ClothesInInventory>> snapshot) {
                           if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                             return Row(
                               children:
                                   List.generate(snapshot.data!.length, (index) {
-                                final int count = snapshot.data![index].count;
-                                listFood[snapshot.data![index].title] = count;
-                                if (count <= 0) {
-                                  return SizedBox.shrink();
-                                }
                                 return Draggable(
                                   data: snapshot.data![index].title,
                                   feedback: Padding(

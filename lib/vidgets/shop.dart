@@ -4,11 +4,11 @@ import 'package:tasky_flutter/data/inventorydatabase.dart';
 import 'package:tasky_flutter/data/shopdatabase.dart';
 
 import '../data/gamedatabase.dart';
-import '../main.dart';
 
 class Shop extends StatefulWidget{
   final String login;
-  const Shop({super.key, required this.login,});
+  final VoidCallback onBuyButtonPressed;
+  const Shop({super.key, required this.login, required this.onBuyButtonPressed,});
 
 
   @override
@@ -22,7 +22,9 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
   InventoryFirebase mInventoryFire = InventoryFirebase();
   List<EatInShop>? mListEat;
   Future<List<EatInShop>>? retrievedListEat;
+  Future<List<ClothesInShop>>? retrievedListClothes;
   List<EatInShop>? mListMedic;
+  List<ClothesInShop>? mListClothes;
   Future<List<EatInShop>>? retrievedListMedic;
   GameDatabase mGame = GameDatabase();
   var _kapikoinCount;
@@ -33,8 +35,10 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
     updateCoin();
     retrievedListEat= mShop.getEatList();
     retrievedListMedic= mShop.getMedicList();
+    retrievedListClothes = mShop.getClothesList();
     getMedFood();
     getListFood();
+    getClothesFood();
   }
   Future<void> updateCoin() async{
     _kapikoinCount = await mGame.getMoney();
@@ -55,10 +59,15 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
     return mListMedic;
   }
 
+  Future<List<ClothesInShop>?> getClothesFood() async{
+    mListClothes = await mShop.getClothesList();
+    return mListClothes;
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    final TabController tabControl = TabController(length: 4, vsync: this,);
+    final TabController tabControl = TabController(length: 3, vsync: this,);
     return DraggableScrollableSheet(
     expand: false,
     builder: (context, scrollController) => SingleChildScrollView(
@@ -108,10 +117,6 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                             icon: Icon(Icons.home_filled, color: Colors.black87),
                             text: "Одежда",
                           ),
-                          Tab(
-                              icon: Icon(Icons.face, color: Colors.black87),
-                              text: "Комната"
-                          ),
                         ],
                       ),
                       Expanded(
@@ -143,30 +148,15 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                                 ]
                             ),
                             Column(
-                                children:[
+                                children: [Container(
+                                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                                  height: 320.0,
+                                  child:
                                   Padding(
-                                    padding: const EdgeInsets.all(15.0),
-                                    child: Wrap(
-                                      spacing: 8.0,
-                                      runSpacing: 4.0,
-                                      children: const <Widget>[
-                                        // _getCard(),
-                                      ],
-                                    ),
-                                  ),
-                                ]
-                            ),
-                            Column(
-                                children:[
-                                  Container(
-                                    margin: EdgeInsets.symmetric(vertical: 8.0),
-                                    height: 320.0,
-                                    child:
-                                    const Padding(
                                       padding: EdgeInsets.all(15.0),
-                                      // child: _getInventar()
-                                    ),
+                                      child: _getClothesCard()
                                   ),
+                                ),
                                 ]
                             ),
                           ],
@@ -223,25 +213,27 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                                 child: const Text('Купить'),
                                 onPressed: () async {
                                   int newCount = _kapikoinCount - mListEat![index].money;
-                                  if(newCount <= _kapikoinCount){
+                                  if(newCount > _kapikoinCount){
+                                    const snackBar = SnackBar(
+                                        content: Text('Не хватает монет')
+                                    );
+                                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                  }
+                                  else{
                                     _updateKapicoin(_kapikoinCount - mListEat![index].money);
                                     bool foodIn = await mInventory.checkIfExists(mListEat![index].title);
                                     if(foodIn){
                                       int count = await mInventory.getCount(mListEat![index].title);
                                       count +=1;
                                       await mInventory.updateCount(count, mListEat![index].title);
-                                      await mInventoryFire.updateCountEat(widget.login, count, mListEat![index].title);
+                                      widget.onBuyButtonPressed();
+                                      mInventoryFire.updateCountEat(widget.login, count, mListEat![index].title);
                                     }
                                     else{
                                       await mInventory.add(EatInInventory(title: mListEat![index].title, asset: mListEat![index].asset, money: mListEat![index].money, count: 1));
-                                      await mInventoryFire.setDataEatList(widget.login, EatInInventory(title: mListEat![index].title, asset: mListEat![index].asset, money: mListEat![index].money, count: 1));
+                                      widget.onBuyButtonPressed();
+                                      mInventoryFire.setDataEatList(widget.login, EatInInventory(title: mListEat![index].title, asset: mListEat![index].asset, money: mListEat![index].money, count: 1));
                                     }
-                                  }
-                                  else{
-                                    const snackBar = SnackBar(
-                                        content: Text('Не хватает монет')
-                                    );
-                                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                   }
                                 },
                               ),
@@ -260,6 +252,97 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
           return const Center(child: CircularProgressIndicator());
         }
         }
+    );
+  }
+
+  _getClothesCard(){
+    return FutureBuilder<List<ClothesInShop>>(
+      future: retrievedListClothes,
+      builder: (BuildContext context, AsyncSnapshot<List<ClothesInShop>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            scrollDirection: Axis.vertical,
+            itemBuilder: (context, index) {
+              ClothesInShop clothes = snapshot.data![index];
+              bool isBuy = clothes.isBuy;
+              return FutureBuilder<bool>(
+                future: InventoryClothesDatabase.instance.checkIfExists(clothes.title),
+                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    bool foodIn = snapshot.data ?? false;
+
+                    return Container(
+                      height: 170,
+                      width: 160,
+                      child: Card(
+                        color: isBuy ? Colors.white : Colors.grey,
+                        child: Column(
+                          children: [
+                            Container(
+                              child: Image.asset(clothes.asset, width: 50, height: 50),
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(5.0),
+                              alignment: Alignment.centerLeft,
+                              child: Text(clothes.title),
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(5.0),
+                              alignment: Alignment.bottomLeft,
+                              child: Text(clothes.money.toString()),
+                            ),
+                            ButtonBar(
+                              children: [
+                                isBuy
+                                    ? foodIn
+                                    ? Icon(Icons.check)
+                                    : TextButton(
+                                  child: const Text('Купить'),
+                                  onPressed: () async {
+                                    int newCount = _kapikoinCount - clothes.money;
+                                    if (newCount > _kapikoinCount) {
+                                      const snackBar = SnackBar(content: Text('Не хватает монет'));
+                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                    } else {
+                                      _updateKapicoin(_kapikoinCount - clothes.money);
+                                      await InventoryClothesDatabase.instance.add(
+                                        ClothesInInventory(
+                                          title: clothes.title,
+                                          asset: clothes.asset,
+                                          money: clothes.money,
+                                        ),
+                                      );
+                                      setState(() {});
+                                      widget.onBuyButtonPressed(); //TODO
+                                      //  mInventoryFire.setDataEatList(widget.login, ClothesInInventory(title: mListClothes![index].title, asset: mListClothes![index].asset, money: mListClothes![index].money,));
+                                    }
+                                  },
+                                )
+                                    : Icon(Icons.lock),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                },
+              );
+            },
+          );
+        } else {
+          return const Text('No data available');
+        }
+      },
     );
   }
 
@@ -305,7 +388,13 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                                   child: const Text('Купить'),
                                   onPressed: () async {
                                     int newCount = _kapikoinCount - mListMedic![index].money;
-                                    if(newCount <= _kapikoinCount){
+                                    if(newCount > _kapikoinCount){
+                                      const snackBar = SnackBar(
+                                          content: Text('Не хватает монет')
+                                      );
+                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                    }
+                                    else{
                                       _updateKapicoin(_kapikoinCount - mListMedic![index].money);
                                       bool foodIn = await mInventory.checkIfExists(mListMedic![index].title);
                                       if(foodIn){
@@ -318,12 +407,6 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                                         await mInventory.add(EatInInventory(title: mListMedic![index].title, asset: mListMedic![index].asset, money: mListMedic![index].money, count: 1));
                                         await mInventoryFire.setDataEatList(widget.login, EatInInventory(title: mListMedic![index].title, asset: mListMedic![index].asset, money: mListMedic![index].money, count: 1));
                                       }
-                                    }
-                                    else{
-                                      const snackBar = SnackBar(
-                                          content: Text('Не хватает монет')
-                                      );
-                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                     }
                                   },
                                 ),

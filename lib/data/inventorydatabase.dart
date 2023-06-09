@@ -33,6 +33,35 @@ class EatInInventory{
     };
   }
 }
+
+
+class ClothesInInventory{
+  late String title;
+  late String asset;
+  late int money;
+
+  ClothesInInventory({
+    required this.title, required this.asset, required this.money
+  }) {
+    money = int.parse(money.toString());
+  }
+
+  factory ClothesInInventory.fromMap(Map<String, dynamic> json) => ClothesInInventory(
+    title: json['title'],
+    asset: json['asset'],
+    money: json['money'],
+  );
+
+  Map<String, dynamic> toMap(){
+    return{
+      'title': title,
+      'asset': asset,
+      'money': money,
+    };
+  }
+
+}
+
 class InventoryDatabase{
   InventoryDatabase._privateConstructor();
   static final InventoryDatabase instance = InventoryDatabase._privateConstructor();
@@ -110,6 +139,71 @@ class InventoryDatabase{
 
 }
 
+
+class InventoryClothesDatabase{
+  InventoryClothesDatabase._privateConstructor();
+  static final InventoryClothesDatabase instance = InventoryClothesDatabase._privateConstructor();
+
+  static Database? _database;
+  Future<Database> get database async => _database ??= await _initDatabase();
+
+  Future<Database> _initDatabase() async{
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, 'clothesInInventory.db');
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreate,
+    );
+  }
+
+  Future _onCreate(Database db, int version) async {
+    await db.execute('''
+    CREATE TABLE clothesInInventory(
+    title TEXT,
+    money INT,
+    asset TEXT
+    )
+    ''');
+  }
+
+
+  Future<List<ClothesInInventory>> getEatList() async{
+    Database db = await instance.database;
+    var foods = await db.query('clothesInInventory');
+    List<ClothesInInventory> foodsList = foods.isNotEmpty
+        ? foods.map((c) => ClothesInInventory.fromMap(c)).toList()
+        : [];
+    return foodsList;
+  }
+
+  Stream<List<ClothesInInventory>> getEatListStream() async*{
+    Database db = await instance.database;
+    var foods = await db.query('clothesInInventory');
+    List<ClothesInInventory> foodsList = foods.isNotEmpty
+        ? foods.map((c) => ClothesInInventory.fromMap(c)).toList()
+        : [];
+    yield foodsList;
+  }
+
+  Future<int> add(ClothesInInventory eat) async {
+    Database db = await instance.database;
+    return await db.insert('clothesInInventory', eat.toMap() );
+  }
+
+
+  Future<bool> checkIfExists(String title) async {
+    Database db = await instance.database;
+    var result = await db.rawQuery('SELECT COUNT(*) FROM clothesInInventory WHERE title = ?', [title]);
+    int count = Sqflite.firstIntValue(result)!;
+    if (count == 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+}
 
 class InventoryFirebase{
   final firestore = FirebaseFirestore.instance;

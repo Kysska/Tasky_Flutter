@@ -16,6 +16,7 @@ class NoteScreen extends StatefulWidget {
 class _NoteScreenState extends State<NoteScreen> {
 
   _refreshPage(){
+    Future.delayed(Duration(milliseconds: 50));
     setState(() {});
   }
 
