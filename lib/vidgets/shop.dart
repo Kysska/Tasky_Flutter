@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tasky_flutter/data/inventorydatabase.dart';
 import 'package:tasky_flutter/data/shopdatabase.dart';
 
@@ -67,7 +68,10 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final TabController tabControl = TabController(length: 3, vsync: this,);
+    final mediaQueryData = MediaQuery.of(context);
+    final screenWidth = mediaQueryData.size.width;
+    final screenHeight = mediaQueryData.size.height;
+    final TabController tabControl = TabController(length: 4, vsync: this,);
     return DraggableScrollableSheet(
     expand: false,
     builder: (context, scrollController) => SingleChildScrollView(
@@ -89,35 +93,68 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
             child: DefaultTabController(
               length: 4,
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 10, horizontal: 12),
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                 child: Column(
                     mainAxisAlignment:
                     MainAxisAlignment.center,
                     crossAxisAlignment:
                     CrossAxisAlignment.start,
                     children: <Widget>[
-                      TabBar(
-                        controller: tabControl,
-                        indicator: BoxDecoration(
-                            gradient: LinearGradient(
-                                colors: [Colors.pink.shade100, Colors.blue.shade100]),
-                            borderRadius: BorderRadius.circular(50),
-                            color: Colors.blue),
-                        tabs: const [
-                          Tab(
-                            icon: Icon(Icons.fastfood_rounded, color: Colors.black87,),
-                            text: "Еда",
+                      SizedBox(
+                        height: screenHeight*0.07,
+                        child: TabBar(
+                          controller: tabControl,
+                          labelColor: Colors.white,
+                          unselectedLabelColor:  Colors.black,
+                          indicator: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: Colors.black
                           ),
-                          Tab(
-                            icon: Icon(Icons.loyalty_outlined, color: Colors.black87),
-                            text: "Лекарства",
-                          ),
-                          Tab(
-                            icon: Icon(Icons.home_filled, color: Colors.black87),
-                            text: "Одежда",
-                          ),
-                        ],
+                          tabs: [
+                            Tab(
+                              icon: Icon(Icons.apple_rounded,
+                              size: screenWidth * 0.06,
+                              ),
+                              child: Text(
+                                "Еда",
+                                style: GoogleFonts.comfortaa(
+                                  fontSize: screenWidth * 0.025,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Tab(
+                              icon: Icon(Icons.healing_rounded,size: screenWidth * 0.06,),
+                              child: Text(
+                                  "Лекарства",
+                                  style: GoogleFonts.comfortaa(
+                                    fontSize: screenWidth * 0.024,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            Tab(
+                              icon: Icon(Icons.watch_rounded,size: screenWidth * 0.06,),
+                              child: Text(
+                                "Одежда",
+                                style: GoogleFonts.comfortaa(
+                                  fontSize: screenWidth * 0.024,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Tab(
+                              icon: Icon(Icons.backpack_rounded,size: screenWidth * 0.06,),
+                              child: Text(
+                                "Инвентарь",
+                                style: GoogleFonts.comfortaa(
+                                  fontSize: screenWidth * 0.024,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       Expanded(
                         child: TabBarView(
@@ -143,6 +180,18 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                                   Padding(
                                     padding: EdgeInsets.all(15.0),
                                     child: _getMedicCard()
+                                  ),
+                                ),
+                                ]
+                            ),
+                            Column(
+                                children: [Container(
+                                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                                  height: 320.0,
+                                  child:
+                                  Padding(
+                                      padding: EdgeInsets.all(15.0),
+                                      child: _getClothesCard()
                                   ),
                                 ),
                                 ]
