@@ -505,7 +505,7 @@ class _GameState extends State<Game> {
                                 snapshot.data!.isEmpty) {
                               return const SizedBox.shrink();
                             } else {
-                              return const CircularProgressIndicator();
+                              return const CircularProgressIndicator(color: Colors.white,);
                             }
                           }),
                     ),

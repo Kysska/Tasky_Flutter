@@ -137,7 +137,6 @@ class _PersonState extends State<Person> {
                   future: mMood.getMood(),
                   builder: (BuildContext context, snapshot){
                     List<int> mood = (snapshot.data ?? []).map((item) => item as int).toList();
-                    print(mood);
                     if (!snapshot.hasData) {
                       return const Center(child: Text('Загрузка..'));
                     }

@@ -344,6 +344,7 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                             String selectedFormatDate = DateFormat.yMd().format(
                                 _selectedDate);
                             String dateSqlite = snapshot.data![index].date;
+                            bool dayForCheck = (_selectedDate.day == DateTime.now().day);
                             if(selectedFormatDate == dateSqlite) {
                               return Padding(
                                 padding: const EdgeInsets.only(left: 8.0, right: 8.0),
@@ -425,7 +426,10 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                                                 ),
                                               ),
                                             ),
-                                          if (snapshot.data![index].isCompleted)
+                                          dayForCheck
+                                          ?
+                                          snapshot.data![index].isCompleted
+                                          ?
                                             IconButton(
                                               icon: const Icon(
                                                 Icons.check_circle_outline,
@@ -458,7 +462,7 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                                                 );
                                               },
                                             )
-                                          else
+                                              :
                                             IconButton(
                                               icon: const Icon(
                                                 Icons.circle_outlined,
@@ -469,7 +473,9 @@ class _MyDraggableScrollableSheetState extends State<MyDraggableScrollableSheet>
                                                 await mTask.updateCompleted(snapshot.data![index].title, 1);
                                                 _refreshPage();
                                               },
-                                            ),
+                                            )
+                                              :
+                                              const Icon(Icons.block, color: Colors.grey,)
                                         ],
                                       ),
                                       onTap: (){
@@ -591,13 +597,14 @@ class _HabitsCardsState extends State<HabitsCards> {
                 itemBuilder: (BuildContext context, int index) {
                   if (index < snapshot.data!.length) {
                     bool selectedFormatWeek = snapshot.data![index]
-                        .listWeek[_selectedWeekday - 1];
+                        .listWeek[_selectedWeekday % 7];
                     List<String> selectedFormatDate = snapshot.data![index]
                         .isCompleted;
                     String selectedFormatDay = DateFormat.yMd().format(
                         _selectedDay);
                     bool dayInList = selectedFormatDate.contains(
                         selectedFormatDay);
+                    bool dayForCheck = (_selectedDay.day == DateTime.now().day);
                     updateCompletedDate(
                         selectedFormatDate, snapshot.data![index].title);
 
@@ -699,6 +706,8 @@ class _HabitsCardsState extends State<HabitsCards> {
                                       ),
                                     ),
                                   ),
+                                  dayForCheck
+                                  ?
                                   dayInList
                                       ? IconButton(
                                     icon: const Icon(
@@ -760,7 +769,9 @@ class _HabitsCardsState extends State<HabitsCards> {
                                               1);
                                       _refreshPage();
                                     },
-                                  ),
+                                  )
+                                  :
+                                  const Icon(Icons.block, color: Colors.grey,)
                                 ],
                               ),
                               onTap: () {

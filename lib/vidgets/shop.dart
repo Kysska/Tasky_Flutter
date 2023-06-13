@@ -145,11 +145,11 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
                               ),
                             ),
                             Tab(
-                              icon: Icon(Icons.backpack_rounded,size: screenWidth * 0.07,),
+                              icon: Icon(Icons.backpack_rounded,size: screenWidth * 0.06,),
                               child: Text(
                                 "Инвентарь",
                                 style: GoogleFonts.comfortaa(
-                                  fontSize: screenWidth * 0.024,
+                                  fontSize: screenWidth * 0.023,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -524,8 +524,8 @@ class _ShopState extends State<Shop> with TickerProviderStateMixin {
             );
           }
           else if (snapshot.connectionState == ConnectionState.done &&
-              mListEat!.isEmpty) {
-            return const Text('No data available');
+              snapshot.data!.isEmpty) {
+            return Center(child: const Text('В гардеробе пусто'));
           } else {
             return const Center(child: CircularProgressIndicator());
           }
