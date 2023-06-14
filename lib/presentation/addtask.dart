@@ -96,7 +96,7 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                 const SizedBox(width: 10,),
                 InkWell(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: Habit(title: 'Отказ от сахара', id: id, isCompleted: [], tag: '', time: '15:00', listWeek: [true,true,true,true,true,true,true], sumCompleted: 0, assets: ["images/Butterfly.png", "images/medic_2.png"], receivedGifts: 0), isPattern: true,)));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: Habit(title: 'Отказ от сахара', id: id, isCompleted: [], tag: '', time: '15:00', listWeek: [true,true,true,true,true,true,true], sumCompleted: 0, assets: ["images/Cook.png", "images/medic_2.png"], receivedGifts: 0), isPattern: true,)));
                     },
                   child: Container(
                     decoration: BoxDecoration(
@@ -124,7 +124,7 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
                 const SizedBox(width: 10,),
                 InkWell(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: Habit(title: 'Время на свежем воздухе', id: id, isCompleted: [], tag: '', time: '15:00', listWeek: [true,true,true,true,true,true,true], sumCompleted: 0, assets:  ["images/Cook.png", "images/medic_2.png"], receivedGifts: 0  ), isPattern: true,)));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateHabit(login: widget.login, habit: Habit(title: 'Время на свежем воздухе', id: id, isCompleted: [], tag: '', time: '15:00', listWeek: [true,true,true,true,true,true,true], sumCompleted: 0, assets:  ["images/Baterfly.png", "images/medic_2.png"], receivedGifts: 0  ), isPattern: true,)));
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -372,7 +372,11 @@ class _AddTaskState extends State<AddTask> with TickerProviderStateMixin{
   _validateData()  async{
     if(_titleController.text.isNotEmpty){
       _selectedTag ??= "";
-      await NotifyTask('habit');
+      try {
+        await NotifyTask('habit');
+      } on Exception catch (e) {
+        // TODO
+      }
       _dbTaskAdd();
       Navigator.of(context).pop(true);
     }
@@ -576,10 +580,14 @@ class _AddHabitState extends State<AddHabit>{
     else{
       if(_titleController.text.isNotEmpty){
         _selectedTime ??= "15:00";
-        for (int i = 0; i < isSelectedWeekday.length; i++) {
-          if (isSelectedWeekday[i]) {
-            await Notify('habit', i + 1);
+        try {
+          for (int i = 0; i < isSelectedWeekday.length; i++) {
+            if (isSelectedWeekday[i]) {
+              await Notify('habit', i + 1);
+            }
           }
+        }
+        catch(e){
         }
         _dbHabitAdd();
         Navigator.of(context).pop(true);
