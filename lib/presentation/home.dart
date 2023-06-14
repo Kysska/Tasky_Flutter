@@ -167,7 +167,6 @@ class _HomeState extends State<Home> {
   }
   refreshPage(){
     setState(() {
-      _selectedDate = DateTime.now();
     });
   }
 }
