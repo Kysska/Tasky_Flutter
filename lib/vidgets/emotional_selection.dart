@@ -232,101 +232,106 @@ class _EmotionSelectionState extends State<EmotionSelection> {
                 visible: isEmotionVisible,
                 child: Padding(
                   padding: const EdgeInsets.only(top: 6, left: 10.0),
-                  child: ButtonBar(
-                    alignment: MainAxisAlignment.spaceEvenly,
-                    buttonPadding: const EdgeInsets.only(right: 2),
-                    children: [
-                      GestureDetector(
-                        onTap: () async{
-                          setState(() {
-                            emotionalKapibara = 0;
-                          });
-                          await mMood.add(formattedDate, 1);
-                        },
-                        child: Container(
-                          width: 72,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(emotionalList[0]),
-                              fit: BoxFit.cover,
+                  child: LayoutBuilder(
+                    builder: (BuildContext context, BoxConstraints constraints) {
+                      double containerWidth = constraints.maxWidth / 6;
+                      return ButtonBar(
+                        alignment: MainAxisAlignment.spaceEvenly,
+                        buttonPadding: const EdgeInsets.only(right: 2),
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              setState(() {
+                                emotionalKapibara = 0;
+                              });
+                              await mMood.add(formattedDate, 1);
+                            },
+                            child: Container(
+                              width: containerWidth,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(emotionalList[0]),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () async{
-                          setState(() {
-                            emotionalKapibara = 1;
-                          });
-                          await mMood.add(formattedDate, 2);
-                        },
-                        child: Container(
-                          width: 72,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(emotionalList[1]),
-                              fit: BoxFit.cover,
+                          GestureDetector(
+                            onTap: () async {
+                              setState(() {
+                                emotionalKapibara = 1;
+                              });
+                              await mMood.add(formattedDate, 2);
+                            },
+                            child: Container(
+                              width: containerWidth,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(emotionalList[1]),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () async{
-                          setState(() {
-                            emotionalKapibara = 2;
-                          });
-                          await mMood.add(formattedDate, 3);
-                        },
-                        child: Container(
-                          width: 72,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(emotionalList[2]),
-                              fit: BoxFit.cover,
+                          GestureDetector(
+                            onTap: () async {
+                              setState(() {
+                                emotionalKapibara = 2;
+                              });
+                              await mMood.add(formattedDate, 3);
+                            },
+                            child: Container(
+                              width: containerWidth,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(emotionalList[2]),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () async{
-                          setState(() {
-                            emotionalKapibara = 3;
-                          });
-                          await mMood.add(formattedDate, 4);
-                        },
-                        child: Container(
-                          width: 72,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(emotionalList[3]),
-                              fit: BoxFit.cover,
+                          GestureDetector(
+                            onTap: () async {
+                              setState(() {
+                                emotionalKapibara = 3;
+                              });
+                              await mMood.add(formattedDate, 4);
+                            },
+                            child: Container(
+                              width: containerWidth,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(emotionalList[3]),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () async{
-                          setState(() {
-                            emotionalKapibara = 4;
-                          });
-                          await mMood.add(formattedDate, 5);
-                        },
-                        child: Container(
-                          width: 72,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(emotionalList[4]),
-                              fit: BoxFit.cover,
+                          GestureDetector(
+                            onTap: () async {
+                              setState(() {
+                                emotionalKapibara = 4;
+                              });
+                              await mMood.add(formattedDate, 5);
+                            },
+                            child: Container(
+                              width: containerWidth,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(emotionalList[4]),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ],
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),

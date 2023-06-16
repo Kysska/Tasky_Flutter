@@ -14,7 +14,6 @@ import 'package:tasky_flutter/presentation/home.dart';
 import 'package:tasky_flutter/presentation/note.dart';
 import 'package:tasky_flutter/presentation/person.dart';
 import 'package:tasky_flutter/presentation/signin.dart';
-import 'package:tasky_flutter/vidgets/options.dart';
 
 import 'data/userdatabase.dart';
 import 'firebase_options.dart';
@@ -112,20 +111,6 @@ class _BottomBarState extends State<Bar> {
         toolbarHeight: 80,
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: Image.asset(
-                'images/options.png',
-                width: 30,
-                height: 30,
-              ),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            );
-          },
-        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 15),
@@ -173,7 +158,6 @@ class _BottomBarState extends State<Bar> {
           ],
         ),
       ),
-      drawer: SettingsMenu(),
       body:
       Container(
         decoration: const BoxDecoration(
